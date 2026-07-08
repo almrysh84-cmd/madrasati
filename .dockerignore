@@ -1,0 +1,16 @@
+.git
+.gitignore
+node_modules
+vendor
+storage/framework/sessions/*
+storage/framework/cache/*
+storage/framework/views/*
+storage/logs/*
+.env
+.phpunit.result.cache
+npm-debug.log
+tests
+phpunit.xml
+package.json
+package-lock.json
+vite.config.js
