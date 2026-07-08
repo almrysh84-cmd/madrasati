@@ -1,0 +1,2 @@
+- [Laravel DATABASE_URL override on Replit](laravel-database-url-override.md) — Replit auto-injects a Postgres `DATABASE_URL`; Laravel's `config/database.php` 'url' key silently overrides DB_CONNECTION for ALL drivers (mysql/pgsql/sqlite), causing wrong-DB connections. Unset it for the process.
+- [madrasati/school-management-system project state](madrasati-project.md) — GitHub repo almrysh84-cmd/madrasati main branch already holds clean original Laravel code + working Railway Dockerfile/entrypoint.sh; don't overwrite it.
