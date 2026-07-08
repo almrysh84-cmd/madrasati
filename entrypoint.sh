@@ -52,6 +52,17 @@ if [ "$DB_CONNECTION" = "mysql" ] && [ -n "$DB_HOST" ]; then
         echo "Running migrations..."
         php artisan migrate --force 2>&1
         echo "Migrations done!"
+
+        # Seed demo data only on first boot (when the users table is empty),
+        # so redeploys/restarts never wipe or duplicate existing data.
+        USER_COUNT=$(php artisan tinker --execute="echo \App\Models\User::count();" 2>/dev/null | tail -n 1)
+        if [ "$USER_COUNT" = "0" ]; then
+            echo "No users found, running database seeders..."
+            php artisan db:seed --force 2>&1
+            echo "Seeding done!"
+        else
+            echo "Users already exist ($USER_COUNT), skipping seeders."
+        fi
     else
         echo "WARNING: MySQL not available, skipping migrations"
     fi
