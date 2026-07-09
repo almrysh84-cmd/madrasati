@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     git \
     libicu-dev \
+    libonig-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # PHP extensions
