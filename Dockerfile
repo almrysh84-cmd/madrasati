@@ -30,7 +30,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     && sed -ri -e 's!Listen 80!Listen 8080!g' /etc/apache2/ports.conf \
-    && a2dismod mpm_event \
+    && rm -f /etc/apache2/mods-enabled/mpm_event.load \
     && a2enmod mpm_prefork rewrite headers
 
 COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
