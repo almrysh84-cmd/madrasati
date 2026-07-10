@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
 
     public function run()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
         $this->call(BloodTableSeeder::class);
         $this->call(NationalitiesTableSeeder::class);
         $this->call(ReligionTableSeeder::class);
@@ -27,9 +29,6 @@ class DatabaseSeeder extends Seeder
         $this->call(GenderTableSeeder::class);
         $this->call(UserTableSeeder::class);
         $this->call(SettingsTableSeeder::class);
-
-
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
         Grade::truncate(); 
         Grade::create([
@@ -234,5 +233,7 @@ class DatabaseSeeder extends Seeder
             'classroom_id' => '1',
             'teacher_id' => '1',
         ]);
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
