@@ -17,4 +17,14 @@ class My_Parent extends Authenticatable
 
 
     protected $table = 'my__parents';
+
+    public function getAuthIdentifierName()
+    {
+        return 'Email';
+    }
+
+    public function getAuthPasswordName()
+    {
+        return 'Password';
+    }
 }

@@ -15,6 +15,16 @@ class Teacher extends Authenticatable
     public $translatable = ['name'];
     protected $guarded = [];
 
+    public function getAuthIdentifierName()
+    {
+        return 'Email';
+    }
+
+    public function getAuthPasswordName()
+    {
+        return 'Password';
+    }
+
     // علاقة بين المعلمين والتخصصات لجلب اسم التخصص
     public function specializations()
     {
