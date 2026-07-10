@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->foreignId('grade_id')->references('id')->on('grades')->onDelete('cascade');
-            $table->foreignId('classroom_id')->references('id')->on('Classrooms')->onDelete('cascade');
+            $table->foreignId('classroom_id')->references('id')->on('classrooms')->onDelete('cascade');
             $table->foreignId('section_id')->references('id')->on('sections')->onDelete('cascade');
             $table->foreignId('teacher_id')->references('id')->on('teachers')->onDelete('cascade');
             $table->date('attendence_date');
