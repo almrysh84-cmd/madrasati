@@ -32,7 +32,6 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     && sed -ri -e 's!Listen 80!Listen 8080!g' /etc/apache2/ports.conf \
     && a2dismod -f mpm_event \
     && a2dismod -f mpm_worker \
-    && a2dismod -f mpm_itk \
     && a2enmod mpm_prefork rewrite headers
 
 COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
