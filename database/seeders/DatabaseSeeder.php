@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingsTableSeeder::class);
 
 
-
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
         Grade::truncate(); 
         Grade::create([
@@ -46,7 +46,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-        Classroom::truncate(); 
+        Classroom::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        
         Classroom::create([
             'Name_Class' => ['en' => "first level", 'ar' => "الصف الاول"],
             'Grade_id' => '1',
