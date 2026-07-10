@@ -63,11 +63,10 @@ if [ -n "$DB_HOST_VAL" ] && [ "$DB_HOST_VAL" != "127.0.0.1" ]; then
     fi
 fi
 
-# Run migrations
-echo "Running database migrations..."
-php artisan migrate --force
+# Run migrations - use migrate:fresh to ensure clean state, then seed
+echo "Running database migrations (fresh)..."
+php artisan migrate:fresh --force --no-interaction
 
-# Seed database (always run to ensure data exists)
 echo "Seeding database..."
 php artisan db:seed --force
 

@@ -1,10 +1,8 @@
 .git
+.github
 .gitignore
-.env
+start.sh
+nixpacks.toml
+*.md
 node_modules
 vendor
-storage/logs/*
-storage/framework/cache/*
-storage/framework/sessions/*
-storage/framework/views/*
-bootstrap/cache/*
