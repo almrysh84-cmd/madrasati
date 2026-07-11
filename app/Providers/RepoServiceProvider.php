@@ -93,6 +93,12 @@ class RepoServiceProvider extends ServiceProvider
             'App\Repository\PdfRepositoryInterface',
             'App\Repository\PdfRepository'
         );
+
+        // ===== Dashboard لوحة التحكم الإحصائية =====
+        $this->app->bind(
+            'App\Repository\DashboardRepositoryInterface',
+            'App\Repository\DashboardRepository'
+        );
     }
 
     /**

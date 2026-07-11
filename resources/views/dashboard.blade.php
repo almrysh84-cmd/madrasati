@@ -141,7 +141,73 @@
                     </div>
                 </div>
             </div>
-            <!-- Orders Status widgets-->
+            <!-- widgets -->
+
+            {{-- ===== Chart.js Statistical Charts (Phase 2) ===== --}}
+            <div class="row">
+                <!-- Students by Grade - Bar Chart -->
+                <div class="col-xl-6 mb-30">
+                    <div class="card card-statistics h-100">
+                        <div class="card-body">
+                            <h5 style="font-family: 'Cairo', sans-serif" class="card-title mb-3">
+                                <i class="fas fa-chart-bar text-primary"></i> توزيع الطلاب حسب المراحل الدراسية
+                            </h5>
+                            <canvas id="studentsByGradeChart" height="120"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Students by Gender - Doughnut Chart -->
+                <div class="col-xl-6 mb-30">
+                    <div class="card card-statistics h-100">
+                        <div class="card-body">
+                            <h5 style="font-family: 'Cairo', sans-serif" class="card-title mb-3">
+                                <i class="fas fa-chart-pie text-success"></i> توزيع الطلاب حسب النوع
+                            </h5>
+                            <canvas id="studentsByGenderChart" height="120"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Attendance last 7 days - Line Chart -->
+                <div class="col-xl-8 mb-30">
+                    <div class="card card-statistics h-100">
+                        <div class="card-body">
+                            <h5 style="font-family: 'Cairo', sans-serif" class="card-title mb-3">
+                                <i class="fas fa-calendar-check text-info"></i> الحضور والغياب - آخر 7 أيام
+                            </h5>
+                            <canvas id="attendance7DaysChart" height="100"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fees Overview - Doughnut Chart -->
+                <div class="col-xl-4 mb-30">
+                    <div class="card card-statistics h-100">
+                        <div class="card-body">
+                            <h5 style="font-family: 'Cairo', sans-serif" class="card-title mb-3">
+                                <i class="fas fa-money-bill-wave text-warning"></i> الرسوم الدراسية
+                            </h5>
+                            <canvas id="feesOverviewChart" height="140"></canvas>
+                            @php
+                                $totalInvoiced = \App\Models\Fee_invoice::sum('amount');
+                                $totalCollected = \App\Models\ReceiptStudent::sum('Debit');
+                                $totalPending = max($totalInvoiced - $totalCollected, 0);
+                            @endphp
+                            <div class="text-center mt-2">
+                                <small class="text-muted">
+                                    المحصّل: <strong class="text-success">{{ number_format($totalCollected, 2) }}</strong> |
+                                    المتبقي: <strong class="text-danger">{{ number_format($totalPending, 2) }}</strong>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ===== End Chart.js Section ===== --}}
 
 
             <div class="row">
@@ -362,6 +428,134 @@
     @include('layouts.footer-scripts')
     @livewireScripts
     @stack('scripts')
+
+    {{-- ===== Chart.js CDN + Chart Initialization (Phase 2) ===== --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+    (function() {
+        // تعيين اتجاه RTL للخطوط العربية
+        Chart.defaults.font.family = "'Cairo', 'Tajawal', sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = '#333';
+
+        // ===== 1. توزيع الطلاب حسب المراحل (Bar Chart) =====
+        @php
+            $gradeData = \App\Models\Student::select('Grade_id', \Illuminate\Support\Facades\DB::raw('count(*) as total'))
+                ->with('grade')->groupBy('Grade_id')->get();
+        @endphp
+        var gradeCtx = document.getElementById('studentsByGradeChart');
+        if (gradeCtx) {
+            new Chart(gradeCtx, {
+                type: 'bar',
+                data: {
+                    labels: @json($gradeData->map(function($i){ return $i->grade ? $i->grade->getTranslation('Name','ar') : 'غير محدد'; })),
+                    datasets: [{
+                        label: 'عدد الطلاب',
+                        data: @json($gradeData->pluck('total')),
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                }
+            });
+        }
+
+        // ===== 2. توزيع الطلاب حسب النوع (Doughnut Chart) =====
+        @php
+            $genderData = \App\Models\Student::select('gender_id', \Illuminate\Support\Facades\DB::raw('count(*) as total'))
+                ->with('gender')->groupBy('gender_id')->get();
+        @endphp
+        var genderCtx = document.getElementById('studentsByGenderChart');
+        if (genderCtx) {
+            new Chart(genderCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: @json($genderData->map(function($i){ return $i->gender ? $i->gender->getTranslation('Name','ar') : 'غير محدد'; })),
+                    datasets: [{
+                        data: @json($genderData->pluck('total')),
+                        backgroundColor: ['rgba(46, 204, 113, 0.8)', 'rgba(231, 76, 60, 0.8)', 'rgba(241, 196, 15, 0.8)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        // ===== 3. الحضور والغياب آخر 7 أيام (Line Chart) =====
+        @php
+            $last7Days = [];
+            for ($i = 6; $i >= 0; $i--) {
+                $date = date('Y-m-d', strtotime("-$i days"));
+                $last7Days[] = [
+                    'date'    => $date,
+                    'present' => \App\Models\Attendance::where('attendence_date', $date)->where('attendence_status', 1)->count(),
+                    'absent'  => \App\Models\Attendance::where('attendence_date', $date)->where('attendence_status', 0)->count(),
+                ];
+            }
+        @endphp
+        var attCtx = document.getElementById('attendance7DaysChart');
+        if (attCtx) {
+            new Chart(attCtx, {
+                type: 'line',
+                data: {
+                    labels: @json(collect($last7Days)->pluck('date')),
+                    datasets: [
+                        {
+                            label: 'الحضور',
+                            data: @json(collect($last7Days)->pluck('present')),
+                            borderColor: 'rgba(46, 204, 113, 1)',
+                            backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'الغياب',
+                            data: @json(collect($last7Days)->pluck('absent')),
+                            borderColor: 'rgba(231, 76, 60, 1)',
+                            backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                            fill: true,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                }
+            });
+        }
+
+        // ===== 4. الرسوم الدراسية (Doughnut Chart) =====
+        var feesCtx = document.getElementById('feesOverviewChart');
+        if (feesCtx) {
+            new Chart(feesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['المحصّل', 'المتبقي'],
+                    datasets: [{
+                        data: [{{ $totalCollected ?? 0 }}, {{ $totalPending ?? 0 }}],
+                        backgroundColor: ['rgba(46, 204, 113, 0.8)', 'rgba(231, 76, 60, 0.8)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+    })();
+    </script>
+    {{-- ===== End Chart.js Section ===== --}}
 
 </body>
 

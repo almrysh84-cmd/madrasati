@@ -51,6 +51,21 @@
             <div class="calendar-main mb-30">
                 <livewire:calender-student />
             </div>
+
+            {{-- ===== Chart.js (Phase 2) ===== --}}
+            <div class="row">
+                <div class="col-xl-12 mb-30">
+                    <div class="card card-statistics h-100">
+                        <div class="card-body">
+                            <h5 style="font-family: 'Cairo', sans-serif" class="card-title mb-3">
+                                <i class="fas fa-chart-bar text-primary"></i> نتائج اختباراتي
+                            </h5>
+                            <canvas id="studentResultsChart" height="80"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- ===== End Chart.js ===== --}}
             <!--=================================
  wrapper -->
 
@@ -68,6 +83,37 @@
     @include('layouts.footer-scripts')
     @livewireScripts
     @stack('scripts')
+
+    {{-- ===== Chart.js (Phase 2) ===== --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+    (function() {
+        Chart.defaults.font.family = "'Cairo', 'Tajawal', sans-serif";
+        Chart.defaults.font.size = 12;
+        @php
+            $sDegrees = \App\Models\Degree::where('student_id', auth()->user()->id)
+                ->with('quizze')->orderBy('id', 'desc')->take(10)->get();
+        @endphp
+        var sCtx = document.getElementById('studentResultsChart');
+        if (sCtx) {
+            new Chart(sCtx, {
+                type: 'bar',
+                data: {
+                    labels: @json($sDegrees->map(function($d){ return $d->quizze ? $d->quizze->getTranslation('name','ar') : 'اختبار'; })),
+                    datasets: [{
+                        label: 'الدرجة',
+                        data: @json($sDegrees->pluck('score')),
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+        }
+    })();
+    </script>
+    {{-- ===== End Chart.js ===== --}}
 </body>
 
 </html>

@@ -93,6 +93,24 @@
                 </div>
             </section>
 
+            {{-- ===== Chart.js (Phase 2) ===== --}}
+            <section style="background-color: #eee;">
+                <div class="container pb-5">
+                    <div class="row">
+                        <div class="col-xl-12">
+                            <div class="card card-statistics h-100">
+                                <div class="card-body">
+                                    <h5 style="font-family: 'Cairo', sans-serif" class="card-title mb-3">
+                                        <i class="fas fa-chart-bar text-primary"></i> حضور أبنائي - الشهر الحالي
+                                    </h5>
+                                    <canvas id="parentAttendanceChart" height="80"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {{-- ===== End Chart.js ===== --}}
 
 
 
@@ -112,6 +130,39 @@
  footer -->
 
     @include('layouts.footer-scripts')
+
+    {{-- ===== Chart.js (Phase 2) ===== --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+    (function() {
+        Chart.defaults.font.family = "'Cairo', 'Tajawal', sans-serif";
+        Chart.defaults.font.size = 12;
+        @php
+            $pChildren = \App\Models\Student::where('parent_id', auth()->user()->id)->get();
+            $pLabels = []; $pPresent = []; $pAbsent = [];
+            foreach ($pChildren as $child) {
+                $pLabels[] = $child->getTranslation('name','ar');
+                $pPresent[] = \App\Models\Attendance::where('student_id', $child->id)->where('attendence_status', 1)->whereMonth('attendence_date', date('m'))->whereYear('attendence_date', date('Y'))->count();
+                $pAbsent[]  = \App\Models\Attendance::where('student_id', $child->id)->where('attendence_status', 0)->whereMonth('attendence_date', date('m'))->whereYear('attendence_date', date('Y'))->count();
+            }
+        @endphp
+        var pCtx = document.getElementById('parentAttendanceChart');
+        if (pCtx) {
+            new Chart(pCtx, {
+                type: 'bar',
+                data: {
+                    labels: @json($pLabels),
+                    datasets: [
+                        { label: 'الحضور', data: @json($pPresent), backgroundColor: 'rgba(46,204,113,0.7)', borderColor: 'rgba(46,204,113,1)', borderWidth: 1 },
+                        { label: 'الغياب', data: @json($pAbsent), backgroundColor: 'rgba(231,76,60,0.7)', borderColor: 'rgba(231,76,60,1)', borderWidth: 1 }
+                    ]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+            });
+        }
+    })();
+    </script>
+    {{-- ===== End Chart.js ===== --}}
 </body>
 
 </html>

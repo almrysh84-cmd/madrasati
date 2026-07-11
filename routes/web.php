@@ -38,7 +38,10 @@ Route::group(
     function () {
         //==============================dashboard============================
         //Route::get('/', 'App\Http\Controllers\HomeController@index')->name('dashboard');
-        Route::get('/dashboard', 'App\Http\Controllers\HomeController@dashboard')->name('dashboard');
+        Route::get('/dashboard', 'App\Http\Controllers\Dashboard\DashboardController@index')->name('dashboard');
+
+        //==============================Chart Data API============================
+        Route::get('/dashboard/chart-data', 'App\Http\Controllers\Dashboard\DashboardController@chartData')->name('dashboard.chartData');
 
         //==============================Grades============================
         Route::group(['namespace' => 'App\Http\Controllers\Grades'], function () {

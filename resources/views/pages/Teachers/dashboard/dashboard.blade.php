@@ -100,6 +100,21 @@
             </div>
             <!-- Orders Status widgets-->
 
+            {{-- ===== Chart.js (Phase 2) ===== --}}
+            <div class="row">
+                <div class="col-xl-12 mb-30">
+                    <div class="card card-statistics h-100">
+                        <div class="card-body">
+                            <h5 style="font-family: 'Cairo', sans-serif" class="card-title mb-3">
+                                <i class="fas fa-chart-line text-info"></i> إحصائيات الحضور لطلابك - آخر 7 أيام
+                            </h5>
+                            <canvas id="teacherAttendanceChart" height="80"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- ===== End Chart.js ===== --}}
+
 
             <div class="row">
 
@@ -319,6 +334,42 @@
     @include('layouts.footer-scripts')
     @livewireScripts
     @stack('scripts')
+
+    {{-- ===== Chart.js (Phase 2) ===== --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+    (function() {
+        Chart.defaults.font.family = "'Cairo', 'Tajawal', sans-serif";
+        Chart.defaults.font.size = 12;
+        @php
+            $teacherId = auth()->user()->id;
+            $tLast7Days = [];
+            for ($i = 6; $i >= 0; $i--) {
+                $date = date('Y-m-d', strtotime("-$i days"));
+                $tLast7Days[] = [
+                    'date'    => $date,
+                    'present' => \App\Models\Attendance::where('attendence_date', $date)->where('attendence_status', 1)->where('teacher_id', $teacherId)->count(),
+                    'absent'  => \App\Models\Attendance::where('attendence_date', $date)->where('attendence_status', 0)->where('teacher_id', $teacherId)->count(),
+                ];
+            }
+        @endphp
+        var tCtx = document.getElementById('teacherAttendanceChart');
+        if (tCtx) {
+            new Chart(tCtx, {
+                type: 'line',
+                data: {
+                    labels: @json(collect($tLast7Days)->pluck('date')),
+                    datasets: [
+                        { label: 'الحضور', data: @json(collect($tLast7Days)->pluck('present')), borderColor: 'rgba(46,204,113,1)', backgroundColor: 'rgba(46,204,113,0.2)', fill: true, tension: 0.3 },
+                        { label: 'الغياب', data: @json(collect($tLast7Days)->pluck('absent')), borderColor: 'rgba(231,76,60,1)', backgroundColor: 'rgba(231,76,60,0.2)', fill: true, tension: 0.3 }
+                    ]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+            });
+        }
+    })();
+    </script>
+    {{-- ===== End Chart.js ===== --}}
 
 </body>
 
