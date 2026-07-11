@@ -9698,8 +9698,6 @@ class SchoolDataSeeder extends Seeder
             $teacherSections[] = [
                 'teacher_id' => 1,
                 'section_id' => $i,
-                'created_at' => now(),
-                'updated_at' => now(),
             ];
         }
         DB::table('teacher_section')->insert($teacherSections);
