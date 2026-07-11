@@ -10,6 +10,8 @@ return [
     'delete_checkbox'=> 'Delete Selected',
     'Search_By_Grade'=> 'Search By Grade Name',
     'Warning_Grade'=> 'هل انت متاكد من عملية الحذف ؟',
+    'Warning_class' => 'Are you sure you want to delete?',
+    'Name_class' => 'Name Class (Arabic)',
     'submit' => 'submit',
     'required_ar'=>'Please Enter The class Name in Arabic',
     'required_en'=>'Please Enter The class Name in English',
