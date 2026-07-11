@@ -20,11 +20,11 @@ class My_Parent extends Authenticatable
 
     public function getAuthIdentifierName()
     {
-        return 'Email';
+        return 'email';
     }
 
     public function getAuthPasswordName()
     {
-        return 'Password';
+        return 'password';
     }
 }

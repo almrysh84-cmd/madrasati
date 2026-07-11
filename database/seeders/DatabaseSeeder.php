@@ -142,8 +142,8 @@ class DatabaseSeeder extends Seeder
 
         DB::table('my__parents')->delete();
         My_Parent::create([
-            'Email' => 'my@example.com',
-            'Password' => Hash::make('12345678'),
+            'email' => 'my@example.com',
+            'password' => Hash::make('12345678'),
             'Name_Father' => ['en' => "Osama", 'ar' => "أسامه"],
             'National_ID_Father' => '1234567890',
             'Passport_ID_Father' => '1234567890',
@@ -211,8 +211,8 @@ class DatabaseSeeder extends Seeder
 
         DB::table('teachers')->delete();
         Teacher::create([
-            'Email' => 'khaled@example.com',
-            'Password' => Hash::make('12345678'),
+            'email' => 'khaled@example.com',
+            'password' => Hash::make('12345678'),
             'name' => ['en' => "Khaled", 'ar' => "خالد"],
             'gender_id' => '1',
             'Specialization_id' => '1',

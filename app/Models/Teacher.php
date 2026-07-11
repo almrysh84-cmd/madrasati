@@ -17,12 +17,12 @@ class Teacher extends Authenticatable
 
     public function getAuthIdentifierName()
     {
-        return 'Email';
+        return 'email';
     }
 
     public function getAuthPasswordName()
     {
-        return 'Password';
+        return 'password';
     }
 
     // علاقة بين المعلمين والتخصصات لجلب اسم التخصص
