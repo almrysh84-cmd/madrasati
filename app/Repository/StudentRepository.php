@@ -11,6 +11,7 @@ use App\Models\Nationalitie;
 use App\Models\Section;
 use App\Models\Student;
 use App\Models\Type_Blood;
+use App\Notifications\NewStudentNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -126,6 +127,16 @@ class StudentRepository implements StudentRepositoryInterface
                 }
             }
             DB::commit(); // insert data
+
+            // ===== إرسال إشعار لولي الأمر =====
+            if ($students->parent_id) {
+                $parent = My_Parent::find($students->parent_id);
+                if ($parent) {
+                    $gradeName = $students->grade ? $students->grade->getTranslation('Name', 'ar') : null;
+                    $parent->notify(new NewStudentNotification($request->name_ar, $gradeName));
+                }
+            }
+
             toastr()->success(trans('messages.success'));
             return redirect()->route('Students.create');
         } catch (\Exception $e) {

@@ -55,27 +55,49 @@ header start-->
             <a id="btnFullscreen" href="#" class="nav-link"><i class="ti-fullscreen"></i></a>
         </li>
         <li class="nav-item dropdown ">
+            @php
+                // الحصول على المستخدم المصادق عليه حسب الحارس النشط
+                $notifUser = null;
+                foreach (['web', 'student', 'teacher', 'parent'] as $guard) {
+                    if (auth($guard)->check()) {
+                        $notifUser = auth($guard)->user();
+                        break;
+                    }
+                }
+                $unreadNotifications = $notifUser ? $notifUser->unreadNotifications->take(5) : collect([]);
+                $unreadCount = $notifUser ? $notifUser->unreadNotifications->count() : 0;
+            @endphp
             <a class="nav-link top-nav" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                 aria-expanded="false">
                 <i class="ti-bell"></i>
-                <span class="badge badge-danger notification-status"> </span>
+                @if($unreadCount > 0)
+                <span class="badge badge-danger notification-status">{{ $unreadCount }}</span>
+                @endif
             </a>
             <div class="dropdown-menu dropdown-menu-right dropdown-big dropdown-notifications">
                 <div class="dropdown-header notifications">
                     <strong>{{ trans('Sidebar_trans.Notifications') }}</strong>
-                    <span class="badge badge-pill badge-warning">05</span>
+                    <span class="badge badge-pill badge-warning">{{ $unreadCount }}</span>
                 </div>
                 <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">New registered user <small
-                        class="float-right text-muted time">Just now</small> </a>
-                <a href="#" class="dropdown-item">New invoice received <small
-                        class="float-right text-muted time">22 mins</small> </a>
-                <a href="#" class="dropdown-item">Server error report<small class="float-right text-muted time">7
-                        hrs</small> </a>
-                <a href="#" class="dropdown-item">Database report<small class="float-right text-muted time">1
-                        days</small> </a>
-                <a href="#" class="dropdown-item">Order confirmation<small class="float-right text-muted time">2
-                        days</small> </a>
+                @if($unreadNotifications->count() > 0)
+                    @foreach($unreadNotifications as $notification)
+                        @php $data = $notification->data; @endphp
+                        <a href="{{ $data['url'] ?? '#' }}" class="dropdown-item notification-item" data-id="{{ $notification->id }}">
+                            <i class="{{ $data['icon'] ?? 'fas fa-bell' }} text-{{ $data['color'] ?? 'info' }}"></i>
+                            {{ $data['message'] ?? 'إشعار جديد' }}
+                            <small class="float-right text-muted time">{{ $notification->created_at->diffForHumans() }}</small>
+                        </a>
+                    @endforeach
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ route('notifications.index') }}" class="dropdown-item text-center text-primary">
+                        <small>{{ trans('Sidebar_trans.View_all') ?? 'عرض الكل' }}</small>
+                    </a>
+                @else
+                    <a href="#" class="dropdown-item text-center text-muted">
+                        <small>لا توجد إشعارات جديدة</small>
+                    </a>
+                @endif
             </div>
         </li>
         <li class="nav-item dropdown ">

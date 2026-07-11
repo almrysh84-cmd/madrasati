@@ -99,6 +99,12 @@ class RepoServiceProvider extends ServiceProvider
             'App\Repository\DashboardRepositoryInterface',
             'App\Repository\DashboardRepository'
         );
+
+        // ===== Notifications الإشعارات =====
+        $this->app->bind(
+            'App\Repository\NotificationRepositoryInterface',
+            'App\Repository\NotificationRepository'
+        );
     }
 
     /**

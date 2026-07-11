@@ -7,8 +7,10 @@ namespace App\Repository;
 use App\Models\Fee;
 use App\Models\Fee_invoice;
 use App\Models\Grade;
+use App\Models\My_Parent;
 use App\Models\Student;
 use App\Models\StudentAccount;
+use App\Notifications\FeeInvoiceNotification;
 use Illuminate\Support\Facades\DB;
 
 class FeeInvoicesRepository implements FeeInvoicesRepositoryInterface
@@ -68,6 +70,18 @@ class FeeInvoicesRepository implements FeeInvoicesRepositoryInterface
             }
 
             DB::commit();
+
+            // ===== إرسال إشعار لولي الأمر =====
+            foreach ($List_Fees as $List_Fee) {
+                $student = Student::with('myparent')->find($List_Fee['student_id']);
+                if ($student && $student->myparent) {
+                    $student->myparent->notify(new FeeInvoiceNotification(
+                        $student->getTranslation('name', 'ar'),
+                        $List_Fee['amount'],
+                        $List_Fee['description'] ?? null
+                    ));
+                }
+            }
 
             toastr()->success(trans('messages.success'));
             return redirect()->route('Fees_Invoices.index');

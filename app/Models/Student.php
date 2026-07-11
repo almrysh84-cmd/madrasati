@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class Student extends Authenticatable
 {
-    use HasTranslations,SoftDeletes;
+    use HasTranslations, SoftDeletes, Notifiable;
     public $translatable = ['name'];
     protected $guarded = [];
 

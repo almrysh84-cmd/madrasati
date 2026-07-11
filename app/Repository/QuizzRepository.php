@@ -4,8 +4,10 @@ namespace App\Repository;
 
 use App\Models\Grade;
 use App\Models\Quizze;
+use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Teacher;
+use App\Notifications\QuizPublishedNotification;
 
 class QuizzRepository implements QuizzRepositoryInterface
 {
@@ -36,6 +38,19 @@ class QuizzRepository implements QuizzRepositoryInterface
             $quizzes->section_id = $request->section_id;
             $quizzes->teacher_id = $request->teacher_id;
             $quizzes->save();
+
+            // ===== إرسال إشعار للطلاب في القسم المعني =====
+            $students = Student::where('section_id', $request->section_id)->get();
+            $subjectName = $quizzes->subject ? $quizzes->subject->getTranslation('name', 'ar') : null;
+            $gradeName = $quizzes->grade ? $quizzes->grade->getTranslation('Name', 'ar') : null;
+            foreach ($students as $student) {
+                $student->notify(new QuizPublishedNotification(
+                    $request->Name_ar,
+                    $subjectName,
+                    $gradeName
+                ));
+            }
+
             toastr()->success(trans('messages.success'));
             return redirect()->route('Quizzes.create');
         } catch (\Exception $e) {

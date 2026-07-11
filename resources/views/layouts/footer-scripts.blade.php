@@ -171,3 +171,49 @@
         });
     });
 </script>
+
+{{-- ===== Notification Mark-as-Read Handler (Phase 2) ===== --}}
+<script>
+    $(document).ready(function() {
+        // تحديد إشعار كمقروء عند النقر عليه
+        $(document).on('click', '.notification-item', function(e) {
+            var notifId = $(this).data('id');
+            if (notifId) {
+                $.ajax({
+                    url: '{{ route("notifications.markAsRead", "__ID__") }}'.replace('__ID__', notifId),
+                    type: 'POST',
+                    data: { _token: '{{ csrf_token() }}' },
+                    success: function() {
+                        // تحديث عدد الإشعارات غير المقروءة
+                        var badge = $('.notification-status');
+                        var count = parseInt(badge.text()) || 0;
+                        if (count > 0) {
+                            count--;
+                            if (count === 0) {
+                                badge.remove();
+                            } else {
+                                badge.text(count);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        // زر تحديد جميع الإشعارات كمقروءة
+        $(document).on('click', '#markAllNotificationsRead', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '{{ route("notifications.markAllAsRead") }}',
+                type: 'POST',
+                data: { _token: '{{ csrf_token() }}' },
+                success: function() {
+                    $('.notification-status').remove();
+                    location.reload();
+                }
+            });
+        });
+    });
+</script>
+{{-- ===== End Notification Handler ===== --}}
+

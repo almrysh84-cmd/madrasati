@@ -6,8 +6,10 @@ namespace App\Repository;
 
 use App\Models\Attendance;
 use App\Models\Grade;
+use App\Models\My_Parent;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Notifications\AttendanceNotification;
 
 class AttendanceRepository implements AttendanceRepositoryInterface
 {
@@ -31,6 +33,8 @@ class AttendanceRepository implements AttendanceRepositoryInterface
     {
         try {
 
+            $currentDate = date('Y-m-d');
+
             foreach ($request->attendences as $studentid => $attendence) {
 
                 if ($attendence == 'presence') {
@@ -45,9 +49,19 @@ class AttendanceRepository implements AttendanceRepositoryInterface
                     'classroom_id' => $request->classroom_id,
                     'section_id' => $request->section_id,
                     'teacher_id' => auth()->user()->id,
-                    'attendence_date' => date('Y-m-d'),
+                    'attendence_date' => $currentDate,
                     'attendence_status' => $attendence_status
                 ]);
+
+                // ===== إرسال إشعار لولي الأمر =====
+                $student = Student::with('myparent')->find($studentid);
+                if ($student && $student->myparent) {
+                    $student->myparent->notify(new AttendanceNotification(
+                        $student->getTranslation('name', 'ar'),
+                        $attendence_status ? 1 : 0,
+                        $currentDate
+                    ));
+                }
             }
 
             toastr()->success(trans('messages.success'));

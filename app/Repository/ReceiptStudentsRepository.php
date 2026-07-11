@@ -4,9 +4,11 @@
 namespace App\Repository;
 
 use App\Models\FundAccount;
+use App\Models\My_Parent;
 use App\Models\ReceiptStudent;
 use App\Models\Student;
 use App\Models\StudentAccount;
+use App\Notifications\ReceiptNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -66,6 +68,16 @@ class ReceiptStudentsRepository implements ReceiptStudentsRepositoryInterface
             $fund_accounts->save();
 
             DB::commit();
+
+            // ===== إرسال إشعار لولي الأمر =====
+            $student = Student::with('myparent')->find($request->student_id);
+            if ($student && $student->myparent) {
+                $student->myparent->notify(new ReceiptNotification(
+                    $student->getTranslation('name', 'ar'),
+                    $request->Debit
+                ));
+            }
+
             toastr()->success(trans('messages.success'));
             return redirect()->route('receipt_students.index');
         } catch (\Exception $e) {

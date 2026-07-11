@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class Teacher extends Authenticatable
 {
     use HasFactory;
     use HasTranslations;
+    use Notifiable;
 
     public $translatable = ['name'];
     protected $guarded = [];

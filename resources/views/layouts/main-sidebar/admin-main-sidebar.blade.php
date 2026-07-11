@@ -205,6 +205,11 @@
             </ul>
         </li>
 
+        <!-- Notifications -->
+        <li>
+            <a href="{{route('notifications.index')}}"><i class="fas fa-bell"></i><span class="right-nav-text">{{trans('Sidebar_trans.Notifications')}} </span></a>
+        </li>
+
         <!-- Settings-->
         <li>
             <a href="{{route('settings.index')}}"><i class="fas fa-cogs"></i><span class="right-nav-text">{{trans('main_trans.Settings')}} </span></a>

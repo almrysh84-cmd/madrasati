@@ -43,6 +43,15 @@ Route::group(
         //==============================Chart Data API============================
         Route::get('/dashboard/chart-data', 'App\Http\Controllers\Dashboard\DashboardController@chartData')->name('dashboard.chartData');
 
+        //==============================Notifications============================
+        Route::group(['namespace' => 'App\Http\Controllers\Notification'], function () {
+            Route::get('/notifications', 'NotificationController@index')->name('notifications.index');
+            Route::post('/notifications/{id}/mark-as-read', 'NotificationController@markAsRead')->name('notifications.markAsRead');
+            Route::post('/notifications/mark-all-as-read', 'NotificationController@markAllAsRead')->name('notifications.markAllAsRead');
+            Route::delete('/notifications/{id}', 'NotificationController@destroy')->name('notifications.destroy');
+            Route::get('/notifications/unread-count', 'NotificationController@unreadCount')->name('notifications.unreadCount');
+        });
+
         //==============================Grades============================
         Route::group(['namespace' => 'App\Http\Controllers\Grades'], function () {
             Route::resource('Grades', 'GradeController');
