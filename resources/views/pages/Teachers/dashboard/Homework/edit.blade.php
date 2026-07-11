@@ -30,7 +30,7 @@
                     <div class="col-xs-12">
                         <div class="col-md-12">
                             <br>
-                            <form action="{{route('homework.update','test')}}" method="post" enctype="multipart/form-data">
+                            <form action="{{route('homework.update',$homework->id)}}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
                                 <input type="hidden" name="id" value="{{$homework->id}}">
