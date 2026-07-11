@@ -25,7 +25,7 @@
                             <img src="{{URL::asset('assets/images/teacher.png')}}"
                                  alt="avatar"
                                  class="rounded-circle img-fluid" style="width: 150px;">
-                            <h5 style="font-family: Cairo" class="my-3">{{$information->Name}}</h5>
+                            <h5 style="font-family: Cairo" class="my-3">{{$information->Name_Father}}</h5>
                             <p class="text-muted mb-1">{{$information->email}}</p>
                             <p class="text-muted mb-4">ولي امر</p>
                         </div>

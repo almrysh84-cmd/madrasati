@@ -10,7 +10,6 @@ use App\Models\My_Parent;
 use App\Models\ReceiptStudent;
 use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class ChildrenController extends Controller
@@ -60,8 +59,7 @@ class ChildrenController extends Controller
             'to.date_format' => 'صيغة التاريخ يجب ان تكون yyyy-mm-dd',
         ]);
 
-        $ids = DB::table('teacher_section')->where('teacher_id', auth()->user()->id)->pluck('section_id');
-        $students = Student::whereIn('section_id', $ids)->get();
+        $students = Student::where('parent_id', auth()->user()->id)->get();
 
         if ($request->student_id == 0) {
 

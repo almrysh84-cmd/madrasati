@@ -71,7 +71,7 @@ class AddParent extends Component
     public function firstStepSubmit()
     {
         $this->validate([
-            'Email' => 'required|unique:my__parents,Email,' . $this->id,
+            'Email' => 'required|unique:my__parents,email,' . $this->id,
             'Password' => 'required',
             'Name_Father' => 'required',
             'Name_Father_en' => 'required',
@@ -117,8 +117,8 @@ class AddParent extends Component
         try {
             $My_Parent = new My_Parent();
             // Father_INPUTS
-            $My_Parent->Email = $this->Email;
-            $My_Parent->Password = Hash::make($this->Password);
+            $My_Parent->email = $this->Email;
+            $My_Parent->password = Hash::make($this->Password);
             $My_Parent->Name_Father = ['en' => $this->Name_Father_en, 'ar' => $this->Name_Father];
             $My_Parent->National_ID_Father = $this->National_ID_Father;
             $My_Parent->Passport_ID_Father = $this->Passport_ID_Father;
@@ -167,8 +167,8 @@ class AddParent extends Component
         $this->updateMode = true;
         $My_Parent = My_Parent::where('id', $id)->first();
         $this->Parent_id = $id;
-        $this->Email = $My_Parent->Email;
-        $this->Password = $My_Parent->Password;
+        $this->Email = $My_Parent->email;
+        $this->Password = $My_Parent->password;
         $this->Name_Father = $My_Parent->getTranslation('Name_Father', 'ar');
         $this->Name_Father_en = $My_Parent->getTranslation('Name_Father', 'en');
         $this->Job_Father = $My_Parent->getTranslation('Job_Father', 'ar');;
@@ -182,7 +182,7 @@ class AddParent extends Component
         $this->Religion_Father_id = $My_Parent->Religion_Father_id;
 
         $this->Name_Mother = $My_Parent->getTranslation('Name_Mother', 'ar');
-        $this->Name_Mother_en = $My_Parent->getTranslation('Name_Father', 'en');
+        $this->Name_Mother_en = $My_Parent->getTranslation('Name_Mother', 'en');
         $this->Job_Mother = $My_Parent->getTranslation('Job_Mother', 'ar');;
         $this->Job_Mother_en = $My_Parent->getTranslation('Job_Mother', 'en');
         $this->National_ID_Mother = $My_Parent->National_ID_Mother;
@@ -199,7 +199,7 @@ class AddParent extends Component
     {
        // dd($this->id);
         $this->validate([
-            'Email' => 'required|unique:my__parents,Email,' . $this->Parent_id,
+            'Email' => 'required|unique:my__parents,email,' . $this->Parent_id,
             'Password' => 'required',
             'Name_Father' => 'required',
             'Name_Father_en' => 'required',
@@ -245,8 +245,8 @@ class AddParent extends Component
         if ($this->Parent_id) {
             $parent = My_Parent::find($this->Parent_id);
             $parent->update([
-                'Email' => $this->Email,
-                'Password' => $this->Password,
+                'email' => $this->Email,
+                'password' => $this->Password,
                 'Phone_Father' => $this->Phone_Father,
                 'Job_Father' => ['en' => $this->Job_Father_en, 'ar' => $this->Job_Father],
                 'Religion_Father_id' => $this->Religion_Father_id,
