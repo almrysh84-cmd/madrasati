@@ -22,7 +22,7 @@ Route::get('/', 'App\Http\Controllers\HomeController@index')->name('selection');
 
 Route::group(['namespace' => 'App\Http\Controllers\Auth'], function () {
 
-    Route::get('/login/{type}', 'LoginController@loginForm')->middleware('guest')->name('login.show');
+    Route::get('/login/{type}', 'LoginController@loginForm')->name('login.show');
 
     Route::post('/login', 'LoginController@login')->name('login');
 
