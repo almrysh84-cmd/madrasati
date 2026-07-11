@@ -73,7 +73,9 @@ php artisan db:seed --force
 # Cache for production
 php artisan config:cache
 php artisan view:cache
-php artisan route:cache
+# Note: route:cache disabled because LaravelLocalization::setLocale()
+# does not work with cached routes (prefix is evaluated at compile time)
+# php artisan route:cache
 
 # Ensure writable permissions
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
