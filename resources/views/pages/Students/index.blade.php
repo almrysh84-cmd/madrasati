@@ -23,7 +23,7 @@
                             <div class="card-body">
                                 <a href="{{route('Students.create')}}" class="btn btn-success btn-sm" role="button"
                                    aria-pressed="true">{{trans('main_trans.add_student')}}</a>
-                                <a href="{{route('excel.export.students')}}" class="btn btn-primary btn-sm" role="button" aria-pressed="true"><i class="fas fa-file-excel"></i> تصدير الطلاب Excel</a>
+                                <a href="{{route('excel.exportStudents')}}" class="btn btn-primary btn-sm" role="button" aria-pressed="true"><i class="fas fa-file-excel"></i> تصدير الطلاب Excel</a>
                                 <div class="table-responsive">
                                     <table id="datatable" class="table  table-hover table-sm table-bordered p-0"
                                            data-page-length="50"
