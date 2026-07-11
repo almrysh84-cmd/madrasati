@@ -7,12 +7,26 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Student extends Authenticatable
 {
-    use HasTranslations, SoftDeletes, Notifiable;
+    use HasTranslations, SoftDeletes, Notifiable, LogsActivity;
     public $translatable = ['name'];
     protected $guarded = [];
+
+    /**
+     * إعدادات تسجيل النشاطات
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'email', 'Grade_id', 'Classroom_id', 'section_id'])
+            ->logOnlyDirty()
+            ->useLogName('student')
+            ->setDescriptionForEvent(fn(string $eventName) => "تم {$eventName} طالب");
+    }
 
     // علاقة بين الطلاب والانواع لجلب اسم النوع في جدول الطلاب
 

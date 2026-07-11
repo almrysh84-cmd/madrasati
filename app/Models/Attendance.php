@@ -3,9 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Attendance extends Model
 {
+    use LogsActivity;
+
+    /**
+     * إعدادات تسجيل النشاطات
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['student_id', 'attendence_date', 'attendence_status'])
+            ->logOnlyDirty()
+            ->useLogName('attendance')
+            ->setDescriptionForEvent(fn(string $eventName) => "تم {$eventName} سجل حضور");
+    }
+
     protected $fillable = [
         'student_id',
         'grade_id',

@@ -52,6 +52,13 @@ Route::group(
             Route::get('/notifications/unread-count', 'NotificationController@unreadCount')->name('notifications.unreadCount');
         });
 
+        //==============================Activity Log============================
+        Route::group(['namespace' => 'App\Http\Controllers\ActivityLog'], function () {
+            Route::get('/activity-log', 'ActivityLogController@index')->name('activitylog.index');
+            Route::delete('/activity-log/{id}', 'ActivityLogController@destroy')->name('activitylog.destroy');
+            Route::post('/activity-log/clear-all', 'ActivityLogController@clearAll')->name('activitylog.clearAll');
+        });
+
         //==============================Grades============================
         Route::group(['namespace' => 'App\Http\Controllers\Grades'], function () {
             Route::resource('Grades', 'GradeController');

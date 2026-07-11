@@ -105,6 +105,12 @@ class RepoServiceProvider extends ServiceProvider
             'App\Repository\NotificationRepositoryInterface',
             'App\Repository\NotificationRepository'
         );
+
+        // ===== Activity Log سجل النشاطات =====
+        $this->app->bind(
+            'App\Repository\ActivityLogRepositoryInterface',
+            'App\Repository\ActivityLogRepository'
+        );
     }
 
     /**

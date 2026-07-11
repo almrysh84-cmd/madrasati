@@ -7,15 +7,30 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Teacher extends Authenticatable
 {
     use HasFactory;
     use HasTranslations;
     use Notifiable;
+    use LogsActivity;
 
     public $translatable = ['name'];
     protected $guarded = [];
+
+    /**
+     * إعدادات تسجيل النشاطات
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'email', 'Specialization_id', 'Gender_id'])
+            ->logOnlyDirty()
+            ->useLogName('teacher')
+            ->setDescriptionForEvent(fn(string $eventName) => "تم {$eventName} معلم");
+    }
 
     public function getAuthIdentifierName()
     {

@@ -4,10 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Section extends Model
 {
-    use HasTranslations;
+    use HasTranslations, LogsActivity;
+
+    /**
+     * إعدادات تسجيل النشاطات
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['Name_Section', 'Grade_id', 'Class_id', 'Status'])
+            ->logOnlyDirty()
+            ->useLogName('section')
+            ->setDescriptionForEvent(fn(string $eventName) => "تم {$eventName} قسم دراسي");
+    }
 
     public $translatable = ['Name_Section'];
     protected $fillable = ['Name_Section', 'Grade_id', 'Class_id'];

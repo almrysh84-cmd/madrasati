@@ -202,6 +202,7 @@
             <ul id="Reports-icon" class="collapse" data-parent="#sidebarnav">
                 <li> <a href="{{route('excel.index')}}"><i class="fas fa-file-excel"></i> استيراد وتصدير Excel</a> </li>
                 <li> <a href="{{url('pdf/attendance-matrix')}}" target="_blank"><i class="fas fa-print"></i> كشف الحضور الشهري</a> </li>
+                <li> <a href="{{route('activitylog.index')}}"><i class="fas fa-history"></i> سجل النشاطات</a> </li>
             </ul>
         </li>
 

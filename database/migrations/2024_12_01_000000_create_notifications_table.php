@@ -25,7 +25,9 @@ return new class extends Migration
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
 
-            $table->index(['notifiable_type', 'notifiable_id']);
+            // ملاحظة: morphs('notifiable') ينشئ تلقائيًا فهرسًا مركبًا على
+            // (notifiable_type, notifiable_id) — لا نكرره هنا لتجنب خطأ
+            // "Duplicate key name" في MySQL
             $table->index('read_at');
         });
     }

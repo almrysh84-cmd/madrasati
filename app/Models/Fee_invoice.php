@@ -4,10 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Fee_invoice extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
+
+    /**
+     * إعدادات تسجيل النشاطات
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['amount', 'description', 'student_id', 'Grade_id', 'Classroom_id'])
+            ->logOnlyDirty()
+            ->useLogName('fee_invoice')
+            ->setDescriptionForEvent(fn(string $eventName) => "تم {$eventName} فاتورة رسوم");
+    }
     protected $guarded = [];
 
     public function grade()
