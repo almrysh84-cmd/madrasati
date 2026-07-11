@@ -9664,6 +9664,30 @@ class SchoolDataSeeder extends Seeder
             'student_id' => 333, 'quizze_id' => 115, 'question_id' => 115, 'score' => 86.0, 'abuse' => '0', 'date' => date('Y-m-d'), 'note' => 'الثاني العلمي - 2023/2024م | فصل أول: 42.0 | فصل ثاني: 44.0', 'created_at' => now(), 'updated_at' => now(),
         ]);
 
+        // ========================================
+        // 8. سندات مالية تجريبية للطباعة (Financial Records)
+        // ========================================
+        DB::table('receipt_students')->delete();
+        DB::table('receipt_students')->insert([
+            ['id' => 1, 'date' => date('Y-m-d'), 'student_id' => 1, 'Debit' => 500.00, 'description' => 'سداد الرسوم الدراسية للفصل الأول', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 2, 'date' => date('Y-m-d'), 'student_id' => 2, 'Debit' => 300.00, 'description' => 'سداد رسوم النشاط المدرسي', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 3, 'date' => date('Y-m-d'), 'student_id' => 3, 'Debit' => 750.00, 'description' => 'سداد الرسوم الدراسية للفصل الثاني', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        DB::table('processing_fees')->delete();
+        DB::table('processing_fees')->insert([
+            ['id' => 1, 'date' => date('Y-m-d'), 'student_id' => 1, 'amount' => 150.00, 'description' => 'صرف بدل نقل طلابي', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 2, 'date' => date('Y-m-d'), 'student_id' => 2, 'amount' => 200.00, 'description' => 'صرف مكافأة تفوق', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 3, 'date' => date('Y-m-d'), 'student_id' => 3, 'amount' => 100.00, 'description' => 'صور مصدقة وكشوف درجات', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        DB::table('payment_students')->delete();
+        DB::table('payment_students')->insert([
+            ['id' => 1, 'date' => date('Y-m-d'), 'student_id' => 1, 'amount' => 1000.00, 'description' => 'دفعة الرسوم الدراسية السنوية', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 2, 'date' => date('Y-m-d'), 'student_id' => 2, 'amount' => 450.00, 'description' => 'دفعة رسوم الامتحانات', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 3, 'date' => date('Y-m-d'), 'student_id' => 3, 'amount' => 600.00, 'description' => 'دفعة الزي المدرسي', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
         // إعادة تفعيل فحص المفاتيح الأجنبية
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
@@ -9671,5 +9695,6 @@ class SchoolDataSeeder extends Seeder
         $this->command->info('الطلاب: 333');
         $this->command->info('المواد: 118');
         $this->command->info('الدرجات: 2248');
+        $this->command->info('السندات المالية: 3 إيصالات + 3 سندات صرف + 3 دفعات');
     }
 }
