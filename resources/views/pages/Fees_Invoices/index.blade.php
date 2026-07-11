@@ -48,6 +48,7 @@
                                             <td>{{$Fee_invoice->classroom->Name_Class}}</td>
                                             <td>{{$Fee_invoice->description}}</td>
                                                 <td>
+                                                    <a href="{{route('pdf.feeInvoice',$Fee_invoice->id)}}" target="_blank" class="btn btn-success btn-sm" role="button" aria-pressed="true" title="طباعة الفاتورة"><i class="fas fa-print"></i></a>
                                                     <a href="{{route('Fees_Invoices.edit',$Fee_invoice->id)}}" class="btn btn-info btn-sm" role="button" aria-pressed="true"><i class="fa fa-edit"></i></a>
                                                     <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#Delete_Fee_invoice{{$Fee_invoice->id}}" ><i class="fa fa-trash"></i></button>
                                                 </td>

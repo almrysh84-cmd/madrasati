@@ -36,6 +36,14 @@
 
 
     <h5 style="font-family: 'Cairo', sans-serif;color: red"> تاريخ اليوم : {{ date('Y-m-d') }}</h5>
+
+    @if(isset($section_id))
+    <div class="mb-3">
+        <a href="{{route('pdf.classRoster', $section_id)}}" target="_blank" class="btn btn-success btn-sm" role="button"><i class="fas fa-print"></i> طباعة كشف أسماء الفصل</a>
+        <a href="{{route('pdf.attendanceMatrix')}}?section_id={{$section_id}}" target="_blank" class="btn btn-primary btn-sm" role="button"><i class="fas fa-calendar-alt"></i> كشف الحضور الشهري</a>
+    </div>
+    @endif
+
     <form method="post" action="{{ route('Attendance.store') }}">
 
         @csrf

@@ -192,6 +192,19 @@
         </li>
 
 
+        <!-- Reports & Tools (Excel + PDF) -->
+        <li>
+            <a href="javascript:void(0);" data-toggle="collapse" data-target="#Reports-icon">
+                <div class="pull-left"><i class="fas fa-file-export"></i><span class="right-nav-text">التقارير والأدوات</span></div>
+                <div class="pull-right"><i class="ti-plus"></i></div>
+                <div class="clearfix"></div>
+            </a>
+            <ul id="Reports-icon" class="collapse" data-parent="#sidebarnav">
+                <li> <a href="{{route('excel.index')}}"><i class="fas fa-file-excel"></i> استيراد وتصدير Excel</a> </li>
+                <li> <a href="{{url('pdf/attendance-matrix')}}" target="_blank"><i class="fas fa-print"></i> كشف الحضور الشهري</a> </li>
+            </ul>
+        </li>
+
         <!-- Settings-->
         <li>
             <a href="{{route('settings.index')}}"><i class="fas fa-cogs"></i><span class="right-nav-text">{{trans('main_trans.Settings')}} </span></a>

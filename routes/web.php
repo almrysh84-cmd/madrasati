@@ -114,5 +114,28 @@ Route::group(
 
         //==============================Setting============================
         Route::resource('settings', 'App\Http\Controllers\SettingController');
+
+        //==============================Excel استيراد وتصدير============================
+        Route::group(['namespace' => 'App\Http\Controllers\Excel'], function () {
+            Route::get('excel', 'ExcelController@index')->name('excel.index');
+            Route::post('excel/import/students', 'ExcelController@importStudents')->name('excel.importStudents');
+            Route::post('excel/import/teachers', 'ExcelController@importTeachers')->name('excel.importTeachers');
+            Route::post('excel/import/grades', 'ExcelController@importGrades')->name('excel.importGrades');
+            Route::post('excel/import/attendance', 'ExcelController@importAttendance')->name('excel.importAttendance');
+            Route::get('excel/export/students', 'ExcelController@exportStudents')->name('excel.exportStudents');
+            Route::get('excel/export/teachers', 'ExcelController@exportTeachers')->name('excel.exportTeachers');
+            Route::get('excel/export/grades', 'ExcelController@exportGrades')->name('excel.exportGrades');
+            Route::get('excel/export/attendance', 'ExcelController@exportAttendance')->name('excel.exportAttendance');
+            Route::get('excel/errors/{filename}', 'ExcelController@downloadErrors')->name('excel.downloadErrors');
+        });
+
+        //==============================PDF طباعة التقارير============================
+        Route::group(['namespace' => 'App\Http\Controllers\Pdf'], function () {
+            Route::get('pdf/class-roster/{section_id}', 'PdfController@classRoster')->name('pdf.classRoster');
+            Route::get('pdf/final-results/{student_id}', 'PdfController@finalResults')->name('pdf.finalResults');
+            Route::get('pdf/fee-invoice/{invoice_id}', 'PdfController@feeInvoice')->name('pdf.feeInvoice');
+            Route::get('pdf/receipt/{receipt_id}', 'PdfController@receipt')->name('pdf.receipt');
+            Route::get('pdf/attendance-matrix', 'PdfController@attendanceMatrix')->name('pdf.attendanceMatrix');
+        });
     }
 );

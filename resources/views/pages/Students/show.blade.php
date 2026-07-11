@@ -19,6 +19,7 @@
             <div class="card card-statistics h-100">
                 <div class="card-body">
                     <div class="card-body">
+                        <a href="{{route('pdf.finalResults', $Student->id)}}" target="_blank" class="btn btn-success btn-sm mb-3" role="button"><i class="fas fa-print"></i> طباعة النتائج النهائية</a>
                         <div class="tab nav-border">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">

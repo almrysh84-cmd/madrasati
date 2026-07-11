@@ -81,6 +81,18 @@ class RepoServiceProvider extends ServiceProvider
             'App\Repository\LibraryRepositoryInterface',
             'App\Repository\LibraryRepository'
         );
+
+        // ===== Excel استيراد وتصدير =====
+        $this->app->bind(
+            'App\Repository\ExcelRepositoryInterface',
+            'App\Repository\ExcelRepository'
+        );
+
+        // ===== PDF طباعة التقارير =====
+        $this->app->bind(
+            'App\Repository\PdfRepositoryInterface',
+            'App\Repository\PdfRepository'
+        );
     }
 
     /**
