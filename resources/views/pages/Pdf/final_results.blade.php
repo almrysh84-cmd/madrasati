@@ -17,7 +17,7 @@
     </div>
     <div class="row">
         <span><strong>الجنس:</strong> {{ $student->gender ? $student->gender->getTranslation('Name', 'ar') : '' }}</span>
-        <span><strong>الجنسية:</strong> {{ $student->nationalitie ? $student->nationalitie->getTranslation('Name', 'ar') : '' }}</span>
+        <span><strong>الجنسية:</strong> {{ $student->Nationality ? $student->Nationality->getTranslation('Name', 'ar') : '' }}</span>
         <span><strong>السنة الدراسية:</strong> {{ $student->academic_year }}</span>
     </div>
 </div>

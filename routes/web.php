@@ -162,6 +162,8 @@ Route::group(
             Route::get('pdf/final-results/{student_id}', 'PdfController@finalResults')->name('pdf.finalResults');
             Route::get('pdf/fee-invoice/{invoice_id}', 'PdfController@feeInvoice')->name('pdf.feeInvoice');
             Route::get('pdf/receipt/{receipt_id}', 'PdfController@receipt')->name('pdf.receipt');
+            Route::get('pdf/processing-fee/{processing_fee_id}', 'PdfController@processingFee')->name('pdf.processingFee');
+            Route::get('pdf/payment/{payment_id}', 'PdfController@payment')->name('pdf.payment');
             Route::get('pdf/attendance-matrix', 'PdfController@attendanceMatrix')->name('pdf.attendanceMatrix');
         });
     }

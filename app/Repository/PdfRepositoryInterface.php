@@ -19,8 +19,14 @@ interface PdfRepositoryInterface
     // فاتورة الرسوم
     public function feeInvoice($invoice_id);
 
-    // إيصال الدفع
+    // إيصال الدفع (سند قبض)
     public function receipt($receipt_id);
+
+    // سند صرف
+    public function processingFee($processing_fee_id);
+
+    // سند دفعة
+    public function payment($payment_id);
 
     // مصفوفة الحضور الشهري
     public function attendanceMatrix($request);

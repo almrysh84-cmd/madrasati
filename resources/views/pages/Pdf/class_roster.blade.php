@@ -33,7 +33,7 @@
             <td>{{ $index + 1 }}</td>
             <td>{{ $student->getTranslation('name', 'ar') }}</td>
             <td>{{ $student->gender ? $student->gender->getTranslation('Name', 'ar') : '' }}</td>
-            <td>{{ $student->nationalitie ? $student->nationalitie->getTranslation('Name', 'ar') : '' }}</td>
+            <td>{{ $student->Nationality ? $student->Nationality->getTranslation('Name', 'ar') : '' }}</td>
             <td>{{ $student->Date_Birth }}</td>
             <td>{{ $student->academic_year }}</td>
         </tr>

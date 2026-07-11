@@ -30,35 +30,63 @@
             color: #333;
             line-height: 1.6;
         }
+        /* ===== الترويسة: تخطيط ثلاثي الأعمدة ===== */
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            border-bottom: 3px solid #2c3e50;
-            margin-bottom: 20px;
+            display: table;
+            width: 100%;
+            border-bottom: 3px double #2c3e50;
+            padding-bottom: 12px;
+            margin-bottom: 18px;
         }
-        .header .logo {
-            width: 70px;
-            height: 70px;
+        .header .col {
+            display: table-cell;
+            vertical-align: middle;
         }
-        .header .school-info {
+        .header .col-right {
+            width: 38%;
+            text-align: right;
+        }
+        .header .col-center {
+            width: 24%;
             text-align: center;
-            flex-grow: 1;
         }
-        .header .school-info h2 {
-            color: #2c3e50;
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
-        .header .school-info p {
-            color: #7f8c8d;
-            font-size: 11px;
-        }
-        .header .dates {
+        .header .col-left {
+            width: 38%;
             text-align: left;
+        }
+        .header .school-name {
+            color: #1a3a5c;
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .header .school-line {
+            color: #555;
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+        .header .logo-img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+        .header .logo-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #1a3a5c;
+            background: #eaf0f6;
+            color: #1a3a5c;
+            font-size: 34px;
+            font-weight: bold;
+            line-height: 74px;
+            text-align: center;
+            display: inline-block;
+        }
+        .header .date-line {
             font-size: 10px;
-            color: #7f8c8d;
+            color: #555;
+            margin-bottom: 2px;
         }
         .title-bar {
             background: #2c3e50;
@@ -152,16 +180,27 @@
 <body>
     {{-- الترويسة --}}
     <div class="header">
-        <div class="logo">
-            <img src="{{ URL::asset('assets/images/logo-dark.png') }}" alt="شعار" style="width:70px;height:70px;" onerror="this.style.display='none'">
+        {{-- العمود الأيمن: اسم المدرسة والمديرية والمحافظة والمركز --}}
+        <div class="col col-right">
+            <div class="school-name">{{ $school_name ?? 'مدرستي' }}</div>
+            @if(!empty($directorate))<div class="school-line">{{ $directorate }}</div>@endif
+            @if(!empty($governorate))<div class="school-line">{{ $governorate }}</div>@endif
+            @if(!empty($center))<div class="school-line">{{ $center }}</div>@endif
         </div>
-        <div class="school-info">
-            <h2>{{ $school_name ?? 'مدرستي' }}</h2>
-            <p>جميع الحقوق محفوظة — {{ $developer ?? 'أحمد المريش' }}</p>
+
+        {{-- العمود الأوسط: شعار المدرسة --}}
+        <div class="col col-center">
+            @if(!empty($logo_path))
+                <img class="logo-img" src="{{ $logo_path }}" alt="شعار">
+            @else
+                <span class="logo-placeholder">م</span>
+            @endif
         </div>
-        <div class="dates">
-            <p>التاريخ الميلادي: {{ $date_gregorian }}</p>
-            <p>التاريخ الهجري: {{ $date_hijri }}</p>
+
+        {{-- العمود الأيسر: التواريخ --}}
+        <div class="col col-left">
+            <div class="date-line">التاريخ الميلادي: {{ $date_gregorian }}</div>
+            <div class="date-line">التاريخ الهجري: {{ $date_hijri }}</div>
         </div>
     </div>
 
@@ -171,10 +210,9 @@
     {{-- التذييل --}}
     <div class="footer">
         <p>
-            {{ $school_name ?? 'مدرستي' }} | 
-            جميع الحقوق محفوظة &copy; {{ date('Y') }} — 
-            المطور: {{ $developer ?? 'أحمد المريش' }} |
-            صفحة {{ $page ?? '' }}
+            {{ $school_name ?? 'مدرستي' }} |
+            جميع الحقوق محفوظة &copy; {{ date('Y') }} —
+            المطور: {{ $developer ?? 'أحمد المريش' }}
         </p>
     </div>
 </body>

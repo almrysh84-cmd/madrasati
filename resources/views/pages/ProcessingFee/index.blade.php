@@ -43,6 +43,7 @@
                                             <td>{{$ProcessingFee->description}}</td>
                                                 <td>
                                                     <a href="{{route('ProcessingFee.edit',$ProcessingFee->id)}}" class="btn btn-info btn-sm" role="button" aria-pressed="true"><i class="fa fa-edit"></i></a>
+                                                    <a href="{{route('pdf.processingFee',$ProcessingFee->id)}}" target="_blank" class="btn btn-success btn-sm" role="button" aria-pressed="true"><i class="fas fa-print"></i></a>
                                                     <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#Delete_receipt{{$ProcessingFee->id}}" ><i class="fa fa-trash"></i></button>
                                                 </td>
                                             </tr>

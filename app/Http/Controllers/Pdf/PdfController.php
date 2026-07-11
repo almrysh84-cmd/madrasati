@@ -46,11 +46,27 @@ class PdfController extends Controller
     }
 
     /**
-     * إيصال الدفع
+     * إيصال الدفع (سند قبض)
      */
     public function receipt($receipt_id)
     {
         return $this->pdfRepository->receipt($receipt_id);
+    }
+
+    /**
+     * سند صرف
+     */
+    public function processingFee($processing_fee_id)
+    {
+        return $this->pdfRepository->processingFee($processing_fee_id);
+    }
+
+    /**
+     * سند دفعة
+     */
+    public function payment($payment_id)
+    {
+        return $this->pdfRepository->payment($payment_id);
     }
 
     /**
