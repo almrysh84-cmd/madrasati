@@ -18,7 +18,7 @@ class SectionController extends Controller
         $list_Grades = Grade::all();
         $teachers = Teacher::all();
 
-        return view('pages.sections.sections', compact('Grades','list_Grades', 'teachers'));
+        return view('pages.sections.Sections', compact('Grades','list_Grades', 'teachers'));
     }
 
 

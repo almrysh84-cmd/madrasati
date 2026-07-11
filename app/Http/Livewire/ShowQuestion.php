@@ -14,7 +14,7 @@ class ShowQuestion extends Component
     {
         $this->data = Question::where('quizze_id', $this->quizze_id)->get();
         $this->questioncount = $this->data->count();
-        return view('livewire.show-question', ['data']);
+        return view('livewire.show-question', ['data' => $this->data]);
     }
 
     public function nextQuestion($question_id, $score, $answer, $right_answer)

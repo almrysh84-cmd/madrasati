@@ -64,8 +64,8 @@
                                                     <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#">تخرج الطالب</button>
                                                 </td>
                                             </tr>
-                                            @include('pages.Students.promotion.Delete_all')
-                                            @include('pages.Students.promotion.Delete_one')
+                                            @include('pages.Students.Promotion.Delete_all')
+                                            @include('pages.Students.Promotion.Delete_one')
                                             
                                         @endforeach
                                 </table>

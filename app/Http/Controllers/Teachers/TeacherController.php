@@ -50,7 +50,7 @@ class TeacherController extends Controller
         $Teachers = $this->Teacher->editTeachers($id);
         $specializations = $this->Teacher->Getspecialization();
         $genders = $this->Teacher->GetGender();
-        return view('pages.Teachers.edit', compact('Teachers', 'specializations', 'genders'));
+        return view('pages.Teachers.Edit', compact('Teachers', 'specializations', 'genders'));
     }
 
 
