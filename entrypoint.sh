@@ -78,5 +78,22 @@ php artisan route:cache
 # Ensure writable permissions
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Fix MPM conflict - ensure only prefork is loaded
+rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf
+rm -f /etc/apache2/mods-enabled/mpm_worker.load /etc/apache2/mods-enabled/mpm_worker.conf
+if [ ! -f /etc/apache2/mods-enabled/mpm_prefork.load ]; then
+    ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load
+fi
+if [ ! -f /etc/apache2/mods-enabled/mpm_prefork.conf ]; then
+    ln -s /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf
+fi
+
+# Check for any LoadModule mpm directives in apache2.conf and remove duplicates
+echo "Listing all MPM load files:"
+find /etc/apache2 -name "mpm_*" -type l 2>/dev/null
+echo "---"
+echo "Checking apache2.conf for MPM LoadModule:"
+grep -n "mpm" /etc/apache2/apache2.conf 2>/dev/null || echo "No mpm in apache2.conf"
+
 echo "Starting Apache on port 8080..."
 exec apache2-foreground
