@@ -44,8 +44,8 @@ Route::group(
             Route::get('attendance_report', 'StudentController@attendanceReport')->name('attendance.report');
             Route::post('attendance_report', 'StudentController@attendanceSearch')->name('attendance.search');
             Route::resource('quizzes', 'QuizzController');
-            Route::resource('questions', 'QuestionController');
-            Route::resource('online_zoom_classes', 'OnlineZoomClassesController');
+            Route::resource('questions', 'QuestionController')->except(['index', 'create']);
+            Route::resource('online_zoom_classes', 'OnlineZoomClassesController')->except(['show', 'edit', 'update']);
 
             Route::get('/indirect', 'OnlineZoomClassesController@indirectCreate')->name('indirect.teacher.create');
             Route::post('/indirect', 'OnlineZoomClassesController@storeIndirect')->name('indirect.teacher.store');

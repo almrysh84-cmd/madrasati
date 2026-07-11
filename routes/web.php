@@ -81,11 +81,11 @@ Route::group(
             Route::resource('Promotion', 'PromotionController');
             Route::resource('Graduated', 'GraduatedController');
             Route::resource('Fees', 'FeesController');
-            Route::resource('Fees_Invoices', 'FeesInvoicesController');
+            Route::resource('Fees_Invoices', 'FeesInvoicesController')->except(['create']);
             Route::resource('receipt_students', 'ReceiptStudentsController');
             Route::resource('ProcessingFee', 'ProcessingFeeController');
             Route::resource('Payment_students', 'PaymentController');
-            Route::resource('Attendance', 'AttendanceController');
+            Route::resource('Attendance', 'AttendanceController')->except(['create']);
 
             Route::get('download_file/{filename}', 'LibraryController@downloadAttachment')->name('downloadAttachment');
             Route::resource('library', 'LibraryController');
