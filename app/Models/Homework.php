@@ -15,6 +15,8 @@ class Homework extends Model
 
     protected $guarded = [];
 
+    protected $table = 'homeworks';
+
     // جلب المادة الدراسية
     public function subject()
     {
