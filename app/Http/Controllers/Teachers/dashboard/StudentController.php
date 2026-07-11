@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Section;
 use App\Models\Student;
+use App\Models\Subject;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,9 @@ class StudentController extends Controller
     {
         $ids = DB::table('teacher_section')->where('teacher_id', auth()->user()->id)->pluck('section_id');
         $students = Student::whereIn('section_id', $ids)->get();
-        return view('pages.Teachers.dashboard.students.index', compact('students'));
+        // جلب مواد المعلم
+        $subjects = Subject::where('teacher_id', auth()->user()->id)->get();
+        return view('pages.Teachers.dashboard.students.index', compact('students', 'subjects'));
     }
 
     public function sections()
@@ -33,6 +36,18 @@ class StudentController extends Controller
         try {
 
             $attenddate = date('Y-m-d');
+            $subjectId = $request->subject_id;
+
+            // التحقق أن المادة تخص المعلم
+            $subject = Subject::where('id', $subjectId)
+                ->where('teacher_id', auth()->user()->id)
+                ->first();
+
+            if (!$subject) {
+                toastr()->error('مادة غير مصرح بها');
+                return redirect()->back();
+            }
+
             foreach ($request->attendences as $studentid => $attendence) {
                 if ($attendence == 'presence') {
                     $attendence_status = true;
@@ -43,13 +58,15 @@ class StudentController extends Controller
                 Attendance::updateorCreate(
                     [
                         'student_id' => $studentid,
-                        'attendence_date' => $attenddate
+                        'attendence_date' => $attenddate,
+                        'subject_id' => $subjectId
                     ],
                     [
                     'student_id' => $studentid,
                     'grade_id' => $request->grade_id,
                     'classroom_id' => $request->classroom_id,
                     'section_id' => $request->section_id,
+                    'subject_id' => $subjectId,
                     'teacher_id' => auth()->user()->id,
                     'attendence_date' => $attenddate,
                     'attendence_status' => $attendence_status
@@ -67,7 +84,8 @@ class StudentController extends Controller
 
         $ids = DB::table('teacher_section')->where('teacher_id', auth()->user()->id)->pluck('section_id');
         $students = Student::whereIn('section_id', $ids)->get();
-        return view('pages.Teachers.dashboard.students.attendance_report', compact('students'));
+        $subjects = Subject::where('teacher_id', auth()->user()->id)->get();
+        return view('pages.Teachers.dashboard.students.attendance_report', compact('students', 'subjects'));
     }
 
     public function attendanceSearch(Request $request)
@@ -85,16 +103,23 @@ class StudentController extends Controller
 
         $ids = DB::table('teacher_section')->where('teacher_id', auth()->user()->id)->pluck('section_id');
         $students = Student::whereIn('section_id', $ids)->get();
+        $subjects = Subject::where('teacher_id', auth()->user()->id)->get();
+
+        // بناء الاستعلام مع تحديد صلاحيات المعلم
+        $query = Attendance::where('teacher_id', auth()->user()->id)
+            ->whereBetween('attendence_date', [$request->from, $request->to]);
+
+        // فلترة حسب المادة إن تم تحديدها
+        if ($request->subject_id && $request->subject_id != 0) {
+            $query->where('subject_id', $request->subject_id);
+        }
 
         if ($request->student_id == 0) {
-
-            $Students = Attendance::whereBetween('attendence_date', [$request->from, $request->to])->get();
-            return view('pages.Teachers.dashboard.students.attendance_report', compact('Students', 'students'));
+            $Students = $query->get();
+            return view('pages.Teachers.dashboard.students.attendance_report', compact('Students', 'students', 'subjects'));
         } else {
-
-            $Students = Attendance::whereBetween('attendence_date', [$request->from, $request->to])
-                ->where('student_id', $request->student_id)->get();
-            return view('pages.Teachers.dashboard.students.attendance_report', compact('Students', 'students'));
+            $Students = $query->where('student_id', $request->student_id)->get();
+            return view('pages.Teachers.dashboard.students.attendance_report', compact('Students', 'students', 'subjects'));
         }
     }
 

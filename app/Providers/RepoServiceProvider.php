@@ -117,6 +117,18 @@ class RepoServiceProvider extends ServiceProvider
             'App\Repository\BackupRepositoryInterface',
             'App\Repository\BackupRepository'
         );
+
+        // ===== Homework الواجبات =====
+        $this->app->bind(
+            'App\Repository\HomeworkRepositoryInterface',
+            'App\Repository\HomeworkRepository'
+        );
+
+        // ===== StudentGrades تقديرات الطلاب =====
+        $this->app->bind(
+            'App\Repository\StudentGradeRepositoryInterface',
+            'App\Repository\StudentGradeRepository'
+        );
     }
 
     /**

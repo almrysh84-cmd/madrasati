@@ -37,6 +37,19 @@
     <form method="post" action="{{ route('attendance') }}" autocomplete="off">
 
         @csrf
+        <div class="form-row mb-3">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="subject_id">المادة الدراسية : <span class="text-danger">*</span></label>
+                    <select class="custom-select mr-sm-2" name="subject_id" required>
+                        <option selected disabled>حدد المادة الدراسية...</option>
+                        @foreach($subjects as $subject)
+                            <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
         <table id="datatable" class="table  table-hover table-sm table-bordered p-0" data-page-length="50"
                style="text-align: center">
             <thead>

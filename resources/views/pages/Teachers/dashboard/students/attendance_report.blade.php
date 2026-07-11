@@ -35,6 +35,18 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
+                                <label for="subject_id">المادة الدراسية</label>
+                                <select class="custom-select mr-sm-2" name="subject_id">
+                                    <option value="0">الكل</option>
+                                    @foreach($subjects as $subject)
+                                        <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
                                 <label for="student">الطلاب</label>
                                 <select class="custom-select mr-sm-2" name="student_id">
                                     <option value="0">الكل</option>
@@ -45,11 +57,13 @@
                             </div>
                         </div>
 
-                        <div class="card-body datepicker-form">
-                            <div class="input-group" data-date-format="yyyy-mm-dd">
-                                <input type="text"  class="form-control range-from date-picker-default" placeholder="تاريخ البداية" required name="from">
-                                <span class="input-group-addon">الي تاريخ</span>
-                                <input class="form-control range-to date-picker-default" placeholder="تاريخ النهاية" type="text" required name="to">
+                        <div class="col-md-6">
+                            <div class="card-body datepicker-form">
+                                <div class="input-group" data-date-format="yyyy-mm-dd">
+                                    <input type="text"  class="form-control range-from date-picker-default" placeholder="تاريخ البداية" required name="from">
+                                    <span class="input-group-addon">الي تاريخ</span>
+                                    <input class="form-control range-to date-picker-default" placeholder="تاريخ النهاية" type="text" required name="to">
+                                </div>
                             </div>
                         </div>
 
@@ -64,6 +78,7 @@
                         <tr>
                             <th class="alert-success">#</th>
                             <th class="alert-success">{{trans('Students_trans.name')}}</th>
+                            <th class="alert-success">المادة</th>
                             <th class="alert-success">{{trans('Students_trans.Grade')}}</th>
                             <th class="alert-success">{{trans('Students_trans.section')}}</th>
                             <th class="alert-success">التاريخ</th>
@@ -75,6 +90,7 @@
                             <tr>
                                 <td>{{ $loop->index+1 }}</td>
                                 <td>{{$student->students->name}}</td>
+                                <td>{{$student->subject->name ?? '—'}}</td>
                                 <td>{{$student->grade->Name}}</td>
                                 <td>{{$student->section->Name_Section}}</td>
                                 <td>{{$student->attendence_date}}</td>

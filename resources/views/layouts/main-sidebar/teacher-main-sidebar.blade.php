@@ -24,6 +24,18 @@
                     class="right-nav-text">الطلاب</span></a>
         </li>
 
+        <!-- الواجبات -->
+        <li>
+            <a href="{{route('homework.index')}}"><i class="fas fa-tasks"></i><span
+                    class="right-nav-text">الواجبات</span></a>
+        </li>
+
+        <!-- التقديرات -->
+        <li>
+            <a href="{{route('grades.index')}}"><i class="fas fa-clipboard-list"></i><span
+                    class="right-nav-text">التقديرات</span></a>
+        </li>
+
         <!-- الاختبارات-->
         <li>
             <a href="javascript:void(0);" data-toggle="collapse" data-target="#sections-menu">
@@ -63,6 +75,7 @@
             </a>
             <ul id="sections-menu1" class="collapse" data-parent="#sidebarnav">
                 <li><a href="{{route('attendance.report')}}">تقرير الحضور والغياب</a></li>
+                <li><a href="{{route('grades.report')}}">تقرير التقديرات</a></li>
                 <li><a href="#">تقرير الامتحانات</a></li>
             </ul>
 

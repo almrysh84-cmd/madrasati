@@ -9688,8 +9688,224 @@ class SchoolDataSeeder extends Seeder
             ['id' => 3, 'date' => date('Y-m-d'), 'student_id' => 3, 'amount' => 600.00, 'description' => 'دفعة الزي المدرسي', 'created_at' => now(), 'updated_at' => now()],
         ]);
 
+        // ========================================
+        // 9. ربط المعلم بالأقسام (teacher_section pivot)
+        // تعيين جميع الأقسام للمعلم خالد (teacher_id = 1)
+        // ========================================
+        DB::table('teacher_section')->truncate();
+        $teacherSections = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $teacherSections[] = [
+                'teacher_id' => 1,
+                'section_id' => $i,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        DB::table('teacher_section')->insert($teacherSections);
+
+        // ========================================
+        // 10. الواجبات (Homework) - بيانات تجريبية
+        // ========================================
+        DB::table('homeworks')->truncate();
+        DB::table('homeworks')->insert([
+            [
+                'id' => 1,
+                'title' => json_encode(['ar' => 'واجب القرآن الكريم - سورة البقرة', 'en' => 'Quran Homework - Surat Al-Baqarah'], JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(['ar' => 'حفظ الآيات من 1 إلى 10 من سورة البقرة', 'en' => 'Memorize verses 1-10 from Surat Al-Baqarah'], JSON_UNESCAPED_UNICODE),
+                'type' => 'file',
+                'file_name' => null,
+                'due_date' => date('Y-m-d', strtotime('+7 days')),
+                'score' => 20,
+                'subject_id' => 1,
+                'grade_id' => 1,
+                'classroom_id' => 1,
+                'section_id' => 1,
+                'teacher_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 2,
+                'title' => json_encode(['ar' => 'واجب اللغة العربية - الإعراب', 'en' => 'Arabic Language Homework - Parsing'], JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(['ar' => 'أعرب الجمل التالية إعراباً كاملاً', 'en' => 'Parse the following sentences fully'], JSON_UNESCAPED_UNICODE),
+                'type' => 'question',
+                'file_name' => null,
+                'due_date' => date('Y-m-d', strtotime('+5 days')),
+                'score' => 10,
+                'subject_id' => 3,
+                'grade_id' => 2,
+                'classroom_id' => 2,
+                'section_id' => 2,
+                'teacher_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 3,
+                'title' => json_encode(['ar' => 'واجب الرياضيات - الكسور', 'en' => 'Math Homework - Fractions'], JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(['ar' => 'حل التمارين من 1 إلى 5 في صفحة 45', 'en' => 'Solve exercises 1-5 on page 45'], JSON_UNESCAPED_UNICODE),
+                'type' => 'image',
+                'file_name' => null,
+                'due_date' => date('Y-m-d', strtotime('+3 days')),
+                'score' => 15,
+                'subject_id' => 10,
+                'grade_id' => 3,
+                'classroom_id' => 5,
+                'section_id' => 5,
+                'teacher_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        // أسئلة الواجب رقم 2 (نوع question)
+        DB::table('homework_questions')->truncate();
+        DB::table('homework_questions')->insert([
+            [
+                'id' => 1,
+                'homework_id' => 2,
+                'title' => 'أعرب كلمة (الكتاب) في جملة (قرأت الكتاب)',
+                'answers' => 'مفعول به منصوب-فاعل مرفوع-مبتدأ مرفوع',
+                'right_answer' => 'مفعول به منصوب',
+                'score' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 2,
+                'homework_id' => 2,
+                'title' => 'ما نوع كلمة (في) من حيث الجزء من الكلام؟',
+                'answers' => 'اسم-فعل-حرف جر',
+                'right_answer' => 'حرف جر',
+                'score' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        // ========================================
+        // 11. تقديرات الطلاب (Student Grades) - بيانات تجريبية
+        // ========================================
+        DB::table('student_grades')->truncate();
+        $studentGrades = [];
+        // تقديرات لطلاب القسم 1 (المرحلة 1) في المادة 1 (القرآن الكريم) - طلاب 1-12
+        for ($i = 1; $i <= 12; $i++) {
+            $studentGrades[] = [
+                'student_id' => $i,
+                'subject_id' => 1,
+                'teacher_id' => 1,
+                'grade_id' => 1,
+                'classroom_id' => 1,
+                'section_id' => 1,
+                'evaluation_type' => 'score',
+                'score' => rand(75, 100),
+                'grade_text' => null,
+                'term' => 'first',
+                'note' => null,
+                'date' => date('Y-m-d'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        // تقديرات نصية لطلاب القسم 2 (المرحلة 2) في المادة 3 (اللغة العربية) - طلاب 13-20
+        for ($i = 13; $i <= 20; $i++) {
+            $texts = ['ممتاز', 'جيد جدا', 'جيد', 'مقبول'];
+            $studentGrades[] = [
+                'student_id' => $i,
+                'subject_id' => 3,
+                'teacher_id' => 1,
+                'grade_id' => 2,
+                'classroom_id' => 2,
+                'section_id' => 2,
+                'evaluation_type' => 'text',
+                'score' => null,
+                'grade_text' => $texts[array_rand($texts)],
+                'term' => 'first',
+                'note' => null,
+                'date' => date('Y-m-d'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        // تقديرات لطلاب القسم 5 (المرحلة 3) في المادة 10 (الرياضيات) - طلاب 106-115
+        for ($i = 106; $i <= 115; $i++) {
+            $studentGrades[] = [
+                'student_id' => $i,
+                'subject_id' => 10,
+                'teacher_id' => 1,
+                'grade_id' => 3,
+                'classroom_id' => 5,
+                'section_id' => 5,
+                'evaluation_type' => 'score',
+                'score' => rand(60, 95),
+                'grade_text' => null,
+                'term' => 'second',
+                'note' => null,
+                'date' => date('Y-m-d'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        DB::table('student_grades')->insert($studentGrades);
+
+        // ========================================
+        // 12. الحضور والغياب (Attendance) - بيانات تجريبية مع subject_id
+        // ========================================
+        DB::table('attendances')->truncate();
+        $attendances = [];
+        $attendanceDate = date('Y-m-d');
+        // حضور لطلاب القسم 1 في المادة 1 (الطلاب 1-12)
+        for ($i = 1; $i <= 12; $i++) {
+            $attendances[] = [
+                'student_id' => $i,
+                'grade_id' => 1,
+                'classroom_id' => 1,
+                'section_id' => 1,
+                'subject_id' => 1,
+                'teacher_id' => 1,
+                'attendence_date' => $attendanceDate,
+                'attendence_status' => rand(0, 10) > 1 ? 1 : 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        // حضور لطلاب القسم 2 في المادة 3 (الطلاب 13-49)
+        for ($i = 13; $i <= 49; $i++) {
+            $attendances[] = [
+                'student_id' => $i,
+                'grade_id' => 2,
+                'classroom_id' => 2,
+                'section_id' => 2,
+                'subject_id' => 3,
+                'teacher_id' => 1,
+                'attendence_date' => $attendanceDate,
+                'attendence_status' => rand(0, 10) > 1 ? 1 : 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        // حضور لطلاب القسم 5 في المادة 10 (الطلاب 106-138) (تاريخ سابق للسماح بالبحث)
+        $pastDate = date('Y-m-d', strtotime('-5 days'));
+        for ($i = 106; $i <= 138; $i++) {
+            $attendances[] = [
+                'student_id' => $i,
+                'grade_id' => 3,
+                'classroom_id' => 5,
+                'section_id' => 5,
+                'subject_id' => 10,
+                'teacher_id' => 1,
+                'attendence_date' => $pastDate,
+                'attendence_status' => rand(0, 10) > 1 ? 1 : 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        DB::table('attendances')->insert($attendances);
+
         // إعادة تفعيل فحص المفاتيح الأجنبية
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
 
         $this->command->info('تم استيراد بيانات المدرسة بنجاح!');
         $this->command->info('الطلاب: 333');

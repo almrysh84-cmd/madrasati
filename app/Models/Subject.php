@@ -34,4 +34,16 @@ class Subject extends Model
     {
         return $this->belongsTo('App\Models\Teacher', 'teacher_id');
     }
+
+    // جلب الواجبات المرتبطة بالمادة
+    public function homeworks()
+    {
+        return $this->hasMany('App\Models\Homework', 'subject_id');
+    }
+
+    // جلب تقديرات الطلاب المرتبطة بالمادة
+    public function studentGrades()
+    {
+        return $this->hasMany('App\Models\StudentGrade', 'subject_id');
+    }
 }

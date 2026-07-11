@@ -55,6 +55,19 @@ Route::group(
 
             Route::get('student_quizze/{id}', 'QuizzController@student_quizze')->name('student.quizze');
             Route::post('repeat_quizze', 'QuizzController@repeat_quizze')->name('repeat.quizze');
+
+            // ==================== الواجبات (Homework) ====================
+            Route::resource('homework', 'HomeworkController');
+            Route::post('homework_question', 'HomeworkController@storeQuestion')->name('homework.question.store');
+            Route::get('homework_question/{id}', 'HomeworkController@destroyQuestion')->name('homework.question.destroy');
+            Route::get('homework_download/{filename}', 'HomeworkController@download')->name('homework.download');
+
+            // ==================== التقديرات (Student Grades) ====================
+            Route::get('grades', 'GradeController@index')->name('grades.index');
+            Route::post('grades', 'GradeController@store')->name('grades.store');
+            Route::get('grades_report', 'GradeController@report')->name('grades.report');
+            Route::post('grades_report', 'GradeController@search')->name('grades.search');
+            Route::get('get_students', 'GradeController@getStudents')->name('grades.getStudents');
         });
     }
 );
