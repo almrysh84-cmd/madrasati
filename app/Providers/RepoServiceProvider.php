@@ -111,6 +111,12 @@ class RepoServiceProvider extends ServiceProvider
             'App\Repository\ActivityLogRepositoryInterface',
             'App\Repository\ActivityLogRepository'
         );
+
+        // ===== Backup النسخ الاحتياطي =====
+        $this->app->bind(
+            'App\Repository\BackupRepositoryInterface',
+            'App\Repository\BackupRepository'
+        );
     }
 
     /**

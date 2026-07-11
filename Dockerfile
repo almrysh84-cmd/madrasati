@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     git \
     libicu-dev \
     libonig-dev \
+    default-mysql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # PHP extensions

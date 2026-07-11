@@ -58,6 +58,14 @@ Route::group(
             Route::delete('/activity-log/{id}', 'ActivityLogController@destroy')->name('activitylog.destroy');
             Route::post('/activity-log/clear-all', 'ActivityLogController@clearAll')->name('activitylog.clearAll');
         });
+        
+        //==============================Backup============================
+        Route::group(['namespace' => 'App\\Http\\Controllers\\Backup'], function () {
+            Route::get('/backup', 'BackupController@index')->name('backup.index');
+            Route::post('/backup/create', 'BackupController@create')->name('backup.create');
+            Route::get('/backup/download/{fileName}', 'BackupController@download')->name('backup.download');
+            Route::delete('/backup/{fileName}', 'BackupController@delete')->name('backup.delete');
+        });
 
         //==============================Grades============================
         Route::group(['namespace' => 'App\Http\Controllers\Grades'], function () {
