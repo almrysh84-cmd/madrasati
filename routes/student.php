@@ -33,9 +33,9 @@ Route::group(
             Route::resource('profile-student', 'ProfileController');
 
             // ==================== واجبات الطالب (Student Homework) ====================
-            Route::get('homework', 'StudentHomeworkController@index')->name('student.homework.index');
-            Route::get('homework/{id}', 'StudentHomeworkController@show')->name('student.homework.show');
-            Route::get('homework_download/{filename}', 'StudentHomeworkController@download')->name('student.homework.download');
+            Route::get('homework', [\App\Http\Controllers\Students\dashboard\StudentHomeworkController::class, 'index'])->name('student.homework.index');
+            Route::get('homework/{id}', [\App\Http\Controllers\Students\dashboard\StudentHomeworkController::class, 'show'])->name('student.homework.show');
+            Route::get('homework_download/{filename}', [\App\Http\Controllers\Students\dashboard\StudentHomeworkController::class, 'download'])->name('student.homework.download');
         });
 
         // ==================== لوحة الإعلانات (Announcements Board) ====================
