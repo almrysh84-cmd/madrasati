@@ -22,7 +22,10 @@ class StudentRepository implements StudentRepositoryInterface
 
     public function Get_Student()
     {
-        $students = Student::all();
+        // P1-3 fix: eager-load relationships to avoid N+1 queries on the students index page.
+        $students = Student::with(['gender', 'grade', 'classroom', 'section', 'Nationality', 'myparent'])
+            ->orderBy('id', 'desc')
+            ->get();
         return view('pages.Students.index', compact('students'));
     }
 
@@ -48,7 +51,11 @@ class StudentRepository implements StudentRepositoryInterface
             $Edit_Students = Student::findorfail($request->id);
             $Edit_Students->name = ['ar' => $request->name_ar, 'en' => $request->name_en];
             $Edit_Students->email = $request->email;
-            $Edit_Students->password = Hash::make($request->password);
+            // P0-10 fix: only re-hash password when a non-empty value is submitted.
+            // Previously this hashed an empty string on every update, locking the student out.
+            if ($request->filled('password')) {
+                $Edit_Students->password = Hash::make($request->password);
+            }
             $Edit_Students->gender_id = $request->gender_id;
             $Edit_Students->nationalitie_id = $request->nationalitie_id;
             $Edit_Students->blood_id = $request->blood_id;
@@ -115,8 +122,22 @@ class StudentRepository implements StudentRepositoryInterface
             // insert img
             if ($request->hasfile('photos')) {
                 foreach ($request->file('photos') as $file) {
-                    $name = $file->getClientOriginalName();
-                    $file->storeAs('attachments/students/' . $students->name, $file->getClientOriginalName(), 'upload_attachments');
+                    // P0-7 fix: validate extension + sanitize filename
+                    $ext = strtolower($file->getClientOriginalExtension());
+                    $allowed = ['pdf','jpg','jpeg','png','gif','webp','bmp'];
+                    if (!in_array($ext, $allowed)) {
+                        throw new \Exception('نوع الملف غير مسموح: ' . $ext);
+                    }
+                    if ($file->getSize() > 10 * 1024 * 1024) {
+                        throw new \Exception('حجم الملف يتجاوز الحد المسموح به');
+                    }
+                    $baseName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    $sanitized = \Illuminate\Support\Str::slug($baseName);
+                    if ($sanitized === '') {
+                        $sanitized = 'file_' . time();
+                    }
+                    $name = time() . '_' . $sanitized . '.' . $ext;
+                    $file->storeAs('attachments/students/' . $students->name, $name, 'upload_attachments');
 
                     // insert in image_table
                     $images = new Image();
@@ -155,8 +176,25 @@ class StudentRepository implements StudentRepositoryInterface
     public function Upload_attachment($request)
     {
         foreach ($request->file('photos') as $file) {
-            $name = $file->getClientOriginalName();
-            $file->storeAs('attachments/students/' . $request->student_name, $file->getClientOriginalName(), 'upload_attachments');
+            // P0-7 fix: validate extension + sanitize filename
+            $ext = strtolower($file->getClientOriginalExtension());
+            $allowed = ['pdf','jpg','jpeg','png','gif','webp','bmp'];
+            if (!in_array($ext, $allowed)) {
+                throw new \Exception('نوع الملف غير مسموح: ' . $ext);
+            }
+            if ($file->getSize() > 10 * 1024 * 1024) {
+                throw new \Exception('حجم الملف يتجاوز الحد المسموح به');
+            }
+            $baseName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $sanitized = \Illuminate\Support\Str::slug($baseName);
+            if ($sanitized === '') {
+                $sanitized = 'file_' . time();
+            }
+            $name = time() . '_' . $sanitized . '.' . $ext;
+
+            // P0-7 fix: sanitize student_name to prevent path traversal
+            $safeStudentName = basename($request->student_name);
+            $file->storeAs('attachments/students/' . $safeStudentName, $name, 'upload_attachments');
 
             // insert in image_table
             $images = new image();
@@ -171,7 +209,22 @@ class StudentRepository implements StudentRepositoryInterface
 
     public function Download_attachment($studentsname, $filename)
     {
-        return response()->download(public_path('attachments/students/' . $studentsname . '/' . $filename));
+        // P0-6 fix: Path Traversal — sanitize filename parts with basename()
+        $studentsname = basename($studentsname);
+        $filename = basename($filename);
+
+        // Block any remaining path components
+        if ($studentsname === '' || $filename === '' || strpos($studentsname, '/') !== false || strpos($studentsname, '\\') !== false) {
+            abort(400, 'Invalid file request');
+        }
+
+        $relative = 'attachments/students/' . $studentsname . '/' . $filename;
+
+        if (!Storage::disk('upload_attachments')->exists($relative)) {
+            abort(404, 'الملف غير موجود');
+        }
+
+        return Storage::disk('upload_attachments')->download($relative);
     }
 
     public function Delete_attachment($request)

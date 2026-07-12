@@ -9,7 +9,14 @@ class Promotions extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    /**
+     * P0-9 fix: Mass Assignment — explicit $fillable.
+     */
+    protected $fillable = [
+        'student_id',
+        'from_grade', 'from_Classroom', 'from_section', 'academic_year',
+        'to_grade', 'to_Classroom', 'to_section', 'academic_year_new',
+    ];
 
     public function student()
     {

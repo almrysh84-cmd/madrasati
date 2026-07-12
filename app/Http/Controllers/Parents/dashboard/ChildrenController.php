@@ -59,20 +59,28 @@ class ChildrenController extends Controller
             'to.date_format' => 'صيغة التاريخ يجب ان تكون yyyy-mm-dd',
         ]);
 
+        // P0-4 fix: IDOR — restrict query to the parent's own children only
+        $my_children_ids = Student::where('parent_id', auth()->user()->id)->pluck('id');
+
         $students = Student::where('parent_id', auth()->user()->id)->get();
 
         if ($request->student_id == 0) {
-
-            $Students = Attendance::whereBetween('attendence_date', [$request->from, $request->to])->get();
-            return view('pages.parents.Attendance.index', compact('Students', 'students'));
-        } else {
-
+            // All my children only — NOT all students in the school
             $Students = Attendance::whereBetween('attendence_date', [$request->from, $request->to])
-                ->where('student_id', $request->student_id)->get();
-            return view('pages.parents.Attendance.index', compact('Students', 'students'));
-
+                ->whereIn('student_id', $my_children_ids)
+                ->get();
+        } else {
+            // Verify the requested student_id belongs to this parent
+            if (!$my_children_ids->contains((int)$request->student_id)) {
+                toastr()->error('يوجد خطأ في كود الطالب');
+                return redirect()->route('sons.attendance');
+            }
+            $Students = Attendance::whereBetween('attendence_date', [$request->from, $request->to])
+                ->where('student_id', $request->student_id)
+                ->get();
         }
 
+        return view('pages.parents.Attendance.index', compact('Students', 'students'));
     }
 
     public function fees(){
@@ -109,21 +117,20 @@ class ChildrenController extends Controller
 
     public function update(Request $request, $id)
     {
+        // P0-3 fix: IDOR — ignore $id from URL and use the authenticated parent only
+        $information = My_Parent::findOrFail(auth()->user()->id);
 
-        $information = My_Parent::findorFail($id);
+        $information->Name_Father = ['en' => $request->Name_en, 'ar' => $request->Name_ar];
 
+        // P0-8 fix: only update password when a non-empty value is provided
         if (!empty($request->password)) {
-            $information->Name_Father = ['en' => $request->Name_en, 'ar' => $request->Name_ar];
             $information->password = Hash::make($request->password);
-            $information->save();
-        } else {
-            $information->Name_Father = ['en' => $request->Name_en, 'ar' => $request->Name_ar];
-            $information->save();
         }
+
+        $information->save();
+
         toastr()->success(trans('messages.Update'));
         return redirect()->back();
-
-
     }
 
 

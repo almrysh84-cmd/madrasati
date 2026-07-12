@@ -22,7 +22,13 @@ class Fee_invoice extends Model
             ->useLogName('fee_invoice')
             ->setDescriptionForEvent(fn(string $eventName) => "تم {$eventName} فاتورة رسوم");
     }
-    protected $guarded = [];
+    /**
+     * P0-9 fix: Mass Assignment — explicit $fillable.
+     */
+    protected $fillable = [
+        'invoice_date', 'student_id', 'Grade_id', 'Classroom_id',
+        'fee_id', 'amount', 'description',
+    ];
 
     public function grade()
     {

@@ -18,7 +18,14 @@ class Teacher extends Authenticatable
     use LogsActivity;
 
     public $translatable = ['name'];
-    protected $guarded = [];
+
+    /**
+     * P0-9 fix: Mass Assignment — explicit $fillable (password set explicitly via Hash::make()).
+     */
+    protected $fillable = [
+        'name', 'email', 'password',
+        'Specialization_id', 'Gender_id', 'Joining_Date', 'Address',
+    ];
 
     /**
      * إعدادات تسجيل النشاطات

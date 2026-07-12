@@ -9,7 +9,15 @@ class StudentGrade extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    /**
+     * P0-9 fix: Mass Assignment — explicit $fillable.
+     */
+    protected $fillable = [
+        'student_id', 'subject_id', 'teacher_id',
+        'grade_id', 'classroom_id', 'section_id',
+        'evaluation_type', 'score', 'grade_text',
+        'term', 'note', 'date',
+    ];
 
     // جلب الطالب
     public function student()

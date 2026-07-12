@@ -58,16 +58,14 @@ class HomeworkRepository implements HomeworkRepositoryInterface
 
             // رفع الملف للنوعين file و image
             if ($request->hasFile('file_name') && in_array($request->type, ['file', 'image'])) {
-                $file_name = $request->file('file_name')->getClientOriginalName();
+                // P0-7 fix: uploadFile now returns a sanitized filename; we persist that
+                $file_name = $this->uploadFile($request, 'file_name', 'homework');
                 $homework->file_name = $file_name;
+            } else {
+                $homework->file_name = null;
             }
 
             $homework->save();
-
-            // رفع الملف فعلياً
-            if ($request->hasFile('file_name') && in_array($request->type, ['file', 'image'])) {
-                $this->uploadFile($request, 'file_name', 'homework');
-            }
 
             DB::commit();
             toastr()->success(trans('messages.success'));
@@ -141,9 +139,8 @@ class HomeworkRepository implements HomeworkRepositoryInterface
                 if ($homework->file_name) {
                     $this->deleteFile($homework->file_name, 'homework');
                 }
-                $file_name = $request->file('file_name')->getClientOriginalName();
-                $homework->file_name = $file_name;
-                $this->uploadFile($request, 'file_name', 'homework');
+                // P0-7 fix: use sanitized filename returned from uploadFile
+                $homework->file_name = $this->uploadFile($request, 'file_name', 'homework');
             }
 
             $homework->save();
@@ -235,6 +232,17 @@ class HomeworkRepository implements HomeworkRepositoryInterface
      */
     public function download($filename)
     {
-        return response()->download(public_path('attachments/homework/' . $filename));
+        // P0-6 fix: Path Traversal — sanitize with basename()
+        $filename = basename($filename);
+        if ($filename === '' || strpos($filename, '/') !== false || strpos($filename, '\\') !== false) {
+            abort(400, 'Invalid file request');
+        }
+
+        $relative = 'attachments/homework/' . $filename;
+        if (!\Illuminate\Support\Facades\Storage::disk('upload_attachments')->exists($relative)) {
+            abort(404, 'الملف غير موجود');
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('upload_attachments')->download($relative);
     }
 }

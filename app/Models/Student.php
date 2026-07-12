@@ -14,7 +14,17 @@ class Student extends Authenticatable
 {
     use HasTranslations, SoftDeletes, Notifiable, LogsActivity;
     public $translatable = ['name'];
-    protected $guarded = [];
+
+    /**
+     * P0-9 fix: Mass Assignment — replace $guarded = [] with explicit $fillable.
+     * password is intentionally NOT fillable here; it is set explicitly via Hash::make().
+     */
+    protected $fillable = [
+        'name', 'email', 'password',
+        'gender_id', 'nationalitie_id', 'blood_id',
+        'Date_Birth', 'Grade_id', 'Classroom_id', 'section_id',
+        'parent_id', 'academic_year',
+    ];
 
     /**
      * إعدادات تسجيل النشاطات

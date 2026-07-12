@@ -63,12 +63,16 @@ if [ -n "$DB_HOST_VAL" ] && [ "$DB_HOST_VAL" != "127.0.0.1" ]; then
     fi
 fi
 
-# Run migrations
-echo "Running database migrations..."
-php artisan migrate:fresh --force
-
-echo "Seeding database..."
-php artisan db:seed --force
+# Run migrations (P0 fix: NEVER use migrate:fresh in production — it destroys data)
+# In production: only run migrate (additive). In non-production: allow fresh+seed.
+if [ "$APP_ENV" = "production" ]; then
+    echo "Running database migrations (production mode — additive only)..."
+    php artisan migrate --force
+else
+    echo "Running database migrations (non-production mode — fresh + seed)..."
+    php artisan migrate:fresh --force
+    php artisan db:seed --force
+fi
 
 # Publish PHPFlasher (toastr) assets so notifications work
 php artisan flasher:install --no-interaction 2>/dev/null || true

@@ -9,7 +9,13 @@ class Degree extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    /**
+     * P0-9 fix: Mass Assignment — explicit $fillable.
+     */
+    protected $fillable = [
+        'quizze_id', 'student_id', 'question_id',
+        'score', 'abuse', 'date', 'note',
+    ];
     public $timestamps = true;
 
     public function student()

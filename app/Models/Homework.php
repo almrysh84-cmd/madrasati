@@ -13,7 +13,14 @@ class Homework extends Model
 
     public $translatable = ['title', 'description'];
 
-    protected $guarded = [];
+    /**
+     * P0-9 fix: Mass Assignment — explicit $fillable.
+     */
+    protected $fillable = [
+        'title', 'description', 'type', 'due_date', 'score',
+        'subject_id', 'grade_id', 'classroom_id', 'section_id',
+        'teacher_id', 'file_name',
+    ];
 
     protected $table = 'homeworks';
 

@@ -14,7 +14,8 @@ class QuizzRepository implements QuizzRepositoryInterface
 
     public function index()
     {
-        $quizzes = Quizze::get();
+        // P1-3 fix: eager-load subject, teacher, grade to avoid N+1 on quizzes index
+        $quizzes = Quizze::with(['subject', 'teacher', 'grade'])->get();
         return view('pages.Quizzes.index', compact('quizzes'));
     }
 
