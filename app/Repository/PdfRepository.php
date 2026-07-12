@@ -218,7 +218,14 @@ class PdfRepository implements PdfRepositoryInterface
             $q->where('section_id', $section_id);
         })->orderBy('id')->get();
 
-        $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        // P0-PDF fix: cal_days_in_month() requires PHP's 'calendar' extension which
+        // is NOT installed in the Docker image. Use Carbon instead — always available.
+        try {
+            $daysInMonth = \Carbon\Carbon::createFromDate($year, $month, 1)->daysInMonth;
+        } catch (\Throwable $e) {
+            // Fallback: manual calculation
+            $daysInMonth = (int) date('t', mktime(0, 0, 0, (int)$month, 1, (int)$year));
+        }
 
         $matrix = [];
         foreach ($students as $student) {
