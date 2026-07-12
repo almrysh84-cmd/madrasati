@@ -38,8 +38,7 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     && rm -f /etc/apache2/mods-enabled/mpm_prefork.load \
     && rm -f /etc/apache2/mods-enabled/mpm_prefork.conf \
     && a2enmod mpm_prefork rewrite headers \
-    && a2dismod -f alias autoindex \
-    && rm -f /etc/apache2/mods-enabled/alias.conf
+    && rm -f /etc/apache2/mods-enabled/alias.conf /etc/apache2/mods-enabled/autoindex.conf
 
 COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
 
