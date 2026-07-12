@@ -11,7 +11,7 @@
     <title>برنامج مورا سوفت لادارة المدارس</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="images/favicon.ico" />
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon" />
 
     <!-- Font -->
     <link rel="stylesheet"
@@ -19,7 +19,6 @@
 
     <!-- css -->
     <link href="{{ asset('assets/css/rtl.css') }}" rel="stylesheet">
-    <link href="{{ asset('') }}" rel="stylesheet">
 
 </head>
 
@@ -74,7 +73,7 @@
     <script src="{{ asset('assets/js/plugins-jquery.js') }}"></script>
     <!-- plugin_path -->
     <script>
-        var plugin_path = 'js/';
+        var plugin_path = '{{ asset('assets/js') }}/';
     </script>
 
 

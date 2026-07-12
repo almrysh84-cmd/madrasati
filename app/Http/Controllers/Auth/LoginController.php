@@ -26,11 +26,15 @@ class LoginController extends Controller
 
     public function loginForm($type)
     {
+        // Map 'admin' to 'web' guard since there is no separate admin guard.
+        // The admin user model (App\Models\User) is served by the 'web' guard.
+        $guard = ($type === 'admin') ? 'web' : $type;
+
         // If the user is already logged in with the SAME guard type they're
         // trying to access, redirect them to their dashboard. Otherwise
         // (e.g. logged in as teacher but accessing student login), show the
         // login form so they can switch.
-        if (Auth::guard($type)->check()) {
+        if (Auth::guard($guard)->check()) {
             return redirect()->intended($this->getRedirectPath($type));
         }
 
@@ -58,7 +62,9 @@ class LoginController extends Controller
 
     public function logout(Request $request, $type)
     {
-        Auth::guard($type)->logout();
+        // Map 'admin' to 'web' guard since there is no separate admin guard.
+        $guard = ($type === 'admin') ? 'web' : $type;
+        Auth::guard($guard)->logout();
 
         $request->session()->invalidate();
 

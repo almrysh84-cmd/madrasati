@@ -68,11 +68,11 @@ class Announcement extends Model
     public function getTargetAudienceTextAttribute()
     {
         $audiences = [
-            'admin'    => 'الإدارة',
-            'teachers' => 'المعلمون',
-            'students' => 'الطلاب',
-            'parents'  => 'أولياء الأمور',
-            'all'      => 'الجميع',
+            'admin'    => trans('Announcements_trans.audience_admin'),
+            'teachers' => trans('Announcements_trans.audience_teachers'),
+            'students' => trans('Announcements_trans.audience_students'),
+            'parents'  => trans('Announcements_trans.audience_parents'),
+            'all'      => trans('Announcements_trans.audience_all'),
         ];
         return $audiences[$this->target_audience] ?? $this->target_audience;
     }

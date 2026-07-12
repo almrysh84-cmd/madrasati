@@ -28,10 +28,8 @@
 <link href="{{ URL::asset('css/wizard.css') }}" rel="stylesheet" id="bootstrap-css">
 
 @yield('css')
-<!--- Style css -->
-<link href="{{ URL::asset('assets/css/style.css') }}" rel="stylesheet">
 
-<!--- Style css -->
+<!--- Style css (RTL/LTR) -->
 @if (App::getLocale() == 'en')
     <link href="{{ URL::asset('assets/css/ltr.css') }}" rel="stylesheet">
 @else

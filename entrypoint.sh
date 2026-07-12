@@ -70,6 +70,9 @@ php artisan migrate:fresh --force
 echo "Seeding database..."
 php artisan db:seed --force
 
+# Publish PHPFlasher (toastr) assets so notifications work
+php artisan flasher:install --no-interaction 2>/dev/null || true
+
 # Cache for production
 php artisan config:cache
 php artisan view:cache
