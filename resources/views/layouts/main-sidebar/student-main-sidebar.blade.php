@@ -19,6 +19,11 @@
                     class="right-nav-text">الامتحانات</span></a>
         </li>
 
+        <!-- واجباتي -->
+        <li>
+            <a href="{{route('student.homework.index')}}"><i class="fas fa-tasks"></i><span
+                    class="right-nav-text">واجباتي</span></a>
+        </li>
 
         <!-- Settings-->
         <li>

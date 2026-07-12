@@ -120,6 +120,54 @@
                                 @enderror
                             </div>
 
+                            {{-- ===== تحديد الفصول/الأقسام التي يدرسها المعلم ===== --}}
+                            <div class="form-group">
+                                <label style="font-weight: bold; font-size: 16px;">
+                                    <i class="fas fa-chalkboard-teacher text-primary"></i>
+                                    الفصول/الأقسام التي يدرسها المعلم
+                                </label>
+                                <p class="text-muted small">حدد الأقسام (الشُّعَب) التي سيكون المعلم مسؤولاً عنها. المعلم سيرى فقط طلاب هذه الأقسام في لوحة تحكمه.</p>
+
+                                @php
+                                    $sectionsByGrade = \App\Models\Section::with(['grade', 'classroom'])
+                                        ->orderBy('Grade_id')->orderBy('Class_id')->get()
+                                        ->groupBy(function($s) {
+                                            return $s->grade ? $s->grade->getTranslation('Name', 'ar') : 'غير محدد';
+                                        });
+                                @endphp
+
+                                <div class="card border-light">
+                                    <div class="card-body" style="max-height: 350px; overflow-y: auto;">
+                                        @foreach($sectionsByGrade as $gradeName => $sections)
+                                            <div class="mb-3">
+                                                <h6 class="text-primary mb-2" style="font-weight: bold;">
+                                                    <i class="fas fa-layer-group"></i> {{ $gradeName }}
+                                                </h6>
+                                                <div class="row">
+                                                    @foreach($sections as $section)
+                                                        <div class="col-md-4 col-sm-6 mb-2">
+                                                            <div class="form-check">
+                                                                <input type="checkbox"
+                                                                       name="sections[]"
+                                                                       value="{{ $section->id }}"
+                                                                       id="section_{{ $section->id }}"
+                                                                       class="form-check-input">
+                                                                <label for="section_{{ $section->id }}" class="form-check-label">
+                                                                    {{ $section->classroom ? $section->classroom->getTranslation('Name_Class', 'ar') : '' }}
+                                                                    -
+                                                                    {{ $section->getTranslation('Name_Section', 'ar') }}
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- ===== نهاية تحديد الفصول ===== --}}
+
                             <button class="btn btn-success btn-sm nextBtn btn-lg pull-right" type="submit">{{trans('Parent_trans.Next')}}</button>
                     </form>
                         </div>

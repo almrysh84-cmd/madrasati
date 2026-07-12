@@ -87,10 +87,16 @@
                     class="right-nav-text">الملف الشخصي</span></a>
         </li>
 
-        <!-- لوحة الإعلانات -->
+        <!-- إعلاناتي (إنشاء + إدارة) -->
         <li>
-            <a href="{{route('teacher.announcements')}}"><i class="fas fa-bullhorn"></i><span
-                    class="right-nav-text">لوحة الإعلانات</span></a>
+            <a href="{{route('teacher.announcements.index')}}"><i class="fas fa-bullhorn"></i><span
+                    class="right-nav-text">إعلاناتي للطلاب</span></a>
+        </li>
+
+        <!-- لوحة الإعلانات (عرض الإعلانات الواردة من الإدارة) -->
+        <li>
+            <a href="{{route('teacher.announcements')}}"><i class="fas fa-info-circle"></i><span
+                    class="right-nav-text">إعلانات الإدارة</span></a>
         </li>
     </ul>
 </div>

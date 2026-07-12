@@ -32,6 +32,10 @@ Route::group(
             Route::resource('student_exams', 'ExamsController');
             Route::resource('profile-student', 'ProfileController');
 
+            // ==================== واجبات الطالب (Student Homework) ====================
+            Route::get('homework', 'StudentHomeworkController@index')->name('student.homework.index');
+            Route::get('homework/{id}', 'StudentHomeworkController@show')->name('student.homework.show');
+            Route::get('homework_download/{filename}', 'StudentHomeworkController@download')->name('student.homework.download');
         });
 
         // ==================== لوحة الإعلانات (Announcements Board) ====================

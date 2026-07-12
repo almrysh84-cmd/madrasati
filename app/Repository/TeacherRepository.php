@@ -39,6 +39,12 @@ class TeacherRepository implements TeacherRepositoryInterface
             $Teachers->Joining_Date = $request->Joining_Date;
             $Teachers->Address = $request->Address;
             $Teachers->save();
+
+            // ===== ربط المعلم بالفصول/الأقسام المحددة =====
+            if ($request->has('sections') && is_array($request->sections)) {
+                $Teachers->Sections()->attach($request->sections);
+            }
+
             toastr()->success(trans('messages.success'));
             return redirect()->route('Teachers.create');
         } catch (Exception $e) {

@@ -33,9 +33,14 @@ class Announcement extends Model
 
     /**
      * علاقة مع منشئ الإعلان
+     * يدعم عدة أنواع من المنشئين (admin, teacher) عبر polymorphic relation
      */
     public function creator()
     {
+        // إذا كان creator_type = 'teacher'، نجلب المعلم، وإلا الإداري
+        if ($this->creator_type === 'teacher') {
+            return $this->belongsTo('App\Models\Teacher', 'created_by');
+        }
         return $this->belongsTo('App\Models\User', 'created_by');
     }
 

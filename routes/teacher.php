@@ -74,6 +74,12 @@ Route::group(
             Route::get('question_bank_export', 'QuestionBankController@export')->name('question_bank.export');
             Route::post('question_bank_import', 'QuestionBankController@import')->name('question_bank.import');
             Route::get('question_bank_search', 'QuestionBankController@search')->name('question_bank.search');
+
+            // ==================== إعلانات المعلم للطلاب ====================
+            Route::get('my_announcements', 'TeacherAnnouncementController@index')->name('teacher.announcements.index');
+            Route::get('my_announcements/create', 'TeacherAnnouncementController@create')->name('teacher.announcements.create');
+            Route::post('my_announcements', 'TeacherAnnouncementController@store')->name('teacher.announcements.store');
+            Route::delete('my_announcements/{id}', 'TeacherAnnouncementController@destroy')->name('teacher.announcements.destroy');
         });
 
         // ==================== لوحة الإعلانات (Announcements Board) ====================
