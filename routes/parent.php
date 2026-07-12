@@ -52,5 +52,11 @@ Route::group(
                 ->get();
             return view('pages.Announcements.role_view', compact('announcements'));
         })->name('parent.announcements');
+
+        // ==================== الإشعارات (Notifications) ====================
+        Route::get('/parent/notifications', 'App\Http\Controllers\Notification\NotificationController@index')->name('parent.notifications.index');
+        Route::post('/parent/notifications/{id}/mark-as-read', 'App\Http\Controllers\Notification\NotificationController@markAsRead')->name('parent.notifications.markAsRead');
+        Route::post('/parent/notifications/mark-all-as-read', 'App\Http\Controllers\Notification\NotificationController@markAllAsRead')->name('parent.notifications.markAllAsRead');
+        Route::get('/parent/notifications/unread-count', 'App\Http\Controllers\Notification\NotificationController@unreadCount')->name('parent.notifications.unreadCount');
     }
 );

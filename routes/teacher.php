@@ -91,5 +91,11 @@ Route::group(
                 ->get();
             return view('pages.Announcements.role_view', compact('announcements'));
         })->name('teacher.announcements');
+
+        // ==================== الإشعارات (Notifications) ====================
+        Route::get('/teacher/notifications', 'App\Http\Controllers\Notification\NotificationController@index')->name('teacher.notifications.index');
+        Route::post('/teacher/notifications/{id}/mark-as-read', 'App\Http\Controllers\Notification\NotificationController@markAsRead')->name('teacher.notifications.markAsRead');
+        Route::post('/teacher/notifications/mark-all-as-read', 'App\Http\Controllers\Notification\NotificationController@markAllAsRead')->name('teacher.notifications.markAllAsRead');
+        Route::get('/teacher/notifications/unread-count', 'App\Http\Controllers\Notification\NotificationController@unreadCount')->name('teacher.notifications.unreadCount');
     }
 );

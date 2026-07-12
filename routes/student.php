@@ -50,5 +50,12 @@ Route::group(
                 ->get();
             return view('pages.Announcements.role_view', compact('announcements'));
         })->name('student.announcements');
+
+        // ==================== الإشعارات (Notifications) ====================
+        // مسارات الإشعارات للطالب — تسمح للطالب برؤية إشعاراته وتمييزها كمقروءة
+        Route::get('/student/notifications', 'App\Http\Controllers\Notification\NotificationController@index')->name('student.notifications.index');
+        Route::post('/student/notifications/{id}/mark-as-read', 'App\Http\Controllers\Notification\NotificationController@markAsRead')->name('student.notifications.markAsRead');
+        Route::post('/student/notifications/mark-all-as-read', 'App\Http\Controllers\Notification\NotificationController@markAllAsRead')->name('student.notifications.markAllAsRead');
+        Route::get('/student/notifications/unread-count', 'App\Http\Controllers\Notification\NotificationController@unreadCount')->name('student.notifications.unreadCount');
     }
 );

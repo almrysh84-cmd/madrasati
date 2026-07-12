@@ -45,6 +45,12 @@ Route::group(
         Route::get('/dashboard/chart-data', 'App\Http\Controllers\Dashboard\DashboardController@chartData')->name('dashboard.chartData');
 
         //==============================Notifications============================
+        // Note: these routes are inside the 'auth' middleware group (admin guard).
+        // But notifications are also needed by teacher/student/parent roles.
+        // The NotificationController's repository checks all 4 guards, so the only
+        // issue is the auth middleware rejecting non-admin users.
+        // Solution: add a fallback set of routes inside the localized group with
+        // a custom middleware that accepts ANY authenticated user.
         Route::group(['namespace' => 'App\Http\Controllers\Notification'], function () {
             Route::get('/notifications', 'NotificationController@index')->name('notifications.index');
             Route::post('/notifications/{id}/mark-as-read', 'NotificationController@markAsRead')->name('notifications.markAsRead');

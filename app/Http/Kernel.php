@@ -65,6 +65,9 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         // P1-1 fix: register role middleware for fine-grained admin RBAC
         'role' => \App\Http\Middleware\CheckRole::class,
+        // Allow ANY authenticated user (any guard) — used for shared routes
+        // like notifications that should work for admin/teacher/student/parent.
+        'auth.any' => \App\Http\Middleware\AuthAnyGuard::class,
          'localize'                => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRoutes::class,
         'localizationRedirect'    => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter::class,
         'localeSessionRedirect'   => \Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect::class,

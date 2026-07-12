@@ -90,7 +90,18 @@ header start-->
                         </a>
                     @endforeach
                     <div class="dropdown-divider"></div>
-                    <a href="{{ route('notifications.index') }}" class="dropdown-item text-center text-primary">
+                    @php
+                        // Determine the notifications route based on the active guard
+                        $notifRoute = 'notifications.index'; // default (admin)
+                        if (auth('student')->check()) {
+                            $notifRoute = 'student.notifications.index';
+                        } elseif (auth('teacher')->check()) {
+                            $notifRoute = 'teacher.notifications.index';
+                        } elseif (auth('parent')->check()) {
+                            $notifRoute = 'parent.notifications.index';
+                        }
+                    @endphp
+                    <a href="{{ route($notifRoute) }}" class="dropdown-item text-center text-primary">
                         <small>{{ trans('Sidebar_trans.View_all') ?? 'عرض الكل' }}</small>
                     </a>
                 @else
