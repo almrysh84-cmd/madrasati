@@ -73,6 +73,9 @@ class DatabaseSeeder extends Seeder
         // quizzes, questions, students, and degrees with real school data
         $this->call(SchoolDataSeeder::class);
 
+        // ===== New Features seeders (Question Bank + Announcements) =====
+        $this->call(NewFeaturesSeeder::class);
+
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

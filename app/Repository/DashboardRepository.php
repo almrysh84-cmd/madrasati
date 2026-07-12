@@ -17,6 +17,7 @@ use App\Models\Subject;
 use App\Models\Library;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * مستودع لوحة التحكم الإحصائية
@@ -26,28 +27,34 @@ use Illuminate\Support\Facades\DB;
  */
 class DashboardRepository implements DashboardRepositoryInterface
 {
+    // مدة التخزين المؤقت للإحصائيات (5 دقائق) - Feature 6
+    const CACHE_TTL = 300;
+
     /**
      * عرض لوحة التحكم مع البيانات الإحصائية
      */
     public function index()
     {
-        // إحصائيات عامة
-        $stats = [
-            'students_count'     => Student::count(),
-            'teachers_count'     => Teacher::count(),
-            'parents_count'      => My_Parent::count(),
-            'sections_count'     => Section::count(),
-            'grades_count'       => Grade::count(),
-            'classrooms_count'   => Classroom::count(),
-            'quizzes_count'      => Quizze::count(),
-            'subjects_count'     => Subject::count(),
-            'fee_invoices_count' => Fee_invoice::count(),
-            'receipts_count'     => ReceiptStudent::count(),
-            'library_count'      => Library::count(),
-        ];
+        // إحصائيات عامة - مع التخزين المؤقت (Feature 6)
+        $stats = Cache::remember('dashboard:stats', self::CACHE_TTL, function () {
+            return [
+                'students_count'     => Student::count(),
+                'teachers_count'     => Teacher::count(),
+                'parents_count'      => My_Parent::count(),
+                'sections_count'     => Section::count(),
+                'grades_count'       => Grade::count(),
+                'classrooms_count'   => Classroom::count(),
+                'quizzes_count'      => Quizze::count(),
+                'subjects_count'     => Subject::count(),
+                'fee_invoices_count' => Fee_invoice::count(),
+                'receipts_count'     => ReceiptStudent::count(),
+                'library_count'      => Library::count(),
+            ];
+        });
 
-        // توزيع الطلاب حسب المرحلة الدراسية
-        $studentsByGrade = Student::select('Grade_id', DB::raw('count(*) as total'))
+        // توزيع الطلاب حسب المرحلة الدراسية - مع التخزين المؤقت (Feature 6)
+        $studentsByGrade = Cache::remember('dashboard:students_by_grade', self::CACHE_TTL, function () {
+            return Student::select('Grade_id', DB::raw('count(*) as total'))
             ->with('grade')
             ->groupBy('Grade_id')
             ->get()
@@ -57,9 +64,11 @@ class DashboardRepository implements DashboardRepositoryInterface
                     'count' => $item->total,
                 ];
             });
+        });
 
-        // توزيع الطلاب حسب النوع (جنس)
-        $studentsByGender = Student::select('gender_id', DB::raw('count(*) as total'))
+        // توزيع الطلاب حسب النوع (جنس) - مع التخزين المؤقت (Feature 6)
+        $studentsByGender = Cache::remember('dashboard:students_by_gender', self::CACHE_TTL, function () {
+            return Student::select('gender_id', DB::raw('count(*) as total'))
             ->with('gender')
             ->groupBy('gender_id')
             ->get()
@@ -69,6 +78,7 @@ class DashboardRepository implements DashboardRepositoryInterface
                     'count' => $item->total,
                 ];
             });
+        });
 
         // نسبة الحضور والغياب لهذا الشهر
         $currentMonth = date('m');
@@ -82,21 +92,30 @@ class DashboardRepository implements DashboardRepositoryInterface
             ->whereYear('attendence_date', $currentYear)
             ->count();
 
-        // إجمالي الرسوم المحصلة مقابل غير المحصلة
-        $totalInvoiced = Fee_invoice::sum('amount');
-        $totalCollected = ReceiptStudent::sum('Debit');
-        $totalPending = max($totalInvoiced - $totalCollected, 0);
+        // إجمالي الرسوم المحصلة مقابل غير المحصلة - مع التخزين المؤقت (Feature 6)
+        $feesOverview = Cache::remember('dashboard:fees_overview', self::CACHE_TTL, function () {
+            $totalInvoiced = Fee_invoice::sum('amount');
+            $totalCollected = ReceiptStudent::sum('Debit');
+            $totalPending = max($totalInvoiced - $totalCollected, 0);
+            return compact('totalInvoiced', 'totalCollected', 'totalPending');
+        });
+        $totalInvoiced = $feesOverview['totalInvoiced'];
+        $totalCollected = $feesOverview['totalCollected'];
+        $totalPending = $feesOverview['totalPending'];
 
-        // آخر 7 أيام حضور
-        $last7Days = [];
-        for ($i = 6; $i >= 0; $i--) {
-            $date = date('Y-m-d', strtotime("-$i days"));
-            $last7Days[] = [
-                'date'    => $date,
-                'present' => Attendance::where('attendence_date', $date)->where('attendence_status', 1)->count(),
-                'absent'  => Attendance::where('attendence_date', $date)->where('attendence_status', 0)->count(),
-            ];
-        }
+        // آخر 7 أيام حضور - مع التخزين المؤقت قصير المدة (Feature 6)
+        $last7Days = Cache::remember('dashboard:attendance_7days', 120, function () {
+            $days = [];
+            for ($i = 6; $i >= 0; $i--) {
+                $date = date('Y-m-d', strtotime("-$i days"));
+                $days[] = [
+                    'date'    => $date,
+                    'present' => Attendance::where('attendence_date', $date)->where('attendence_status', 1)->count(),
+                    'absent'  => Attendance::where('attendence_date', $date)->where('attendence_status', 0)->count(),
+                ];
+            }
+            return $days;
+        });
 
         return view('dashboard', compact(
             'stats',

@@ -42,5 +42,15 @@ Route::group(
             Route::get('profile/parent', 'ChildrenController@profile')->name('profile.show.parent');
             Route::post('profile/parent/{id}', 'ChildrenController@update')->name('profile.update.parent');
         });
+
+        // ==================== لوحة الإعلانات (Announcements Board) ====================
+        Route::get('/parent/announcements', function () {
+            $announcements = \App\Models\Announcement::with('creator')
+                ->published()
+                ->forAudience('parents')
+                ->orderBy('created_at', 'desc')
+                ->get();
+            return view('pages.Announcements.role_view', compact('announcements'));
+        })->name('parent.announcements');
     }
 );

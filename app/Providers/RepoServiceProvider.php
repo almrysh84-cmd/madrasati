@@ -129,6 +129,30 @@ class RepoServiceProvider extends ServiceProvider
             'App\Repository\StudentGradeRepositoryInterface',
             'App\Repository\StudentGradeRepository'
         );
+
+        // ===== QuestionBank بنك الأسئلة المركزي =====
+        $this->app->bind(
+            'App\Repository\QuestionBankRepositoryInterface',
+            'App\Repository\QuestionBankRepository'
+        );
+
+        // ===== AutoPromotion محرك الترقية التلقائية =====
+        $this->app->bind(
+            'App\Repository\AutoPromotionRepositoryInterface',
+            'App\Repository\AutoPromotionRepository'
+        );
+
+        // ===== Announcement لوحة الإعلانات =====
+        $this->app->bind(
+            'App\Repository\AnnouncementRepositoryInterface',
+            'App\Repository\AnnouncementRepository'
+        );
+
+        // ===== WhatsApp (Feature 7) =====
+        $this->app->bind(
+            'App\Repository\WhatsAppRepositoryInterface',
+            'App\Repository\WhatsAppRepository'
+        );
     }
 
     /**

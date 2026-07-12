@@ -26,5 +26,11 @@
                     class="right-nav-text">الملف الشخصي</span></a>
         </li>
 
+        <!-- لوحة الإعلانات -->
+        <li>
+            <a href="{{route('student.announcements')}}"><i class="fas fa-bullhorn"></i><span
+                    class="right-nav-text">لوحة الإعلانات</span></a>
+        </li>
+
     </ul>
 </div>

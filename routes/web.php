@@ -58,7 +58,24 @@ Route::group(
             Route::delete('/activity-log/{id}', 'ActivityLogController@destroy')->name('activitylog.destroy');
             Route::post('/activity-log/clear-all', 'ActivityLogController@clearAll')->name('activitylog.clearAll');
         });
-        
+
+        //==============================Announcements (Admin)============================
+        Route::group(['namespace' => 'App\Http\Controllers\Announcements'], function () {
+            Route::resource('announcements', 'AnnouncementController');
+            Route::post('announcements/{id}/toggle-publish', 'AnnouncementController@togglePublish')->name('announcements.togglePublish');
+            Route::get('announcements/role/{role}', 'AnnouncementController@forRole')->name('announcements.forRole');
+        });
+
+        //==============================WhatsApp Integration (Feature 7)============================
+        Route::group(['namespace' => 'App\\Http\\Controllers\\WhatsApp'], function () {
+            Route::get('whatsapp', 'WhatsAppController@index')->name('whatsapp.index');
+            Route::get('whatsapp/settings', 'WhatsAppController@settings')->name('whatsapp.settings');
+            Route::post('whatsapp/settings', 'WhatsAppController@updateSettings')->name('whatsapp.updateSettings');
+            Route::post('whatsapp/send-bulk', 'WhatsAppController@sendBulk')->name('whatsapp.sendBulk');
+            Route::get('whatsapp/logs', 'WhatsAppController@logs')->name('whatsapp.logs');
+            Route::get('whatsapp/preview-recipients', 'WhatsAppController@previewRecipients')->name('whatsapp.previewRecipients');
+        });
+
         //==============================Backup============================
         Route::group(['namespace' => 'App\\Http\\Controllers\\Backup'], function () {
             Route::get('/backup', 'BackupController@index')->name('backup.index');
@@ -122,6 +139,18 @@ Route::group(
             Route::post('Upload_attachment', 'StudentController@Upload_attachment')->name('Upload_attachment');
             Route::get('Download_attachment/{studentsname}/{filename}', 'StudentController@Download_attachment')->name('Download_attachment');
             Route::post('Delete_attachment', 'StudentController@Delete_attachment')->name('Delete_attachment');
+
+            // ==================== محرك الترقية التلقائية (Auto Promotion Engine) ====================
+            Route::get('auto_promotion', 'AutoPromotionController@index')->name('auto_promotion.index');
+            Route::get('auto_promotion/logs', 'AutoPromotionController@logs')->name('auto_promotion.logs');
+            Route::get('auto_promotion/review', 'AutoPromotionController@review')->name('auto_promotion.review');
+            Route::get('auto_promotion/findCandidates', 'AutoPromotionController@findCandidates')->name('auto_promotion.findCandidates');
+            Route::post('auto_promotion/trigger', 'AutoPromotionController@trigger')->name('auto_promotion.trigger');
+            Route::post('auto_promotion/approve/{id}', 'AutoPromotionController@approve')->name('auto_promotion.approve');
+            Route::post('auto_promotion/reject', 'AutoPromotionController@reject')->name('auto_promotion.reject');
+            Route::post('auto_promotion/approveAll', 'AutoPromotionController@approveAll')->name('auto_promotion.approveAll');
+            Route::post('auto_promotion/executeApproved', 'AutoPromotionController@executeApproved')->name('auto_promotion.executeApproved');
+            Route::post('auto_promotion/reverse/{id}', 'AutoPromotionController@reverse')->name('auto_promotion.reverse');
         });
 
         //==============================Subjects============================

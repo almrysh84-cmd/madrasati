@@ -217,3 +217,163 @@
 </script>
 {{-- ===== End Notification Handler ===== --}}
 
+{{-- ===== Real-Time Notifications via Pusher (Feature 4) ===== --}}
+@if(config('broadcasting.default') === 'pusher')
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        @php
+            // تحديد المستخدم المصادق عليه والحارس النشط
+            $rtGuard = null;
+            $rtUser = null;
+            foreach (['web', 'student', 'teacher', 'parent'] as $guard) {
+                if (auth($guard)->check()) {
+                    $rtGuard = $guard;
+                    $rtUser = auth($guard)->user();
+                    break;
+                }
+            }
+            $rtModelType = $rtUser ? class_basename(get_class($rtUser)) : null;
+            $rtUserId = $rtUser ? $rtUser->id : null;
+        @endphp
+
+        @if($rtUser && $rtUserId)
+        var pusherKey = '{{ config('broadcasting.connections.pusher.key') }}';
+        var pusherCluster = '{{ config('broadcasting.connections.pusher.options.cluster', env('PUSHER_APP_CLUSTER', 'mt1')) }}';
+        var pusherHost = '{{ config('broadcasting.connections.pusher.options.host', '') }}';
+
+        // تهيئة Pusher
+        var pusherOptions = {
+            cluster: pusherCluster,
+            encrypted: true
+        };
+        if (pusherHost) {
+            pusherOptions.wsHost = pusherHost.replace('api-', '').replace('.pusher.com', '');
+        }
+
+        if (typeof Pusher !== 'undefined' && pusherKey) {
+            var pusher = new Pusher(pusherKey, pusherOptions);
+
+            // الاشتراك في القناة الخاصة بالمستخدم
+            var channelName = 'private-App.Models.{{ $rtModelType }}.{{ $rtUserId }}';
+            var channel = pusher.subscribe(channelName);
+
+            // دالة تحديث عداد الإشعارات وزيادته بواحد
+            function incrementNotificationBadge(data) {
+                var badge = $('.notification-status');
+
+                if (badge.length === 0) {
+                    // إنشاء الشارة إذا لم تكن موجودة
+                    $('.top-nav .ti-bell').after('<span class="badge badge-danger notification-status">1</span>');
+                } else {
+                    var currentCount = parseInt(badge.text()) || 0;
+                    badge.text(currentCount + 1);
+                }
+
+                // إظهار إشعار toastr
+                if (typeof toastr !== 'undefined') {
+                    var messageType = (data.color === 'danger') ? 'error' :
+                                      (data.color === 'success') ? 'success' :
+                                      (data.color === 'warning') ? 'warning' : 'info';
+                    toastr[messageType](data.message || 'إشعار جديد', data.title || '', {
+                        timeOut: 5000,
+                        extendedTimeOut: 1000,
+                        closeButton: true,
+                        progressBar: true,
+                        positionClass: 'toast-top-left',
+                        rtl: true
+                    });
+                }
+
+                // تشغيل صوت إشعار
+                try {
+                    var audio = new Audio('{{ URL::asset("assets/sounds/notification.mp3") }}');
+                    audio.volume = 0.3;
+                    audio.play().catch(function(){});
+                } catch(e) {}
+
+                // إضافة الإشعار إلى القائمة المنسدلة
+                var dropdown = $('.dropdown-notifications .dropdown-divider').first();
+                if (dropdown.length) {
+                    var newNotif = '<a href="' + (data.url || '#') + '" class="dropdown-item notification-item" style="background:#fff3cd;">' +
+                        '<i class="' + (data.icon || 'fas fa-bell') + ' text-' + (data.color || 'info') + '"></i> ' +
+                        (data.message || 'إشعار جديد') +
+                        '<small class="float-right text-muted time">الآن</small>' +
+                        '</a>';
+                    dropdown.before(newNotif);
+                }
+            }
+
+            // الاستماع لحدث درجة جديدة
+            channel.bind('NewGrade', function(data) {
+                incrementNotificationBadge(data);
+            });
+
+            // الاستماع لحدث اختبار جديد
+            channel.bind('NewQuiz', function(data) {
+                incrementNotificationBadge(data);
+            });
+
+            // الاستماع لحدث رسالة جديدة
+            channel.bind('NewMessage', function(data) {
+                incrementNotificationBadge(data);
+            });
+
+            // الاستماع لإشعارات البث العامة (Illuminate\\Notifications\\Events\\BroadcastNotificationCreated)
+            channel.bind('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', function(data) {
+                incrementNotificationBadge(data);
+            });
+
+            // معالجة أخطاء الاتصال
+            pusher.connection.bind('error', function(err) {
+                console.warn('Pusher connection error:', err);
+            });
+        }
+        @endif
+    });
+</script>
+@endif
+{{-- ===== End Real-Time Notifications ===== --}}
+
+{{-- ===== PWA Service Worker Registration (Feature 5) ===== --}}
+<script>
+    window.addEventListener('load', function() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('{{ URL::asset("service-worker.js") }}', {
+                scope: '/'
+            }).then(function(registration) {
+                console.log('SW: Registered with scope:', registration.scope);
+
+                // Check for updates
+                registration.addEventListener('updatefound', function() {
+                    var newWorker = registration.installing;
+                    if (newWorker) {
+                        newWorker.addEventListener('statechange', function() {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // New update available
+                                if (typeof toastr !== 'undefined') {
+                                    toastr.info('يتوفر تحديث جديد. يرجى إعادة تحميل الصفحة.', 'تحديث متوفر', {
+                                        timeOut: 8000,
+                                        extendedTimeOut: 2000,
+                                        closeButton: true,
+                                        positionClass: 'toast-top-left',
+                                        rtl: true,
+                                        onclick: function() { window.location.reload(); }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            }).catch(function(error) {
+                console.warn('SW: Registration failed:', error);
+            });
+
+            // Listen for controller change (new SW took over)
+            navigator.serviceWorker.addEventListener('controllerchange', function() {
+                // Optionally auto-reload, or let user decide
+            });
+        }
+    });
+</script>
+{{-- ===== End PWA Service Worker ===== --}}

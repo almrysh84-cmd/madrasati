@@ -33,5 +33,15 @@ Route::group(
             Route::resource('profile-student', 'ProfileController');
 
         });
+
+        // ==================== لوحة الإعلانات (Announcements Board) ====================
+        Route::get('/student/announcements', function () {
+            $announcements = \App\Models\Announcement::with('creator')
+                ->published()
+                ->forAudience('students')
+                ->orderBy('created_at', 'desc')
+                ->get();
+            return view('pages.Announcements.role_view', compact('announcements'));
+        })->name('student.announcements');
     }
 );

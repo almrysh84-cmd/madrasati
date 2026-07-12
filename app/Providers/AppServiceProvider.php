@@ -15,7 +15,29 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // تسجيل خدمة الإشعارات في الوقت الفعلي (singleton)
+        $this->app->singleton(
+            \App\Services\RealTimeNotificationService::class,
+            function ($app) {
+                return new \App\Services\RealTimeNotificationService();
+            }
+        );
+
+        // تسجيل خدمة التخزين المؤقت (singleton) - Feature 6
+        $this->app->singleton(
+            \App\Services\CacheService::class,
+            function ($app) {
+                return new \App\Services\CacheService();
+            }
+        );
+
+        // تسجيل خدمة واتساب (singleton) - Feature 7
+        $this->app->singleton(
+            \App\Services\WhatsAppService::class,
+            function ($app) {
+                return new \App\Services\WhatsAppService();
+            }
+        );
     }
 
     /**

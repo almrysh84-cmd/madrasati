@@ -69,6 +69,8 @@
                     <ul id="Students_upgrade" class="collapse">
                         <li> <a href="{{route('Promotion.index')}}">{{trans('main_trans.add_Promotion')}}</a></li>
                         <li> <a href="{{route('Promotion.create')}}">{{trans('main_trans.list_Promotions')}}</a> </li>
+                        <li> <a href="{{route('auto_promotion.index')}}">{{trans('AutoPromotion_trans.title')}}</a></li>
+                        <li> <a href="{{route('auto_promotion.logs')}}">{{trans('AutoPromotion_trans.logs_title')}}</a></li>
                     </ul>
                 </li>
 
@@ -210,6 +212,16 @@
         <!-- Notifications -->
         <li>
             <a href="{{route('notifications.index')}}"><i class="fas fa-bell"></i><span class="right-nav-text">{{trans('Sidebar_trans.Notifications')}} </span></a>
+        </li>
+
+        <!-- Announcements -->
+        <li>
+            <a href="{{route('announcements.index')}}"><i class="fas fa-bullhorn"></i><span class="right-nav-text">لوحة الإعلانات </span></a>
+        </li>
+
+        <!-- WhatsApp Integration -->
+        <li>
+            <a href="{{route('whatsapp.index')}}"><i class="fab fa-whatsapp"></i><span class="right-nav-text">{{trans('WhatsApp_trans.whatsapp_integration')}} </span></a>
         </li>
 
         <!-- Settings-->

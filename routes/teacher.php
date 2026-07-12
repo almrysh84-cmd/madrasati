@@ -68,6 +68,22 @@ Route::group(
             Route::get('grades_report', 'GradeController@report')->name('grades.report');
             Route::post('grades_report', 'GradeController@search')->name('grades.search');
             Route::get('get_students', 'GradeController@getStudents')->name('grades.getStudents');
+
+            // ==================== بنك الأسئلة المركزي (Question Bank) ====================
+            Route::resource('question_bank', 'QuestionBankController');
+            Route::get('question_bank_export', 'QuestionBankController@export')->name('question_bank.export');
+            Route::post('question_bank_import', 'QuestionBankController@import')->name('question_bank.import');
+            Route::get('question_bank_search', 'QuestionBankController@search')->name('question_bank.search');
         });
+
+        // ==================== لوحة الإعلانات (Announcements Board) ====================
+        Route::get('/teacher/announcements', function () {
+            $announcements = \App\Models\Announcement::with('creator')
+                ->published()
+                ->forAudience('teachers')
+                ->orderBy('created_at', 'desc')
+                ->get();
+            return view('pages.Announcements.role_view', compact('announcements'));
+        })->name('teacher.announcements');
     }
 );

@@ -46,7 +46,7 @@
             </a>
             <ul id="sections-menu" class="collapse" data-parent="#sidebarnav">
                 <li><a href="{{route('quizzes.index')}}">قائمة الاختبارات</a></li>
-                <li><a href="#">قائمة الاسئلة</a></li>
+                <li><a href="{{route('question_bank.index')}}">بنك الأسئلة المركزي</a></li>
             </ul>
 
         </li>
@@ -85,6 +85,12 @@
         <li>
             <a href="{{route('profile.show')}}"><i class="fas fa-id-card-alt"></i><span
                     class="right-nav-text">الملف الشخصي</span></a>
+        </li>
+
+        <!-- لوحة الإعلانات -->
+        <li>
+            <a href="{{route('teacher.announcements')}}"><i class="fas fa-bullhorn"></i><span
+                    class="right-nav-text">لوحة الإعلانات</span></a>
         </li>
     </ul>
 </div>

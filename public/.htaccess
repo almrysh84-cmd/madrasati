@@ -19,3 +19,20 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# ===== PWA Headers (Feature 5) =====
+# Serve manifest.json and service-worker.js with correct headers
+<IfModule mod_headers.c>
+    # Manifest should not be cached aggressively (so updates propagate)
+    <FilesMatch "manifest\.json$">
+        Header set Cache-Control "public, max-age=0, must-revalidate"
+        Header set Content-Type "application/manifest+json"
+    </FilesMatch>
+
+    # Service worker must always be fetched fresh (no cache)
+    <FilesMatch "service-worker\.js$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Service-Worker-Allowed "/"
+    </FilesMatch>
+</IfModule>
+# ===== End PWA Headers =====

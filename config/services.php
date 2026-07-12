@@ -31,4 +31,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // ===== WhatsApp Integration via Twilio (Feature 7) =====
+    'twilio' => [
+        'sid'           => env('TWILIO_SID'),
+        'token'         => env('TWILIO_TOKEN'),
+        'whatsapp_from' => env('TWILIO_WHATSAPP_FROM', 'whatsapp:+14155238886'), // Twilio sandbox number
+        'enabled'       => env('TWILIO_WHATSAPP_ENABLED', false),
+    ],
+
 ];
