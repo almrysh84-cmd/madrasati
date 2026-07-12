@@ -81,15 +81,20 @@ php artisan flasher:install --no-interaction 2>/dev/null || true
 php artisan route:clear 2>/dev/null || true
 php artisan config:clear 2>/dev/null || true
 php artisan view:clear 2>/dev/null || true
+php artisan event:clear 2>/dev/null || true
 # Force-remove any cached route file that may have been baked into the Docker image
 rm -f /var/www/html/bootstrap/cache/routes*.php /var/www/html/bootstrap/cache/config.php /var/www/html/bootstrap/cache/events.php /var/www/html/bootstrap/cache/packages.php /var/www/html/bootstrap/cache/services.php 2>/dev/null || true
 
-# Cache for production
+# Cache for production — these dramatically improve performance
 php artisan config:cache
+php artisan event:cache 2>/dev/null || true
 php artisan view:cache
 # Note: route:cache disabled because LaravelLocalization::setLocale()
 # does not work with cached routes (prefix is evaluated at compile time)
 # php artisan route:cache
+
+# Optimize autoloader for production (already done in Dockerfile but re-run to be safe)
+# composer dump-autoload --optimize --no-dev 2>/dev/null || true
 
 # Ensure writable permissions
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache

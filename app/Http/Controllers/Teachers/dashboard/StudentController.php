@@ -17,7 +17,10 @@ class StudentController extends Controller
     public function index()
     {
         $ids = DB::table('teacher_section')->where('teacher_id', auth()->user()->id)->pluck('section_id');
-        $students = Student::whereIn('section_id', $ids)->get();
+        // Eager-load relations to avoid N+1 queries when rendering the table
+        $students = Student::with(['gender', 'grade', 'classroom', 'section'])
+            ->whereIn('section_id', $ids)
+            ->get();
         // جلب مواد المعلم
         $subjects = Subject::where('teacher_id', auth()->user()->id)->get();
         return view('pages.Teachers.dashboard.students.index', compact('students', 'subjects'));
