@@ -13,7 +13,8 @@ class LibraryRepository implements LibraryRepositoryInterface
 
     public function index()
     {
-        $books = Library::all();
+        // P1-3 fix: eager-load grade to avoid N+1 on library index
+        $books = Library::with('grade')->get();
         return view('pages.library.index', compact('books'));
     }
 
@@ -28,13 +29,13 @@ class LibraryRepository implements LibraryRepositoryInterface
         try {
             $books = new Library();
             $books->title = $request->title;
-            $books->file_name =  $request->file('file_name')->getClientOriginalName();
+            // P0-7 fix: use sanitized filename returned by uploadFile
+            $books->file_name = $this->uploadFile($request, 'file_name', 'library');
             $books->Grade_id = $request->Grade_id;
             $books->classroom_id = $request->Classroom_id;
             $books->section_id = $request->section_id;
             $books->teacher_id = 1;
             $books->save();
-            $this->uploadFile($request, 'file_name','library');
 
             toastr()->success(trans('messages.success'));
             return redirect()->route('library.create');
@@ -61,10 +62,9 @@ class LibraryRepository implements LibraryRepositoryInterface
 
                 $this->deleteFile($book->file_name, 'library');
 
-                $this->uploadFile($request,'file_name', 'library');
-
-                $file_name_new = $request->file('file_name')->getClientOriginalName();
-                $book->file_name = $book->file_name !== $file_name_new ? $file_name_new : $book->file_name;
+                // P0-7 fix: capture sanitized filename from uploadFile
+                $new_filename = $this->uploadFile($request, 'file_name', 'library');
+                $book->file_name = $new_filename;
             }
 
             $book->Grade_id = $request->Grade_id;
@@ -89,6 +89,17 @@ class LibraryRepository implements LibraryRepositoryInterface
 
     public function download($filename)
     {
-        return response()->download(public_path('attachments/library/' . $filename));
+        // P0-6 fix: Path Traversal — sanitize with basename()
+        $filename = basename($filename);
+        if ($filename === '' || strpos($filename, '/') !== false || strpos($filename, '\\') !== false) {
+            abort(400, 'Invalid file request');
+        }
+
+        $relative = 'attachments/library/' . $filename;
+        if (!\Illuminate\Support\Facades\Storage::disk('upload_attachments')->exists($relative)) {
+            abort(404, 'الملف غير موجود');
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('upload_attachments')->download($relative);
     }
 }

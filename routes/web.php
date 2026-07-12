@@ -24,7 +24,8 @@ Route::group(['namespace' => 'App\Http\Controllers\Auth'], function () {
 
     Route::get('/login/{type}', 'LoginController@loginForm')->name('login.show');
 
-    Route::post('/login', 'LoginController@login')->name('login');
+    // P0-11 fix: throttle login to 5 attempts per minute per IP to prevent brute-force
+    Route::post('/login', 'LoginController@login')->middleware('throttle:5,1')->name('login');
 
     Route::get('/logout/{type}', 'LoginController@logout')->name('logout');
 });

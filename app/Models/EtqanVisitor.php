@@ -9,5 +9,8 @@ class EtqanVisitor extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    /**
+     * P0-9 fix: Mass Assignment — explicit $fillable.
+     */
+    protected $fillable = ['count'];
 }

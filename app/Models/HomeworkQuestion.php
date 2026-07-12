@@ -9,7 +9,12 @@ class HomeworkQuestion extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    /**
+     * P0-9 fix: Mass Assignment — explicit $fillable.
+     */
+    protected $fillable = [
+        'homework_id', 'title', 'answers', 'right_answer', 'score',
+    ];
 
     // جلب الواجب المرتبط بالسؤال
     public function homework()

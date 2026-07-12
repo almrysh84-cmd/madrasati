@@ -54,6 +54,10 @@ class QuizzController extends Controller
     public function edit($id)
     {
         $quizz = Quizze::findorFail($id);
+        // P0-5 fix: IDOR — verify ownership
+        if ($quizz->teacher_id !== auth()->user()->id) {
+            abort(403, 'غير مصرح لك بالوصول إلى هذا الاختبار');
+        }
         $data['grades'] = Grade::all();
         $data['subjects'] = Subject::where('teacher_id', auth()->user()->id)->get();
         return view('pages.Teachers.dashboard.Quizzes.edit', $data, compact('quizz'));
@@ -61,8 +65,12 @@ class QuizzController extends Controller
 
     public function show($id)
     {
-        $questions = Question::where('quizze_id', $id)->get();
         $quizz = Quizze::findorFail($id);
+        // P0-5 fix: IDOR — verify ownership
+        if ($quizz->teacher_id !== auth()->user()->id) {
+            abort(403, 'غير مصرح لك بالوصول إلى هذا الاختبار');
+        }
+        $questions = Question::where('quizze_id', $id)->get();
         return view('pages.Teachers.dashboard.Questions.index', compact('questions', 'quizz'));
     }
 
@@ -70,12 +78,16 @@ class QuizzController extends Controller
     {
         try {
             $quizz = Quizze::findorFail($request->id);
+            // P0-5 fix: IDOR — verify ownership before update
+            if ($quizz->teacher_id !== auth()->user()->id) {
+                abort(403, 'غير مصرح لك بتعديل هذا الاختبار');
+            }
             $quizz->name = ['en' => $request->Name_en, 'ar' => $request->Name_ar];
             $quizz->subject_id = $request->subject_id;
             $quizz->grade_id = $request->Grade_id;
             $quizz->classroom_id = $request->Classroom_id;
             $quizz->section_id = $request->section_id;
-            $quizz->teacher_id = auth()->user()->id;
+            // P0-5 fix: do NOT overwrite teacher_id — keep the original owner
             $quizz->save();
             toastr()->success(trans('messages.Update'));
             return redirect()->route('quizzes.index');
@@ -88,7 +100,12 @@ class QuizzController extends Controller
     public function destroy($id)
     {
         try {
-            Quizze::destroy($id);
+            $quizz = Quizze::findorFail($id);
+            // P0-5 fix: IDOR — verify ownership before delete
+            if ($quizz->teacher_id !== auth()->user()->id) {
+                abort(403, 'غير مصرح لك بحذف هذا الاختبار');
+            }
+            $quizz->delete();
             toastr()->error(trans('messages.Delete'));
             return redirect()->back();
         } catch (\Exception $e) {

@@ -244,9 +244,14 @@ class AddParent extends Component
 
         if ($this->Parent_id) {
             $parent = My_Parent::find($this->Parent_id);
-            $parent->update([
+
+            // P0-10 fix: only update + hash the password if the user typed a NEW one.
+            // In edit(), $this->Password is pre-filled with the existing HASHED value
+            // from the DB — if we re-save it raw, the user can never log in again.
+            // Detect "user typed a new plaintext password" by checking that the value
+            // does NOT start with "$2y$" (the bcrypt hash prefix).
+            $updateData = [
                 'email' => $this->Email,
-                'password' => $this->Password,
                 'Phone_Father' => $this->Phone_Father,
                 'Job_Father' => ['en' => $this->Job_Father_en, 'ar' => $this->Job_Father],
                 'Religion_Father_id' => $this->Religion_Father_id,
@@ -255,7 +260,13 @@ class AddParent extends Component
                 'Job_Mother' => ['en' => $this->Job_Mother_en, 'ar' => $this->Job_Mother],
                 'Religion_Mother_id' => $this->Religion_Mother_id,
                 'Address_Mother' => $this->Address_Mother,
-            ]);
+            ];
+
+            if (!empty($this->Password) && strpos($this->Password, '$2y$') !== 0) {
+                $updateData['password'] = Hash::make($this->Password);
+            }
+
+            $parent->update($updateData);
         }
 
         toastr()->success(trans('messages.Update'));

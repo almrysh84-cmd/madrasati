@@ -17,40 +17,51 @@ class ShowQuestion extends Component
         return view('livewire.show-question', ['data' => $this->data]);
     }
 
-    public function nextQuestion($question_id, $score, $answer, $right_answer)
+    /**
+     * P0-8 fix: receive ONLY question_id and the chosen answer from the client.
+     * Look up the right_answer and score SERVER-SIDE — never trust client.
+     */
+    public function nextQuestion($question_id, $answer)
     {
+        // Fetch the question server-side to get the authoritative right_answer and score
+        $question = Question::where('id', $question_id)
+            ->where('quizze_id', $this->quizze_id) // ensure the question belongs to this quiz
+            ->first();
+
+        if (!$question) {
+            toastr()->error('سؤال غير صالح');
+            return redirect('student_exams');
+        }
+
+        $score = (float) $question->score;
+        $right_answer = $question->right_answer;
+        $is_correct = strcmp(trim(mb_strtolower($answer)), trim(mb_strtolower($right_answer))) === 0;
+
         $stuDegree = Degree::where('student_id', $this->student_id)
             ->where('quizze_id', $this->quizze_id)
             ->first();
-        // insert
+
+        // Insert
         if ($stuDegree == null) {
             $degree = new Degree();
             $degree->quizze_id = $this->quizze_id;
             $degree->student_id = $this->student_id;
             $degree->question_id = $question_id;
-            if (strcmp(trim($answer), trim($right_answer)) === 0) {
-                $degree->score += $score;
-            } else {
-                $degree->score += 0;
-            }
+            $degree->score = $is_correct ? $score : 0;
             $degree->date = date('Y-m-d');
             $degree->save();
         } else {
-
-            // update
-            if ($stuDegree->question_id >= $this->data[$this->counter]->id) {
+            // Update — detect tampering (re-answering earlier questions)
+            if ($stuDegree->question_id >= $question_id) {
                 $stuDegree->score = 0;
                 $stuDegree->abuse = '1';
                 $stuDegree->save();
                 toastr()->error('تم إلغاء الاختبار لإكتشاف تلاعب بالنظام');
                 return redirect('student_exams');
             } else {
-
                 $stuDegree->question_id = $question_id;
-                if (strcmp(trim($answer), trim($right_answer)) === 0) {
-                    $stuDegree->score += $score;
-                } else {
-                    $stuDegree->score += 0;
+                if ($is_correct) {
+                    $stuDegree->score = (float) $stuDegree->score + $score;
                 }
                 $stuDegree->save();
             }

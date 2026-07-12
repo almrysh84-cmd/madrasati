@@ -58,7 +58,11 @@ class TeacherRepository implements TeacherRepositoryInterface
         try {
             $Teachers = Teacher::findOrFail($request->id);
             $Teachers->email = $request->Email;
-            $Teachers->password =  Hash::make($request->Password);
+            // P0-10 fix: only re-hash password when a non-empty value is submitted.
+            // Previously this hashed an empty string on every update, locking the teacher out.
+            if ($request->filled('Password')) {
+                $Teachers->password = Hash::make($request->Password);
+            }
             $Teachers->name = ['en' => $request->Name_en, 'ar' => $request->Name_ar];
             $Teachers->Specialization_id = $request->Specialization_id;
             $Teachers->Gender_id = $request->Gender_id;

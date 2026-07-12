@@ -124,14 +124,28 @@ class DashboardRepository implements DashboardRepositoryInterface
         $totalPending = $feesOverview['totalPending'];
 
         // آخر 7 أيام حضور - مع التخزين المؤقت قصير المدة (Feature 6)
+        // P1-3 fix: replaced 14 separate COUNT queries with a single grouped query.
         $last7Days = $this->safeRemember('dashboard:attendance_7days', 120, function () {
+            $startDate = date('Y-m-d', strtotime('-6 days'));
+            $endDate = date('Y-m-d');
+
+            $rows = Attendance::selectRaw('attendence_date, attendence_status, COUNT(*) as cnt')
+                ->whereBetween('attendence_date', [$startDate, $endDate])
+                ->groupBy('attendence_date', 'attendence_status')
+                ->get();
+
+            $map = [];
+            foreach ($rows as $r) {
+                $map[$r->attendence_date][$r->attendence_status] = $r->cnt;
+            }
+
             $days = [];
             for ($i = 6; $i >= 0; $i--) {
                 $date = date('Y-m-d', strtotime("-$i days"));
                 $days[] = [
                     'date'    => $date,
-                    'present' => Attendance::where('attendence_date', $date)->where('attendence_status', 1)->count(),
-                    'absent'  => Attendance::where('attendence_date', $date)->where('attendence_status', 0)->count(),
+                    'present' => $map[$date][1] ?? 0,
+                    'absent'  => $map[$date][0] ?? 0,
                 ];
             }
             return $days;
@@ -199,14 +213,28 @@ class DashboardRepository implements DashboardRepositoryInterface
 
     private function attendance7DaysData()
     {
+        // P1-3 fix: single grouped query instead of 14 COUNT queries.
+        $startDate = date('Y-m-d', strtotime('-6 days'));
+        $endDate = date('Y-m-d');
+
+        $rows = Attendance::selectRaw('attendence_date, attendence_status, COUNT(*) as cnt')
+            ->whereBetween('attendence_date', [$startDate, $endDate])
+            ->groupBy('attendence_date', 'attendence_status')
+            ->get();
+
+        $map = [];
+        foreach ($rows as $r) {
+            $map[$r->attendence_date][$r->attendence_status] = $r->cnt;
+        }
+
         $labels = [];
         $present = [];
         $absent  = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = date('Y-m-d', strtotime("-$i days"));
             $labels[] = $date;
-            $present[] = Attendance::where('attendence_date', $date)->where('attendence_status', 1)->count();
-            $absent[]  = Attendance::where('attendence_date', $date)->where('attendence_status', 0)->count();
+            $present[] = $map[$date][1] ?? 0;
+            $absent[]  = $map[$date][0] ?? 0;
         }
         return response()->json([
             'labels'  => $labels,

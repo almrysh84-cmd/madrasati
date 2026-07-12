@@ -56,7 +56,8 @@ class LoginController extends Controller
             return $this->redirect($request);
         }
         else {
-            return redirect()->back()->with('message', 'المستخدم اسم او المرور كلمة في عطا توجد');
+            // P0-11 fix: corrected broken Arabic login error message
+            return redirect()->back()->with('message', 'اسم المستخدم أو كلمة المرور غير صحيحة');
         }
     }
 
