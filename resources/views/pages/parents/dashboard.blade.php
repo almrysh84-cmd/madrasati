@@ -65,13 +65,13 @@
                                             </div>
                                             <div>
                                                 <div class="d-flex justify-content-between">
-                                                    <span>المرحلة</span><span>{{$son->grade->Name}}</span>
+                                                    <span>المرحلة</span><span>{{$son->grade ? $son->grade->Name : '-'}}</span>
                                                 </div>
                                                 <div class="d-flex justify-content-between">
-                                                    <span>الصف</span><span>{{$son->classroom->Name_Class}}</span>
+                                                    <span>الصف</span><span>{{$son->classroom ? $son->classroom->Name_Class : '-'}}</span>
                                                 </div>
                                                 <div class="d-flex justify-content-between">
-                                                    <span>القسم</span><span>{{$son->section->Name_Section}}</span>
+                                                    <span>القسم</span><span>{{$son->section ? $son->section->Name_Section : '-'}}</span>
                                                 </div>
 
                                                 <div class="d-flex justify-content-between">

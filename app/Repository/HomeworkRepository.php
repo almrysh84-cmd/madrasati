@@ -6,8 +6,11 @@ use App\Http\Traits\AttachFilesTrait;
 use App\Models\Grade;
 use App\Models\Homework;
 use App\Models\HomeworkQuestion;
+use App\Models\Student;
 use App\Models\Subject;
+use App\Notifications\HomeworkCreatedNotification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class HomeworkRepository implements HomeworkRepositoryInterface
 {
@@ -68,6 +71,23 @@ class HomeworkRepository implements HomeworkRepositoryInterface
             $homework->save();
 
             DB::commit();
+
+            // ===== إرسال إشعار لكل الطلاب في الصف/القسم المعني =====
+            // (بعد commit حتى لا يُرسل الإشعار إذا فشل保存 الواجب)
+            try {
+                $students = Student::where('Grade_id', $homework->grade_id)
+                    ->where('Classroom_id', $homework->classroom_id)
+                    ->where('section_id', $homework->section_id)
+                    ->get();
+
+                foreach ($students as $student) {
+                    $student->notify(new HomeworkCreatedNotification($homework));
+                }
+            } catch (\Exception $notifyEx) {
+                // لا نُفشل العملية إذا فشل الإشعار — نسجّل الخطأ فقط
+                Log::warning('Failed to send homework notification: ' . $notifyEx->getMessage());
+            }
+
             toastr()->success(trans('messages.success'));
             return redirect()->route('homework.index');
         } catch (\Exception $e) {

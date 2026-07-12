@@ -280,10 +280,10 @@
                                                             <td>{{ $loop->iteration }}</td>
                                                             <td>{{ $student->name }}</td>
                                                             <td>{{ $student->email }}</td>
-                                                            <td>{{ $student->gender->Name }}</td>
-                                                            <td>{{ $student->grade->Name }}</td>
-                                                            <td>{{ $student->classroom->Name_Class }}</td>
-                                                            <td>{{ $student->section->Name_Section }}</td>
+                                                            <td>{{ $student->gender ? $student->gender->Name : '-' }}</td>
+                                                            <td>{{ $student->grade ? $student->grade->Name : '-' }}</td>
+                                                            <td>{{ $student->classroom ? $student->classroom->Name_Class : '-' }}</td>
+                                                            <td>{{ $student->section ? $student->section->Name_Section : '-' }}</td>
                                                             <td class="text-success">{{ $student->created_at }}</td>
                                                         @empty
                                                             <td class="alert-danger" colspan="8">لاتوجد بيانات</td>
@@ -316,9 +316,9 @@
                                                         <tr>
                                                             <td>{{ $loop->iteration }}</td>
                                                             <td>{{ $teacher->name }}</td>
-                                                            <td>{{ $teacher->genders->Name }}</td>
+                                                            <td>{{ $teacher->genders ? $teacher->genders->Name : '-' }}</td>
                                                             <td>{{ $teacher->Joining_Date }}</td>
-                                                            <td>{{ $teacher->specializations->Name }}</td>
+                                                            <td>{{ $teacher->specializations ? $teacher->specializations->Name : '-' }}</td>
                                                             <td class="text-success">{{ $teacher->created_at }}</td>
                                                         @empty
                                                             <td class="alert-danger" colspan="8">لاتوجد بيانات</td>
@@ -387,7 +387,7 @@
                                                         <tr>
                                                             <td>{{ $loop->iteration }}</td>
                                                             <td>{{ $section->invoice_date }}</td>
-                                                            <td>{{ $section->My_classs->Name_Class }}</td>
+                                                            <td>{{ $section->classroom ? $section->classroom->Name_Class : '-' }}</td>
                                                             <td class="text-success">{{ $section->created_at }}</td>
                                                         </tr>
                                                     @empty
