@@ -18,6 +18,7 @@ use App\Models\Library;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 /**
  * مستودع لوحة التحكم الإحصائية
@@ -31,12 +32,31 @@ class DashboardRepository implements DashboardRepositoryInterface
     const CACHE_TTL = 300;
 
     /**
+     * استرجاع آمن من الذاكرة المؤقتة مع fallback عند فشل Redis
+     * إذا فشل التخزين المؤقت (مثلاً Redis غير متاح)، يتم تنفيذ callback مباشرة
+     *
+     * @param string   $key      مفتاح التخزين
+     * @param int      $ttl      وقت الانتهاء بالثواني
+     * @param callable $callback الدالة المنفذة عند عدم وجود القيمة
+     * @return mixed
+     */
+    private function safeRemember(string $key, int $ttl, callable $callback)
+    {
+        try {
+            return Cache::remember($key, $ttl, $callback);
+        } catch (\Exception $e) {
+            Log::warning('Dashboard cache failed, executing directly: ' . $e->getMessage());
+            return $callback();
+        }
+    }
+
+    /**
      * عرض لوحة التحكم مع البيانات الإحصائية
      */
     public function index()
     {
         // إحصائيات عامة - مع التخزين المؤقت (Feature 6)
-        $stats = Cache::remember('dashboard:stats', self::CACHE_TTL, function () {
+        $stats = $this->safeRemember('dashboard:stats', self::CACHE_TTL, function () {
             return [
                 'students_count'     => Student::count(),
                 'teachers_count'     => Teacher::count(),
@@ -53,7 +73,7 @@ class DashboardRepository implements DashboardRepositoryInterface
         });
 
         // توزيع الطلاب حسب المرحلة الدراسية - مع التخزين المؤقت (Feature 6)
-        $studentsByGrade = Cache::remember('dashboard:students_by_grade', self::CACHE_TTL, function () {
+        $studentsByGrade = $this->safeRemember('dashboard:students_by_grade', self::CACHE_TTL, function () {
             return Student::select('Grade_id', DB::raw('count(*) as total'))
             ->with('grade')
             ->groupBy('Grade_id')
@@ -67,7 +87,7 @@ class DashboardRepository implements DashboardRepositoryInterface
         });
 
         // توزيع الطلاب حسب النوع (جنس) - مع التخزين المؤقت (Feature 6)
-        $studentsByGender = Cache::remember('dashboard:students_by_gender', self::CACHE_TTL, function () {
+        $studentsByGender = $this->safeRemember('dashboard:students_by_gender', self::CACHE_TTL, function () {
             return Student::select('gender_id', DB::raw('count(*) as total'))
             ->with('gender')
             ->groupBy('gender_id')
@@ -93,7 +113,7 @@ class DashboardRepository implements DashboardRepositoryInterface
             ->count();
 
         // إجمالي الرسوم المحصلة مقابل غير المحصلة - مع التخزين المؤقت (Feature 6)
-        $feesOverview = Cache::remember('dashboard:fees_overview', self::CACHE_TTL, function () {
+        $feesOverview = $this->safeRemember('dashboard:fees_overview', self::CACHE_TTL, function () {
             $totalInvoiced = Fee_invoice::sum('amount');
             $totalCollected = ReceiptStudent::sum('Debit');
             $totalPending = max($totalInvoiced - $totalCollected, 0);
@@ -104,7 +124,7 @@ class DashboardRepository implements DashboardRepositoryInterface
         $totalPending = $feesOverview['totalPending'];
 
         // آخر 7 أيام حضور - مع التخزين المؤقت قصير المدة (Feature 6)
-        $last7Days = Cache::remember('dashboard:attendance_7days', 120, function () {
+        $last7Days = $this->safeRemember('dashboard:attendance_7days', 120, function () {
             $days = [];
             for ($i = 6; $i >= 0; $i--) {
                 $date = date('Y-m-d', strtotime("-$i days"));
