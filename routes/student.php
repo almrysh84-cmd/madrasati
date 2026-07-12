@@ -33,9 +33,12 @@ Route::group(
             Route::resource('profile-student', 'ProfileController');
 
             // ==================== واجبات الطالب (Student Homework) ====================
-            Route::get('homework', [\App\Http\Controllers\Students\dashboard\StudentHomeworkController::class, 'index'])->name('student.homework.index');
-            Route::get('homework/{id}', [\App\Http\Controllers\Students\dashboard\StudentHomeworkController::class, 'show'])->name('student.homework.show');
-            Route::get('homework_download/{filename}', [\App\Http\Controllers\Students\dashboard\StudentHomeworkController::class, 'download'])->name('student.homework.download');
+            // ملاحظة: استخدمنا 'my_homework' بدلاً من 'homework' لتجنب التعارض مع
+            // Route::resource('homework', ...) في routes/teacher.php التي تحوي
+            // middleware auth:teacher وتلتقط الطلب أولاً.
+            Route::get('my_homework', [\App\Http\Controllers\Students\dashboard\StudentHomeworkController::class, 'index'])->name('student.homework.index');
+            Route::get('my_homework/{id}', [\App\Http\Controllers\Students\dashboard\StudentHomeworkController::class, 'show'])->name('student.homework.show');
+            Route::get('student_homework_download/{filename}', [\App\Http\Controllers\Students\dashboard\StudentHomeworkController::class, 'download'])->name('student.homework.download');
         });
 
         // ==================== لوحة الإعلانات (Announcements Board) ====================

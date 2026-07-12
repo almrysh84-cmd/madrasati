@@ -21,7 +21,7 @@
 
         <!-- واجباتي -->
         <li>
-            <a href="{{ url('/en/homework') }}"><i class="fas fa-tasks"></i><span
+            <a href="{{ url('/en/my_homework') }}"><i class="fas fa-tasks"></i><span
                     class="right-nav-text">واجباتي</span></a>
         </li>
 

@@ -72,12 +72,12 @@
                                         </td>
                                         <td><span class="badge badge-warning">{{ $hw->score }}</span></td>
                                         <td>
-                                            <a href="{{ route('student.homework.show', $hw->id) }}"
+                                            <a href="{{ url('/en/my_homework/' . $hw->id) }}"
                                                class="btn btn-primary btn-sm" title="عرض التفاصيل">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                             @if(in_array($hw->type, ['file','image']) && $hw->file_name)
-                                                <a href="{{ route('student.homework.download', $hw->file_name) }}"
+                                                <a href="{{ url('/en/student_homework_download/' . $hw->file_name) }}"
                                                    class="btn btn-success btn-sm" title="تنزيل الملف" target="_blank">
                                                     <i class="fas fa-download"></i>
                                                 </a>

@@ -18,7 +18,7 @@
         <div class="col-md-12 mb-30">
             <div class="card card-statistics h-100">
                 <div class="card-body">
-                    <a href="{{ route('student.homework.index') }}" class="btn btn-secondary btn-sm mb-3">
+                    <a href="{{ url('/en/my_homework') }}" class="btn btn-secondary btn-sm mb-3">
                         <i class="fas fa-arrow-right"></i> رجوع للقائمة
                     </a>
 
@@ -68,7 +68,7 @@
 
                             @if(in_array($homework->type, ['file','image']) && $homework->file_name)
                                 <div class="mb-3">
-                                    <a href="{{ route('student.homework.download', $homework->file_name) }}"
+                                    <a href="{{ url('/en/student_homework_download/' . $homework->file_name) }}"
                                        class="btn btn-success" target="_blank">
                                         <i class="fas fa-download"></i> تنزيل ملف الواجب
                                     </a>
