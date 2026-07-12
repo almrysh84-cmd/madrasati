@@ -293,7 +293,7 @@
                                                         <tr>
                                                             <td>{{ $loop->iteration }}</td>
                                                             <td>{{ $section->invoice_date }}</td>
-                                                            <td>{{ $section->My_classs->Name_Class }}</td>
+                                                            <td>{{ $section->classroom ? $section->classroom->Name_Class : '-' }}</td>
                                                             <td class="text-success">{{ $section->created_at }}</td>
                                                         </tr>
                                                     @empty
