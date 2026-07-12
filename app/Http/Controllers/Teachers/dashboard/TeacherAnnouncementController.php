@@ -59,22 +59,66 @@ class TeacherAnnouncementController extends Controller
         ]);
 
         try {
+            // تحديد حالة النشر: إذا حدد المعلم تاريخ نشر في المستقبل،
+            // نتركه غير منشور حتى يحين الوقت. خلاف ذلك نشر فوري.
+            $isPublished = true;
+            $publishAt = null;
+            if ($request->filled('publish_at')) {
+                $publishAt = $request->publish_at;
+                $isPublished = (strtotime($publishAt) <= time());
+            }
+
             Announcement::create([
                 'title'           => $request->title,
                 'body'            => $request->body,
                 'target_audience' => $request->target_audience,
-                'publish_at'      => $request->publish_at,
-                'is_published'    => true,
+                'publish_at'      => $publishAt,
+                'is_published'    => $isPublished,
                 'created_by'      => auth()->user()->id,
                 'creator_type'    => 'teacher',
             ]);
 
-            toastr()->success('تم نشر الإعلان بنجاح — سيظهر للطلاب فوراً');
+            // ===== إرسال إشعار في قاعدة البيانات لكل الطلاب المعنيين =====
+            try {
+                $this->notifyStudents($request->target_audience, $request->title, $request->body);
+            } catch (\Throwable $ne) {
+                \Log::warning('Failed to send announcement notification: ' . $ne->getMessage());
+            }
+
+            $msg = $isPublished
+                ? 'تم نشر الإعلان بنجاح — سيظهر للطلاب فوراً'
+                : 'تم حفظ الإعلان — سيُنشر تلقائياً في الوقت المحدد';
+            toastr()->success($msg);
             return redirect()->route('teacher.announcements.index');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['error' => 'حدث خطأ أثناء نشر الإعلان: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * إرسال إشعار لكل الطلاب المعنيين بالإعلان (حسب target_audience)
+     */
+    private function notifyStudents($targetAudience, $title, $body)
+    {
+        $teacher = auth()->user();
+
+        if ($targetAudience === 'all') {
+            // كل الطلاب في المدرسة
+            $students = \App\Models\Student::all();
+        } else {
+            // فقط طلاب أقسام المعلم
+            $sectionIds = $teacher->Sections()->pluck('sections.id');
+            $students = \App\Models\Student::whereIn('section_id', $sectionIds)->get();
+        }
+
+        foreach ($students as $student) {
+            $student->notify(new \App\Notifications\AnnouncementPublishedNotification(
+                $title,
+                $targetAudience === 'all' ? 'لجميع الطلاب' : 'لطلاب صفك',
+                $teacher->getTranslation('name', 'ar')
+            ));
         }
     }
 

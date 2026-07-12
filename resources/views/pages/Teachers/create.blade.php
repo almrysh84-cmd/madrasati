@@ -166,7 +166,62 @@
                                     </div>
                                 </div>
                             </div>
-                            {{-- ===== نهاية تحديد الفصول ===== --}}
+                            {{-- ===== تحديد المواد التي يدرسها المعلم ===== --}}
+                            <div class="form-group">
+                                <label style="font-weight: bold; font-size: 16px;">
+                                    <i class="fas fa-book text-success"></i>
+                                    المواد التي يدرسها المعلم
+                                </label>
+                                <p class="text-muted small">حدد المواد التي سيكون المعلم مسؤولاً عنها. المعلم سيرى هذه المواد في لوحة تحكمه (للحضور، الواجبات، الاختبارات). كل مادة تُربط بمعلم واحد فقط.</p>
+
+                                @php
+                                    $subjectsByGrade = \App\Models\Subject::with(['grade', 'classroom'])
+                                        ->orderBy('grade_id')->orderBy('classroom_id')->get()
+                                        ->groupBy(function($s) {
+                                            return $s->grade ? $s->grade->getTranslation('Name', 'ar') : 'غير محدد';
+                                        });
+                                @endphp
+
+                                <div class="card border-light">
+                                    <div class="card-body" style="max-height: 350px; overflow-y: auto;">
+                                        @foreach($subjectsByGrade as $gradeName => $subjects)
+                                            <div class="mb-3">
+                                                <h6 class="text-success mb-2" style="font-weight: bold;">
+                                                    <i class="fas fa-layer-group"></i> {{ $gradeName }}
+                                                    <small class="text-muted">({{ $subjects->count() }} مادة)</small>
+                                                </h6>
+                                                <div class="row">
+                                                    @foreach($subjects as $subject)
+                                                        <div class="col-md-6 col-sm-12 mb-2">
+                                                            <div class="form-check">
+                                                                <input type="checkbox"
+                                                                       name="subjects[]"
+                                                                       value="{{ $subject->id }}"
+                                                                       id="subject_{{ $subject->id }}"
+                                                                       class="form-check-input">
+                                                                <label for="subject_{{ $subject->id }}" class="form-check-label">
+                                                                    {{ $subject->getTranslation('name', 'ar') }}
+                                                                    @if($subject->classroom)
+                                                                        <small class="text-muted">({{ $subject->classroom->getTranslation('Name_Class', 'ar') }})</small>
+                                                                    @endif
+                                                                    @if($subject->teacher)
+                                                                        <small class="text-warning">— مرتبطة بمعلم آخر</small>
+                                                                    @endif
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                        @if($subjectsByGrade->isEmpty())
+                                            <div class="alert alert-warning">لا توجد مواد في النظام. أضف مواد أولاً من صفحة المواد.</div>
+                                        @endif
+                                    </div>
+                                </div>
+                                <small class="text-muted">ملاحظة: المواد المرتبطة بمعلم آخر سيتم إعادة ربطها بالمعلم الجديد عند اختيارها.</small>
+                            </div>
+                            {{-- ===== نهاية تحديد المواد ===== --}}
 
                             <button class="btn btn-success btn-sm nextBtn btn-lg pull-right" type="submit">{{trans('Parent_trans.Next')}}</button>
                     </form>

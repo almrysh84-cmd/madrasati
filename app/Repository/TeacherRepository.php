@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Models\Gender;
 use App\Models\Specialization;
+use App\Models\Subject;
 use App\Models\Teacher;
 use Exception;
 use Illuminate\Support\Facades\Hash;
@@ -43,6 +44,13 @@ class TeacherRepository implements TeacherRepositoryInterface
             // ===== ربط المعلم بالفصول/الأقسام المحددة =====
             if ($request->has('sections') && is_array($request->sections)) {
                 $Teachers->Sections()->attach($request->sections);
+            }
+
+            // ===== ربط المواد المحددة بالمعلم الجديد =====
+            // ملاحظة: subjects.teacher_id هو FK واحد (كل مادة لمعلم واحد)
+            // لذا نحدّث teacher_id لكل مادة مختارة لتصبح المعلم الجديد
+            if ($request->has('subjects') && is_array($request->subjects)) {
+                Subject::whereIn('id', $request->subjects)->update(['teacher_id' => $Teachers->id]);
             }
 
             toastr()->success(trans('messages.success'));

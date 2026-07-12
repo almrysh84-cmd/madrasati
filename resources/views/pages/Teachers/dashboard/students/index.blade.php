@@ -70,10 +70,10 @@
                     <td>{{ $loop->index + 1 }}</td>
                     <td>{{ $student->name }}</td>
                     <td>{{ $student->email }}</td>
-                    <td>{{ $student->gender->Name }}</td>
-                    <td>{{ $student->grade->Name }}</td>
-                    <td>{{ $student->classroom->Name_Class }}</td>
-                    <td>{{ $student->section->Name_Section }}</td>
+                    <td>{{ $student->gender ? $student->gender->Name : '-' }}</td>
+                    <td>{{ $student->grade ? $student->grade->Name : '-' }}</td>
+                    <td>{{ $student->classroom ? $student->classroom->Name_Class : '-' }}</td>
+                    <td>{{ $student->section ? $student->section->Name_Section : '-' }}</td>
                     <td>
                         <label class="block text-gray-500 font-semibold sm:border-r sm:pr-4">
                             <input name="attendences[{{ $student->id }}]"
