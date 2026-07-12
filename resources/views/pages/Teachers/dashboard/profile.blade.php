@@ -12,8 +12,8 @@
 @endsection
 @section('content')
     @php
-        // eager-load relations
-        $info = \App\Models\Teacher::with(['specializations', 'genders', 'Sections', 'Sections.grade', 'Sections.My_classs'])
+        // eager-load relations (Section model uses Grades + My_classs, not grade + classroom)
+        $info = \App\Models\Teacher::with(['specializations', 'genders', 'Sections', 'Sections.Grades', 'Sections.My_classs'])
             ->findOrFail(auth()->user()->id);
         $teacherSubjects = \App\Models\Subject::where('teacher_id', $info->id)->with('grade', 'classroom')->get();
     @endphp
@@ -180,7 +180,7 @@
                                                         <strong>{{ $section->My_classs ? $section->My_classs->getTranslation('Name_Class', 'ar') : '-' }}</strong>
                                                     </p>
                                                     <small class="text-muted">
-                                                        {{ $section->grade ? $section->grade->getTranslation('Name', 'ar') : '' }} -
+                                                        {{ $section->Grades ? $section->Grades->getTranslation('Name', 'ar') : '' }} -
                                                         قسم {{ $section->getTranslation('Name_Section', 'ar') }}
                                                     </small>
                                                 </div>
