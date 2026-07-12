@@ -129,10 +129,10 @@
                                 <p class="text-muted small">حدد الأقسام (الشُّعَب) التي سيكون المعلم مسؤولاً عنها. المعلم سيرى فقط طلاب هذه الأقسام في لوحة تحكمه.</p>
 
                                 @php
-                                    $sectionsByGrade = \App\Models\Section::with(['grade', 'classroom'])
+                                    $sectionsByGrade = \App\Models\Section::with(['Grades', 'My_classs'])
                                         ->orderBy('Grade_id')->orderBy('Class_id')->get()
                                         ->groupBy(function($s) {
-                                            return $s->grade ? $s->grade->getTranslation('Name', 'ar') : 'غير محدد';
+                                            return $s->Grades ? $s->Grades->getTranslation('Name', 'ar') : 'غير محدد';
                                         });
                                 @endphp
 
@@ -153,7 +153,7 @@
                                                                        id="section_{{ $section->id }}"
                                                                        class="form-check-input">
                                                                 <label for="section_{{ $section->id }}" class="form-check-label">
-                                                                    {{ $section->classroom ? $section->classroom->getTranslation('Name_Class', 'ar') : '' }}
+                                                                    {{ $section->My_classs ? $section->My_classs->getTranslation('Name_Class', 'ar') : '' }}
                                                                     -
                                                                     {{ $section->getTranslation('Name_Section', 'ar') }}
                                                                 </label>

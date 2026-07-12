@@ -77,6 +77,12 @@ fi
 # Publish PHPFlasher (toastr) assets so notifications work
 php artisan flasher:install --no-interaction 2>/dev/null || true
 
+# Clear any stale route cache from previous deploys (route:cache is intentionally
+# disabled below, but a stale bootstrap/cache/routes-v7.php file may still exist
+# from an older deploy — that would cause new routes added in this deploy to be
+# "undefined" at runtime).
+php artisan route:clear 2>/dev/null || true
+
 # Cache for production
 php artisan config:cache
 php artisan view:cache
