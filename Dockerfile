@@ -45,10 +45,9 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     && a2enmod mpm_prefork rewrite headers \
     && rm -f /etc/apache2/mods-enabled/alias.conf /etc/apache2/mods-enabled/autoindex.conf
 
-# Apache performance tuning: gzip compression + browser caching
-# Use a separate conf file instead of editing apache2.conf (safer than echo with \n)
-COPY apache-performance.conf /etc/apache2/conf-available/performance.conf
-RUN a2enconf performance
+# Apache performance tuning — copy directly to conf-enabled (no a2enconf needed)
+# Uses only <IfModule> guards so missing modules don't crash Apache
+COPY apache-performance.conf /etc/apache2/conf-enabled/performance.conf
 
 COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
 

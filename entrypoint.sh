@@ -86,9 +86,8 @@ php artisan event:clear 2>/dev/null || true
 rm -f /var/www/html/bootstrap/cache/routes*.php /var/www/html/bootstrap/cache/config.php /var/www/html/bootstrap/cache/events.php /var/www/html/bootstrap/cache/packages.php /var/www/html/bootstrap/cache/services.php 2>/dev/null || true
 
 # Cache for production — these dramatically improve performance
-php artisan config:cache
-php artisan event:cache 2>/dev/null || true
-php artisan view:cache
+php artisan config:cache 2>&1 || echo "WARNING: config:cache failed"
+php artisan view:cache 2>&1 || echo "WARNING: view:cache failed"
 # Note: route:cache disabled because LaravelLocalization::setLocale()
 # does not work with cached routes (prefix is evaluated at compile time)
 # php artisan route:cache
