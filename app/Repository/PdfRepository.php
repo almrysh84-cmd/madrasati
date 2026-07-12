@@ -198,9 +198,25 @@ class PdfRepository implements PdfRepositoryInterface
      */
     public function attendanceMatrix($request)
     {
+        // P0-PDF fix: generating a PDF for ALL students (no section_id) can
+        // exhaust the default 128MB memory_limit when there are 300+ students
+        // × 31 days. Raise the limit for this request only.
+        @ini_set('memory_limit', '512M');
+        @set_time_limit(120);
+
         $month = $request->get('month', date('m'));
         $year = $request->get('year', date('Y'));
         $section_id = $request->get('section_id');
+
+        // If no section_id is provided, count students first. If too many,
+        // show a friendly error page instead of crashing with HTTP 500.
+        $studentsCount = Student::when($section_id, function ($q) use ($section_id) {
+            $q->where('section_id', $section_id);
+        })->count();
+
+        if ($studentsCount > 200 && !$section_id) {
+            return back()->withErrors(['error' => 'يرجى اختيار قسم محدد — لا يمكن طباعة كشف الحضور لكل الطلاب دفعة واحدة (العدد كبير جداً).']);
+        }
 
         $query = Attendance::with(['students', 'grade', 'section']);
 
