@@ -12,11 +12,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="مدرستي">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="apple-touch-icon" href="{{ URL::asset('icons/apple-touch-icon.png') }}">
-<link rel="icon" type="image/png" sizes="192x192" href="{{ URL::asset('icons/icon-192.png') }}">
-<link rel="icon" type="image/png" sizes="512x512" href="{{ URL::asset('icons/icon-512.png') }}">
+<link rel="apple-touch-icon" href="{{ URL::asset('pwa-icons/apple-touch-icon.png') }}">
+<link rel="icon" type="image/png" sizes="192x192" href="{{ URL::asset('pwa-icons/icon-192.png') }}">
+<link rel="icon" type="image/png" sizes="512x512" href="{{ URL::asset('pwa-icons/icon-512.png') }}">
 <meta name="msapplication-TileColor" content="#1a237e">
-<meta name="msapplication-TileImage" content="{{ URL::asset('icons/icon-192.png') }}">
+<meta name="msapplication-TileImage" content="{{ URL::asset('pwa-icons/icon-192.png') }}">
 <!-- ===== End PWA Meta Tags ===== -->
 
 <!-- Font -->

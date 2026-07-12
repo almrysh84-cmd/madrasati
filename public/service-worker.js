@@ -16,9 +16,9 @@ const CORE_ASSETS = [
     '/dashboard',
     '/offline.html',
     '/manifest.json',
-    '/icons/icon-192.png',
-    '/icons/icon-512.png',
-    '/icons/apple-touch-icon.png',
+    '/pwa-icons/icon-192.png',
+    '/pwa-icons/icon-512.png',
+    '/pwa-icons/apple-touch-icon.png',
     '/favicon.ico',
     '/assets/css/style.css',
     '/assets/js/jquery-3.3.1.min.js',
@@ -157,8 +157,8 @@ self.addEventListener('push', function(event) {
             const data = event.data.json();
             const options = {
                 body: data.message || '',
-                icon: '/icons/icon-192.png',
-                badge: '/icons/icon-32.png',
+                icon: '/pwa-icons/icon-192.png',
+                badge: '/pwa-icons/icon-32.png',
                 dir: 'rtl',
                 lang: 'ar',
                 data: {

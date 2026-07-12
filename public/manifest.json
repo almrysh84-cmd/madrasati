@@ -13,25 +13,25 @@
     "categories": ["education", "productivity"],
     "icons": [
         {
-            "src": "/icons/icon-192.png",
+            "src": "/pwa-icons/icon-192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any"
         },
         {
-            "src": "/icons/icon-512.png",
+            "src": "/pwa-icons/icon-512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any"
         },
         {
-            "src": "/icons/icon-maskable-512.png",
+            "src": "/pwa-icons/icon-maskable-512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
         },
         {
-            "src": "/icons/apple-touch-icon.png",
+            "src": "/pwa-icons/apple-touch-icon.png",
             "sizes": "180x180",
             "type": "image/png",
             "purpose": "any"
@@ -42,19 +42,19 @@
             "name": "لوحة التحكم",
             "short_name": "الرئيسية",
             "url": "/dashboard",
-            "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+            "icons": [{ "src": "/pwa-icons/icon-192.png", "sizes": "192x192" }]
         },
         {
             "name": "الطلاب",
             "short_name": "الطلاب",
             "url": "/Students",
-            "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+            "icons": [{ "src": "/pwa-icons/icon-192.png", "sizes": "192x192" }]
         },
         {
             "name": "الإشعارات",
             "short_name": "الإشعارات",
             "url": "/notifications",
-            "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+            "icons": [{ "src": "/pwa-icons/icon-192.png", "sizes": "192x192" }]
         }
     ]
 }
