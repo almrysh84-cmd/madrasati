@@ -4,11 +4,15 @@ namespace App\Notifications;
 
 use App\Models\Homework;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class HomeworkCreatedNotification extends Notification implements ShouldQueue
+/**
+ * إشعار بإنشاء واجب جديد.
+ *
+ * ملاحظة: لا نستخدم ShouldQueue لأنه لا يوجد queue worker على Railway.
+ * الإشعار يُحفظ مباشرة في قاعدة البيانات عند إنشائه.
+ */
+class HomeworkCreatedNotification extends Notification
 {
     use Queueable;
 
@@ -50,6 +54,8 @@ class HomeworkCreatedNotification extends Notification implements ShouldQueue
             'score'          => $this->homework->score,
             'message'        => "واجب جديد في مادة {$subjectName} من المعلم {$teacherName}",
             'url'            => '/en/my_homework/' . $this->homework->id,
+            'icon'           => 'fas fa-tasks',
+            'color'          => 'info',
         ];
     }
 }
