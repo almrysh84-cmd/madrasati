@@ -37,10 +37,8 @@ class AddPerformanceIndexesToTables extends Migration
         // فهرس مركب: القسم + التاريخ (تقرير الحضور حسب القسم)
         $this->addIndexIfNotExists('attendances', 'attendances_section_date_index', ['section_id', 'attendence_date']);
 
-        // ===== fee_invoices: فهرس على الحالة =====
-        $this->addIndexIfNotExists('fee_invoices', 'fee_invoices_status_index', ['status']);
-        // فهرس مركب: الطالب + الحالة (عرض فواتير الطالب حسب الحالة)
-        $this->addIndexIfNotExists('fee_invoices', 'fee_invoices_student_status_index', ['student_id', 'status']);
+        // ===== fee_invoices: فهرس على الطالب (لا يوجد عمود status في الجدول) =====
+        $this->addIndexIfNotExists('fee_invoices', 'fee_invoices_student_index', ['student_id']);
 
         // ===== student_accounts: فهرس على النوع =====
         $this->addIndexIfNotExists('student_accounts', 'student_accounts_type_index', ['type']);
@@ -124,6 +122,12 @@ class AddPerformanceIndexesToTables extends Migration
         }
 
         if (!$indexExists) {
+            // تحقق من وجود جميع الأعمدة المطلوبة قبل إنشاء الفهرس
+            foreach ($columns as $column) {
+                if (!Schema::hasColumn($table, $column)) {
+                    return; // تخطى الفهرس إذا كان العمود غير موجود
+                }
+            }
             Schema::table($table, function (Blueprint $blueprint) use ($columns, $indexName) {
                 $blueprint->index($columns, $indexName);
             });
@@ -140,8 +144,7 @@ class AddPerformanceIndexesToTables extends Migration
         $this->dropIndexIfExists('attendances', 'attendances_teacher_date_index');
         $this->dropIndexIfExists('attendances', 'attendances_section_date_index');
 
-        $this->dropIndexIfExists('fee_invoices', 'fee_invoices_status_index');
-        $this->dropIndexIfExists('fee_invoices', 'fee_invoices_student_status_index');
+        $this->dropIndexIfExists('fee_invoices', 'fee_invoices_student_index');
 
         $this->dropIndexIfExists('student_accounts', 'student_accounts_type_index');
         $this->dropIndexIfExists('student_accounts', 'student_accounts_date_index');
