@@ -120,7 +120,7 @@ class MessagesController extends Controller
             ? Student::find($request->student_id)->getTranslation('name', 'ar')
             : null;
         $parentName = auth()->user()->getTranslation('Name_Father', 'ar');
-        $conversationUrl = '/en/teacher/messages/' . $parentId;
+        $conversationUrl = '/en/teacher_messages/' . $parentId;
 
         $teacher->notify(new NewMessageNotification(
             $parentName,

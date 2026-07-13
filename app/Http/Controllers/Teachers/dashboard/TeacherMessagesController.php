@@ -100,7 +100,7 @@ class TeacherMessagesController extends Controller
 
         // إرسال إشعار لولي الأمر
         $teacherName = auth()->user()->getTranslation('name', 'ar');
-        $conversationUrl = '/en/parent/messages/' . $teacherId;
+        $conversationUrl = '/en/parent_messages/' . $teacherId;
 
         $parent->notify(new NewMessageNotification(
             $teacherName,

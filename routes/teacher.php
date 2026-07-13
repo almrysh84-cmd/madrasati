@@ -82,9 +82,11 @@ Route::group(
             Route::delete('my_announcements/{id}', 'TeacherAnnouncementController@destroy')->name('teacher.announcements.destroy');
 
             // ==================== الرسائل (Messaging with parents) ====================
-            Route::get('messages', [\App\Http\Controllers\Teachers\dashboard\TeacherMessagesController::class, 'index'])->name('teacher.messages.index');
-            Route::get('messages/{parentId}', [\App\Http\Controllers\Teachers\dashboard\TeacherMessagesController::class, 'show'])->name('teacher.messages.show');
-            Route::post('messages/{parentId}', [\App\Http\Controllers\Teachers\dashboard\TeacherMessagesController::class, 'store'])->name('teacher.messages.store');
+            // ملاحظة: استخدمنا 'teacher_messages' بدلاً من 'messages' لتجنب التعارض
+            // مع Route::resource('homework', ...) وroutes أخرى في parent.php
+            Route::get('teacher_messages', [\App\Http\Controllers\Teachers\dashboard\TeacherMessagesController::class, 'index'])->name('teacher.messages.index');
+            Route::get('teacher_messages/{parentId}', [\App\Http\Controllers\Teachers\dashboard\TeacherMessagesController::class, 'show'])->name('teacher.messages.show');
+            Route::post('teacher_messages/{parentId}', [\App\Http\Controllers\Teachers\dashboard\TeacherMessagesController::class, 'store'])->name('teacher.messages.store');
         });
 
         // ==================== لوحة الإعلانات (Announcements Board) ====================
