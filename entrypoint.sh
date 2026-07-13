@@ -27,6 +27,30 @@ if [ -n "$RAILWAY_PUBLIC_DOMAIN" ]; then
     sed -i "s|APP_URL=.*|APP_URL=https://$RAILWAY_PUBLIC_DOMAIN|" /var/www/html/.env
 fi
 
+# ===== CRITICAL: Map Railway env vars to .env file =====
+# Railway injects env vars at runtime, but Laravel's config:cache reads from .env.
+# If we don't sync them, config:cache will use the .env.example defaults (which may
+# be wrong for production, e.g. SESSION_DRIVER=file instead of database).
+
+# Session config — CRITICAL for avoiding 419 errors
+if [ -n "$SESSION_DRIVER" ]; then
+    sed -i "s|SESSION_DRIVER=.*|SESSION_DRIVER=$SESSION_DRIVER|" /var/www/html/.env
+fi
+if [ -n "$SESSION_LIFETIME" ]; then
+    sed -i "s|SESSION_LIFETIME=.*|SESSION_LIFETIME=$SESSION_LIFETIME|" /var/www/html/.env
+fi
+if [ -n "$SESSION_SECURE_COOKIE" ]; then
+    sed -i "s|SESSION_SECURE_COOKIE=.*|SESSION_SECURE_COOKIE=$SESSION_SECURE_COOKIE|" /var/www/html/.env
+fi
+
+# App config
+if [ -n "$APP_ENV" ]; then
+    sed -i "s|APP_ENV=.*|APP_ENV=$APP_ENV|" /var/www/html/.env
+fi
+if [ -n "$APP_DEBUG" ]; then
+    sed -i "s|APP_DEBUG=.*|APP_DEBUG=$APP_DEBUG|" /var/www/html/.env
+fi
+
 # Generate APP_KEY if missing
 if ! grep -q "APP_KEY=base64:" /var/www/html/.env; then
     php artisan key:generate --force
