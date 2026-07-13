@@ -43,9 +43,9 @@ Route::group(
             Route::post('profile/parent/{id}', 'ChildrenController@update')->name('profile.update.parent');
 
             // ==================== الرسائل (Messaging) ====================
-            Route::get('messages', 'MessagesController@index')->name('parent.messages.index');
-            Route::get('messages/{teacherId}', 'MessagesController@show')->name('parent.messages.show');
-            Route::post('messages/{teacherId}', 'MessagesController@store')->name('parent.messages.store');
+            Route::get('messages', [\App\Http\Controllers\Parents\dashboard\MessagesController::class, 'index'])->name('parent.messages.index');
+            Route::get('messages/{teacherId}', [\App\Http\Controllers\Parents\dashboard\MessagesController::class, 'show'])->name('parent.messages.show');
+            Route::post('messages/{teacherId}', [\App\Http\Controllers\Parents\dashboard\MessagesController::class, 'store'])->name('parent.messages.store');
         });
 
         // ==================== لوحة الإعلانات (Announcements Board) ====================

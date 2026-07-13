@@ -41,4 +41,12 @@ class My_Parent extends Authenticatable
     {
         return 'password';
     }
+
+    /**
+     * علاقة مع الأبناء (الطلاب المرتبطون بولي الأمر)
+     */
+    public function students()
+    {
+        return $this->hasMany('App\Models\Student', 'parent_id');
+    }
 }
