@@ -19,150 +19,194 @@
 
     <div class="wrapper" style="font-family: 'Cairo', sans-serif">
 
-        <!--=================================
- preloader -->
-
- <div id="pre-loader">
-     <img src="{{ URL::asset('assets/images/pre-loader/loader-01.svg') }}" alt="">
- </div>
-
-        <!--=================================
- preloader -->
+        <div id="pre-loader">
+            <img src="{{ URL::asset('assets/images/pre-loader/loader-01.svg') }}" alt="">
+        </div>
 
         @include('layouts.main-header')
-
         @include('layouts.main-sidebar')
 
-        <!--=================================
- Main content -->
-        <!-- main-content -->
         <div class="content-wrapper">
-            <div class="page-title" >
+            <div class="page-title">
                 <div class="row">
-                    <div class="col-sm-6" >
-                        <h4 class="mb-0" style="font-family: 'Cairo', sans-serif">مرحبا بك : {{auth()->user()->Name_Father}}</h4>
-                    </div><br><br>
                     <div class="col-sm-6">
-                        <ol class="breadcrumb pt-0 pr-0 float-left float-sm-right">
-                        </ol>
+                        <h4 class="mb-0" style="font-family: 'Cairo', sans-serif">
+                            <i class="fas fa-user-tie text-primary"></i>
+                            مرحبا بك: {{ auth()->user()->getTranslation('Name_Father', 'ar') }}
+                        </h4>
                     </div>
                 </div>
             </div>
 
-            <section style="background-color: #eee;">
-                <div class="container py-5">
-                    <div class="row justify-content-center">
-                         @foreach($sons as $son)
-                            <div class="col-md-8 col-lg-6 col-xl-4">
-                                <a href="">
-                                    <div class="card text-black">
-                                        <img src="{{URL::asset('assets/images/my_son.png')}}"/>
-                                        <div class="card-body">
-                                            <div class="text-center">
-                                                <h5 style="font-family: 'Cairo', sans-serif"
-                                                    class="card-title">{{$son->name}}</h5>
-                                                <p class="text-muted mb-4">معلومات الطالب</p>
-                                            </div>
-                                            <div>
-                                                <div class="d-flex justify-content-between">
-                                                    <span>المرحلة</span><span>{{$son->grade ? $son->grade->Name : '-'}}</span>
-                                                </div>
-                                                <div class="d-flex justify-content-between">
-                                                    <span>الصف</span><span>{{$son->classroom ? $son->classroom->Name_Class : '-'}}</span>
-                                                </div>
-                                                <div class="d-flex justify-content-between">
-                                                    <span>القسم</span><span>{{$son->section ? $son->section->Name_Section : '-'}}</span>
-                                                </div>
+            @php
+                // جلب كل الأبناء مع علاقاتهم (eager-load لتفادي N+1)
+                $sons = \App\Models\Student::where('parent_id', auth()->user()->id)
+                    ->with(['grade', 'classroom', 'section', 'gender'])
+                    ->get();
 
-                                                <div class="d-flex justify-content-between">
-{{--                                                    @if(\App\Models\Degree::where('student_id',$son->id)->count() == 0)--}}
-{{--                                                        <span>عدد الاختبارات</span><span--}}
-{{--                                                            class="text-danger">{{\App\Models\Degree::where('student_id',$son->id)->count()}}</span>--}}
-{{--                                                    @else--}}
-{{--                                                        <span>عدد الاختبارات</span><span--}}
-{{--                                                            class="text-success">{{\App\Models\Degree::where('student_id',$son->id)->count()}}</span>--}}
-{{--                                                    @endif--}}
+                // إحصائيات سريعة لكل ابن
+                $childStats = [];
+                foreach ($sons as $son) {
+                    $degrees = \App\Models\Degree::where('student_id', $son->id)->get();
+                    $attendanceRecords = \App\Models\Attendance::where('student_id', $son->id)->count();
+                    $absentDays = \App\Models\Attendance::where('student_id', $son->id)->where('attendence_status', 0)->count();
+                    $presentDays = \App\Models\Attendance::where('student_id', $son->id)->where('attendence_status', 1)->count();
+                    $attendanceRate = $attendanceRecords > 0 ? round(($presentDays / $attendanceRecords) * 100, 1) : 0;
+
+                    // آخر اختبار لم يدخله الطالب (درجته 0 أو لم يخضه)
+                    $missedExams = \App\Models\Quizze::where('grade_id', $son->Grade_id)
+                        ->where('classroom_id', $son->Classroom_id)
+                        ->where('section_id', $son->section_id)
+                        ->whereNotIn('id', $degrees->pluck('quizze_id'))
+                        ->count();
+
+                    // الواجبات غير المنجزة
+                    $homeworks = \App\Models\Homework::where('grade_id', $son->Grade_id)
+                        ->where('classroom_id', $son->Classroom_id)
+                        ->where('section_id', $son->section_id)
+                        ->count();
+
+                    // الفواتير غير المدفوعة
+                    $unpaidInvoices = \App\Models\Fee_invoice::where('student_id', $son->id)->count();
+                    $paidReceipts = \App\Models\ReceiptStudent::whereHas('student', function($q) use ($son) {
+                        $q->where('id', $son->id);
+                    })->count();
+
+                    $childStats[$son->id] = [
+                        'exams_taken'    => $degrees->count(),
+                        'total_score'    => $degrees->sum('score'),
+                        'avg_score'      => $degrees->count() > 0 ? round($degrees->avg('score'), 1) : 0,
+                        'attendance_rate'=> $attendanceRate,
+                        'absent_days'    => $absentDays,
+                        'present_days'   => $presentDays,
+                        'missed_exams'   => $missedExams,
+                        'homeworks'      => $homeworks,
+                        'unpaid_invoices'=> max($unpaidInvoices - $paidReceipts, 0),
+                    ];
+                }
+
+                // إجمالي الإشعارات غير المقروءة
+                $unreadNotifs = auth()->user()->unreadNotifications->count();
+            @endphp
+
+            {{-- ===== تنبيه سريع بالإشعارات --}}
+            @if($unreadNotifs > 0)
+                <div class="alert alert-info alert-dismissible fade show" role="alert" style="font-family: 'Cairo', sans-serif">
+                    <i class="fas fa-bell"></i>
+                    لديك <strong>{{ $unreadNotifs }}</strong> إشعار غير مقروء.
+                    <a href="{{ route('parent.notifications.index') }}" class="alert-link">عرض الإشعارات</a>
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                </div>
+            @endif
+
+            {{-- ===== بطاقات الأبناء --}}
+            <section style="background-color: #f5f7fa;">
+                <div class="container-fluid py-4">
+                    <h4 class="mb-3" style="font-family: 'Cairo', sans-serif">
+                        <i class="fas fa-children text-primary"></i> أبنائي ({{ $sons->count() }})
+                    </h4>
+
+                    @if($sons->isEmpty())
+                        <div class="alert alert-warning text-center" style="font-family: 'Cairo', sans-serif">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                            <h5>لا يوجد أبناء مرتبطون بحسابك</h5>
+                            <p>يرجى التواصل مع إدارة المدرسة لربط أبنائك بحسابك.</p>
+                        </div>
+                    @else
+                        <div class="row">
+                            @foreach($sons as $son)
+                                @php $stats = $childStats[$son->id]; @endphp
+                                <div class="col-md-6 col-xl-4 mb-4">
+                                    <div class="card shadow-sm h-100 border-primary">
+                                        <div class="card-header bg-primary text-white">
+                                            <h5 class="mb-0" style="font-family: 'Cairo', sans-serif">
+                                                <i class="fas fa-child"></i>
+                                                {{ $son->getTranslation('name', 'ar') }}
+                                            </h5>
+                                        </div>
+                                        <div class="card-body" style="font-family: 'Cairo', sans-serif">
+                                            {{-- معلومات أساسية --}}
+                                            <p class="text-muted small mb-2">
+                                                {{ $son->grade ? $son->grade->getTranslation('Name', 'ar') : '-' }} /
+                                                {{ $son->classroom ? $son->classroom->getTranslation('Name_Class', 'ar') : '-' }} /
+                                                {{ $son->section ? $son->section->getTranslation('Name_Section', 'ar') : '-' }}
+                                            </p>
+
+                                            {{-- إحصائيات سريعة --}}
+                                            <div class="row text-center mb-3">
+                                                <div class="col-4">
+                                                    <div class="border rounded p-2">
+                                                        <h5 class="text-info mb-0">{{ $stats['exams_taken'] }}</h5>
+                                                        <small>اختبار</small>
+                                                    </div>
                                                 </div>
+                                                <div class="col-4">
+                                                    <div class="border rounded p-2">
+                                                        <h5 class="text-success mb-0">{{ $stats['avg_score'] }}</h5>
+                                                        <small>متوسط الدرجة</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-4">
+                                                    <div class="border rounded p-2">
+                                                        <h5 class="text-primary mb-0">{{ $stats['attendance_rate'] }}%</h5>
+                                                        <small>نسبة الحضور</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {{-- تنبيهات --}}
+                                            @if($stats['missed_exams'] > 0 || $stats['absent_days'] > 0 || $stats['unpaid_invoices'] > 0)
+                                                <div class="alert alert-warning py-2 mb-3">
+                                                    <strong><i class="fas fa-exclamation-triangle"></i> تنبيهات:</strong>
+                                                    <ul class="mb-0 mt-1 small">
+                                                        @if($stats['missed_exams'] > 0)
+                                                            <li>اختبارات فاتته: <strong>{{ $stats['missed_exams'] }}</strong></li>
+                                                        @endif
+                                                        @if($stats['absent_days'] > 0)
+                                                            <li>أيام الغياب: <strong>{{ $stats['absent_days'] }}</strong></li>
+                                                        @endif
+                                                        @if($stats['unpaid_invoices'] > 0)
+                                                            <li>فواتير غير مدفوعة: <strong>{{ $stats['unpaid_invoices'] }}</strong></li>
+                                                        @endif
+                                                    </ul>
+                                                </div>
+                                            @else
+                                                <div class="alert alert-success py-2 mb-3">
+                                                    <i class="fas fa-check-circle"></i> كل شيء على ما يرام!
+                                                </div>
+                                            @endif
+
+                                            {{-- روابط سريعة --}}
+                                            <div class="btn-group-vertical w-100" role="group">
+                                                <a href="{{ route('sons.results', $son->id) }}" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-chart-bar"></i> عرض التقديرات والدرجات
+                                                </a>
+                                                <a href="{{ route('sons.attendances') }}" class="btn btn-outline-info btn-sm">
+                                                    <i class="fas fa-calendar-check"></i> تقرير الحضور والغياب
+                                                </a>
+                                                <a href="{{ route('sons.fees') }}" class="btn btn-outline-success btn-sm">
+                                                    <i class="fas fa-money-bill"></i> الرسوم والمدفوعات
+                                                </a>
+                                                <a href="{{ route('parent.messages.index') }}" class="btn btn-outline-warning btn-sm">
+                                                    <i class="fas fa-comment"></i> مراسلة المعلمين
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
-                                </a>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </section>
-
-            {{-- ===== Chart.js (Phase 2) ===== --}}
-            <section style="background-color: #eee;">
-                <div class="container pb-5">
-                    <div class="row">
-                        <div class="col-xl-12">
-                            <div class="card card-statistics h-100">
-                                <div class="card-body">
-                                    <h5 style="font-family: 'Cairo', sans-serif" class="card-title mb-3">
-                                        <i class="fas fa-chart-bar text-primary"></i> حضور أبنائي - الشهر الحالي
-                                    </h5>
-                                    <canvas id="parentAttendanceChart" height="80"></canvas>
                                 </div>
-                            </div>
+                            @endforeach
                         </div>
-                    </div>
+                    @endif
                 </div>
             </section>
-            {{-- ===== End Chart.js ===== --}}
-
-
-
-
-            <!--=================================
- wrapper -->
-
-            <!--=================================
- footer -->
 
             @include('layouts.footer')
-        </div><!-- main content wrapper end-->
+        </div>
     </div>
-    </div>
-    </div>
-    <!--=================================
- footer -->
 
     @include('layouts.footer-scripts')
-
-    {{-- ===== Chart.js (Phase 2) ===== --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script>
-    (function() {
-        Chart.defaults.font.family = "'Cairo', 'Tajawal', sans-serif";
-        Chart.defaults.font.size = 12;
-        @php
-            $pChildren = \App\Models\Student::where('parent_id', auth()->user()->id)->get();
-            $pLabels = []; $pPresent = []; $pAbsent = [];
-            foreach ($pChildren as $child) {
-                $pLabels[] = $child->getTranslation('name','ar');
-                $pPresent[] = \App\Models\Attendance::where('student_id', $child->id)->where('attendence_status', 1)->whereMonth('attendence_date', date('m'))->whereYear('attendence_date', date('Y'))->count();
-                $pAbsent[]  = \App\Models\Attendance::where('student_id', $child->id)->where('attendence_status', 0)->whereMonth('attendence_date', date('m'))->whereYear('attendence_date', date('Y'))->count();
-            }
-        @endphp
-        var pCtx = document.getElementById('parentAttendanceChart');
-        if (pCtx) {
-            new Chart(pCtx, {
-                type: 'bar',
-                data: {
-                    labels: @json($pLabels),
-                    datasets: [
-                        { label: 'الحضور', data: @json($pPresent), backgroundColor: 'rgba(46,204,113,0.7)', borderColor: 'rgba(46,204,113,1)', borderWidth: 1 },
-                        { label: 'الغياب', data: @json($pAbsent), backgroundColor: 'rgba(231,76,60,0.7)', borderColor: 'rgba(231,76,60,1)', borderWidth: 1 }
-                    ]
-                },
-                options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
-            });
-        }
-    })();
-    </script>
-    {{-- ===== End Chart.js ===== --}}
+    @livewireScripts
 </body>
-
 </html>

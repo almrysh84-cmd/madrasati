@@ -93,6 +93,12 @@
                     class="right-nav-text">إعلاناتي للطلاب</span></a>
         </li>
 
+        <!-- الرسائل (محادثة مع أولياء الأمور) -->
+        <li>
+            <a href="{{route('teacher.messages.index')}}"><i class="fas fa-comments"></i><span
+                    class="right-nav-text">رسائل أولياء الأمور</span></a>
+        </li>
+
         <!-- لوحة الإعلانات (عرض الإعلانات الواردة من الإدارة) -->
         <li>
             <a href="{{route('teacher.announcements')}}"><i class="fas fa-info-circle"></i><span

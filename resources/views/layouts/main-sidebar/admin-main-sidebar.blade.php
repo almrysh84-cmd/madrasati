@@ -110,6 +110,7 @@
             </a>
             <ul id="Parents-menu" class="collapse" data-parent="#sidebarnav">
                 <li> <a href="{{url('add_parent')}}">{{trans('main_trans.List_Parents')}}</a> </li>
+                <li> <a href="{{ route('admin.parents.index') }}"><i class="fas fa-link"></i> ربط الأبناء بولي الأمر</a> </li>
             </ul>
         </li>
 

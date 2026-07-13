@@ -80,6 +80,11 @@ Route::group(
             Route::get('my_announcements/create', 'TeacherAnnouncementController@create')->name('teacher.announcements.create');
             Route::post('my_announcements', 'TeacherAnnouncementController@store')->name('teacher.announcements.store');
             Route::delete('my_announcements/{id}', 'TeacherAnnouncementController@destroy')->name('teacher.announcements.destroy');
+
+            // ==================== الرسائل (Messaging with parents) ====================
+            Route::get('messages', 'TeacherMessagesController@index')->name('teacher.messages.index');
+            Route::get('messages/{parentId}', 'TeacherMessagesController@show')->name('teacher.messages.show');
+            Route::post('messages/{parentId}', 'TeacherMessagesController@store')->name('teacher.messages.store');
         });
 
         // ==================== لوحة الإعلانات (Announcements Board) ====================

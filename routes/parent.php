@@ -36,11 +36,16 @@ Route::group(
             Route::get('results/{id}', 'ChildrenController@results')->name('sons.results');
             Route::get('attendances', 'ChildrenController@attendances')->name('sons.attendances');
             Route::post('attendances', 'ChildrenController@attendanceSearch')->name('sons.attendance.search');
-            
+
             Route::get('fees', 'ChildrenController@fees')->name('sons.fees');
             Route::get('receipt/{id}', 'ChildrenController@receiptStudent')->name('sons.receipt');
             Route::get('profile/parent', 'ChildrenController@profile')->name('profile.show.parent');
             Route::post('profile/parent/{id}', 'ChildrenController@update')->name('profile.update.parent');
+
+            // ==================== الرسائل (Messaging) ====================
+            Route::get('messages', 'MessagesController@index')->name('parent.messages.index');
+            Route::get('messages/{teacherId}', 'MessagesController@show')->name('parent.messages.show');
+            Route::post('messages/{teacherId}', 'MessagesController@store')->name('parent.messages.store');
         });
 
         // ==================== لوحة الإعلانات (Announcements Board) ====================

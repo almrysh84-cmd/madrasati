@@ -178,6 +178,14 @@ Route::group(
         //==============================Setting============================
         Route::resource('settings', 'App\Http\Controllers\SettingController');
 
+        // ==================== إدارة أولياء الأمور (Parent Management) ====================
+        Route::group(['namespace' => 'App\Http\Controllers\Admin'], function () {
+            Route::get('admin/parents', 'ParentManagementController@index')->name('admin.parents.index');
+            Route::post('admin/parents/link-child', 'ParentManagementController@linkChild')->name('admin.parents.linkChild');
+            Route::delete('admin/parents/unlink-child/{studentId}', 'ParentManagementController@unlinkChild')->name('admin.parents.unlinkChild');
+            Route::get('admin/parents/{parentId}/children', 'ParentManagementController@getChildren')->name('admin.parents.children');
+        });
+
         //==============================Excel استيراد وتصدير============================
         Route::group(['namespace' => 'App\Http\Controllers\Excel'], function () {
             Route::get('excel', 'ExcelController@index')->name('excel.index');
