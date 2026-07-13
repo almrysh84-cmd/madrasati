@@ -32,6 +32,9 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingsTableSeeder::class);
 
         // ===== Create a default parent (needed as FK for students) =====
+        // ملاحظة: هذا ولي أمر افتراضي فقط للـ seeders. الـ migration
+        // 2026_07_16_000030_create_real_parents_for_students.php ينشئ أولياء أمور
+        // حقيقيين لكل عائلة بعد إضافة الطلاب.
         DB::table('my__parents')->delete();
         My_Parent::create([
             'email' => 'my@example.com',
