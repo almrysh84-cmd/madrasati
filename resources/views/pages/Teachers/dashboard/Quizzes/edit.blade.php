@@ -80,7 +80,7 @@
                                         <div class="form-group">
                                             <label for="Classroom_id">{{trans('Students_trans.classrooms')}} : <span class="text-danger">*</span></label>
                                             <select class="custom-select mr-sm-2" name="Classroom_id">
-                                                <option value="{{$quizz->classroom_id}}">{{$quizz->classroom->Name_Class}}</option>                                            </select>
+                                                <option value="{{$quizz->classroom_id}}">{{$quizz->classroom ? $quizz->classroom->Name_Class : "-"}}</option>                                            </select>
                                         </div>
                                     </div>
 
@@ -88,7 +88,7 @@
                                         <div class="form-group">
                                             <label for="section_id">{{trans('Students_trans.section')}} : </label>
                                             <select class="custom-select mr-sm-2" name="section_id">
-                                                <option value="{{$quizz->section_id}}">{{$quizz->section->Name_Section}}</option>
+                                                <option value="{{$quizz->section_id}}">{{$quizz->section ? $quizz->section->Name_Section : "-"}}</option>
                                             </select>
                                         </div>
                                     </div>

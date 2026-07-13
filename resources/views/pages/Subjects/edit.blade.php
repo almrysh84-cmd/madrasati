@@ -65,7 +65,7 @@
                                     <label for="inputState">الصف الدراسي</label>
                                     <select name="Class_id" class="custom-select">
                                         <option value="{{ $subject->classroom->id }}">
-                                            {{ $subject->classroom->Name_Class }}
+                                            {{ $subject->classroom ? $subject->classroom->Name_Class : "-" }}
                                         </option>
                                     </select>
                                 </div>

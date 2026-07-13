@@ -43,10 +43,10 @@
                                                 <td>{{ $loop->index+1 }}</td>
                                                 <td>{{$student->name}}</td>
                                                 <td>{{$student->email}}</td>
-                                                <td>{{$student->gender->Name}}</td>
-                                                <td>{{$student->grade->Name}}</td>
-                                                <td>{{$student->classroom->Name_Class}}</td>
-                                                <td>{{$student->section->Name_Section}}</td>
+                                                <td>{{$student->gender ? $student->gender->Name : "-"}}</td>
+                                                <td>{{$student->grade ? $student->grade->Name : "-"}}</td>
+                                                <td>{{$student->classroom ? $student->classroom->Name_Class : "-"}}</td>
+                                                <td>{{$student->section ? $student->section->Name_Section : "-"}}</td>
                                                 <td>
                                                     <div class="dropdown show">
                                                         <a class="btn btn-success btn-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

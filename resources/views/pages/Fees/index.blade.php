@@ -45,8 +45,8 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{$fee->title}}</td>
                                             <td>{{ number_format($fee->amount, 2) }}</td>
-                                            <td>{{$fee->grade->Name}}</td>
-                                            <td>{{$fee->classroom->Name_Class}}</td>
+                                            <td>{{$fee->grade ? $fee->grade->Name : "-"}}</td>
+                                            <td>{{$fee->classroom ? $fee->classroom->Name_Class : "-"}}</td>
                                             <td>{{$fee->year}}</td>
                                             <td>{{$fee->description}}</td>
                                                 <td>

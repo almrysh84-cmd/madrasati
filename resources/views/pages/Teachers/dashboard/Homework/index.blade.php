@@ -56,9 +56,9 @@
                                                     @endif
                                                 </td>
                                                 <td>{{$homework->subject->name}}</td>
-                                                <td>{{$homework->grade->Name}}</td>
-                                                <td>{{$homework->classroom->Name_Class}}</td>
-                                                <td>{{$homework->section->Name_Section}}</td>
+                                                <td>{{$homework->grade ? $homework->grade->Name : "-"}}</td>
+                                                <td>{{$homework->classroom ? $homework->classroom->Name_Class : "-"}}</td>
+                                                <td>{{$homework->section ? $homework->section->Name_Section : "-"}}</td>
                                                 <td>{{$homework->due_date}}</td>
                                                 <td>{{$homework->score}}</td>
                                                 <td>

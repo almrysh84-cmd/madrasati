@@ -67,10 +67,10 @@
                     <td>{{ $loop->index + 1 }}</td>
                     <td>{{ $student->name }}</td>
                     <td>{{ $student->email }}</td>
-                    <td>{{ $student->gender->Name }}</td>
-                    <td>{{ $student->grade->Name }}</td>
-                    <td>{{ $student->classroom->Name_Class }}</td>
-                    <td>{{ $student->section->Name_Section }}</td>
+                    <td>{{ $student->gender ? $student->gender->Name : "-" }}</td>
+                    <td>{{ $student->grade ? $student->grade->Name : "-" }}</td>
+                    <td>{{ $student->classroom ? $student->classroom->Name_Class : "-" }}</td>
+                    <td>{{ $student->section ? $student->section->Name_Section : "-" }}</td>
                     <td>
 
                         @if(isset($student->attendance()->where('attendence_date',date('Y-m-d'))->first()->student_id))

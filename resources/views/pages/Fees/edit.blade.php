@@ -67,7 +67,7 @@
                             <div class="form-group col">
                                 <label for="inputZip">الصف الدراسي</label>
                                 <select class="custom-select mr-sm-2" name="Classroom_id">
-                                    <option value="{{$fee->Classroom_id}}">{{$fee->classroom->Name_Class}}</option>
+                                    <option value="{{$fee->Classroom_id}}">{{$fee->classroom ? $fee->classroom->Name_Class : "-"}}</option>
                                 </select>
                             </div>
                             <div class="form-group col">

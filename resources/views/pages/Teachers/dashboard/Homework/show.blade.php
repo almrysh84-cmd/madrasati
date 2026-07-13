@@ -59,7 +59,7 @@
                                 </tr>
                                 <tr>
                                     <th class="alert-success">المرحلة / الصف / القسم</th>
-                                    <td>{{$homework->grade->Name}} / {{$homework->classroom->Name_Class}} / {{$homework->section->Name_Section}}</td>
+                                    <td>{{$homework->grade ? $homework->grade->Name : "-"}} / {{$homework->classroom ? $homework->classroom->Name_Class : "-"}} / {{$homework->section ? $homework->section->Name_Section : "-"}}</td>
                                 </tr>
                                 <tr>
                                     <th class="alert-success">تاريخ التسليم</th>

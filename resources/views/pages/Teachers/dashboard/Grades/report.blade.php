@@ -97,8 +97,8 @@
                                 <td>{{ $loop->index + 1 }}</td>
                                 <td>{{$grade->student->name ?? '—'}}</td>
                                 <td>{{$grade->subject->name ?? '—'}}</td>
-                                <td>{{$grade->grade->Name ?? '—'}}</td>
-                                <td>{{$grade->section->Name_Section ?? '—'}}</td>
+                                <td>{{$grade->grade ? $grade->grade->Name : "-" ?? '—'}}</td>
+                                <td>{{$grade->section ? $grade->section->Name_Section : "-" ?? '—'}}</td>
                                 <td>
                                     @if($grade->score !== null)
                                         <span class="badge badge-primary">{{$grade->score}}</span>

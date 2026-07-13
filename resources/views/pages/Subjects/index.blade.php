@@ -42,8 +42,8 @@
                                             <tr>
                                             <td>{{$loop->iteration}}</td>
                                             <td>{{$subject->name}}</td>
-                                            <td>{{$subject->grade->Name}}</td>
-                                            <td>{{$subject->classroom->Name_Class}}</td>
+                                            <td>{{$subject->grade ? $subject->grade->Name : "-"}}</td>
+                                            <td>{{$subject->classroom ? $subject->classroom->Name_Class : "-"}}</td>
                                             <td>{{$subject->teacher->name}}</td>
                                                 <td>
                                                     <a href="{{route('subjects.edit',$subject->id)}}" class="btn btn-info btn-sm" role="button" aria-pressed="true"><i class="fa fa-edit"></i></a>
