@@ -33,12 +33,15 @@ Route::group(
             Route::resource('profile-student', 'ProfileController');
 
             // ==================== واجبات الطالب (Student Homework) ====================
-            // ملاحظة: استخدمنا 'my_homework' بدلاً من 'homework' لتجنب التعارض مع
-            // Route::resource('homework', ...) في routes/teacher.php التي تحوي
-            // middleware auth:teacher وتلتقط الطلب أولاً.
             Route::get('my_homework', [\App\Http\Controllers\Students\dashboard\StudentHomeworkController::class, 'index'])->name('student.homework.index');
             Route::get('my_homework/{id}', [\App\Http\Controllers\Students\dashboard\StudentHomeworkController::class, 'show'])->name('student.homework.show');
             Route::get('student_homework_download/{filename}', [\App\Http\Controllers\Students\dashboard\StudentHomeworkController::class, 'download'])->name('student.homework.download');
+
+            // ==================== المواد الدراسية (Student Subjects) ====================
+            Route::get('student_subjects', [\App\Http\Controllers\Students\dashboard\StudentSubjectsController::class, 'index'])->name('student.subjects.index');
+            Route::get('student_subjects/{subjectId}', [\App\Http\Controllers\Students\dashboard\StudentSubjectsController::class, 'show'])->name('student.subjects.show');
+            Route::get('student_subjects/{subjectId}/messages', [\App\Http\Controllers\Students\dashboard\StudentSubjectsController::class, 'messages'])->name('student.subjects.messages');
+            Route::post('student_subjects/{subjectId}/messages', [\App\Http\Controllers\Students\dashboard\StudentSubjectsController::class, 'sendMessage'])->name('student.subjects.sendMessage');
         });
 
         // ==================== لوحة الإعلانات (Announcements Board) ====================

@@ -19,6 +19,12 @@
                     class="right-nav-text">الامتحانات</span></a>
         </li>
 
+        <!-- المواد الدراسية -->
+        <li>
+            <a href="{{ url('/en/student_subjects') }}"><i class="fas fa-book-reader"></i><span
+                    class="right-nav-text">المواد الدراسية</span></a>
+        </li>
+
         <!-- واجباتي -->
         <li>
             <a href="{{ url('/en/my_homework') }}"><i class="fas fa-tasks"></i><span
