@@ -82,6 +82,10 @@
                                         @endforeach
                                     </table>
                                 </div>
+                                {{-- Pagination links --}}
+                                <div class="d-flex justify-content-center mt-3">
+                                    {{ $subjects->links() }}
+                                </div>
                             </div>
                         </div>
                     </div>

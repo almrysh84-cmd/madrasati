@@ -23,9 +23,10 @@ class StudentRepository implements StudentRepositoryInterface
     public function Get_Student()
     {
         // P1-3 fix: eager-load relationships to avoid N+1 queries on the students index page.
+        // Use pagination (50 per page) to reduce memory + response size.
         $students = Student::with(['gender', 'grade', 'classroom', 'section', 'Nationality', 'myparent'])
             ->orderBy('id', 'desc')
-            ->get();
+            ->paginate(50);
         return view('pages.Students.index', compact('students'));
     }
 

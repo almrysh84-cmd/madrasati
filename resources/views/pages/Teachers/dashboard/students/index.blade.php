@@ -75,11 +75,13 @@
                     <td>{{ $student->classroom ? $student->classroom->Name_Class : '-' }}</td>
                     <td>{{ $student->section ? $student->section->Name_Section : '-' }}</td>
                     <td>
+                        @php
+                            // استخدام البيانات المحمَّلة مسبقاً بدلاً من استعلام لكل طالب (N+1 fix)
+                            $todayAtt = isset($todayAttendance[$student->id]) ? $todayAttendance[$student->id] : null;
+                        @endphp
                         <label class="block text-gray-500 font-semibold sm:border-r sm:pr-4">
                             <input name="attendences[{{ $student->id }}]"
-                                   @foreach($student->attendance()->where('attendence_date',date('Y-m-d'))->get() as $attendance)
-                                   {{ $attendance->attendence_status == 1 ? 'checked' : '' }}
-                                   @endforeach
+                                   {{ $todayAtt && $todayAtt->attendence_status == 1 ? 'checked' : '' }}
                                    class="leading-tight" type="radio"
                                    value="presence">
                             <span class="text-success">حضور</span>
@@ -87,9 +89,7 @@
 
                         <label class="ml-4 block text-gray-500 font-semibold">
                             <input name="attendences[{{ $student->id }}]"
-                                   @foreach($student->attendance()->where('attendence_date',date('Y-m-d'))->get() as $attendance)
-                                   {{ $attendance->attendence_status == 0 ? 'checked' : '' }}
-                                   @endforeach
+                                   {{ $todayAtt && $todayAtt->attendence_status == 0 ? 'checked' : '' }}
                                    class="leading-tight" type="radio"
                                    value="absent">
                             <span class="text-danger">غياب</span>

@@ -13,8 +13,10 @@ class SubjectRepository implements SubjectRepositoryInterface
 
     public function index()
     {
-        // Eager-load relations to avoid N+1 on subjects list
-        $subjects = Subject::with(['grade', 'classroom', 'teacher'])->get();
+        // Eager-load relations + paginate to reduce memory
+        $subjects = Subject::with(['grade', 'classroom', 'teacher'])
+            ->orderBy('id', 'desc')
+            ->paginate(50);
         return view('pages.Subjects.index', compact('subjects'));
     }
 

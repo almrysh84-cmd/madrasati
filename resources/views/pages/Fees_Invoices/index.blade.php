@@ -57,6 +57,10 @@
                                         @endforeach
                                     </table>
                                 </div>
+                                {{-- Pagination links --}}
+                                <div class="d-flex justify-content-center mt-3">
+                                    {{ $Fee_invoices->links() }}
+                                </div>
                             </div>
                         </div>
                     </div>

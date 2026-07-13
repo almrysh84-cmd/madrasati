@@ -21,9 +21,17 @@ class StudentController extends Controller
         $students = Student::with(['gender', 'grade', 'classroom', 'section'])
             ->whereIn('section_id', $ids)
             ->get();
+
         // جلب مواد المعلم
         $subjects = Subject::where('teacher_id', auth()->user()->id)->get();
-        return view('pages.Teachers.dashboard.students.index', compact('students', 'subjects'));
+
+        // جلب سجلات الحضور لليوم الحالي لكل الطلاب دفعة واحدة (تفادي N+1 في الـ view)
+        $todayAttendance = Attendance::where('attendence_date', date('Y-m-d'))
+            ->whereIn('student_id', $students->pluck('id'))
+            ->get()
+            ->keyBy('student_id');
+
+        return view('pages.Teachers.dashboard.students.index', compact('students', 'subjects', 'todayAttendance'));
     }
 
     public function sections()

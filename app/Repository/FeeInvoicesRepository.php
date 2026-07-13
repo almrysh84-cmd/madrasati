@@ -18,8 +18,10 @@ class FeeInvoicesRepository implements FeeInvoicesRepositoryInterface
 
     public function index()
     {
-        // Eager-load relations to avoid N+1 queries on 333+ invoices
-        $Fee_invoices = Fee_invoice::with(['student', 'fees', 'grade', 'classroom'])->get();
+        // Eager-load relations + paginate to reduce memory + response size
+        $Fee_invoices = Fee_invoice::with(['student', 'fees', 'grade', 'classroom'])
+            ->orderBy('id', 'desc')
+            ->paginate(50);
         $Grades = Grade::all();
         return view('pages.Fees_Invoices.index', compact('Fee_invoices', 'Grades'));
     }

@@ -18,7 +18,10 @@ class QuizzController extends Controller
 
     public function index()
     {
-        $quizzes = Quizze::where('teacher_id', auth()->user()->id)->get();
+        // Eager-load relations to avoid N+1 queries
+        $quizzes = Quizze::with(['subject', 'grade', 'classroom', 'section'])
+            ->where('teacher_id', auth()->user()->id)
+            ->get();
         return view('pages.Teachers.dashboard.Quizzes.index', compact('quizzes'));
     }
 

@@ -71,6 +71,10 @@
                                         @endforeach
                                     </table>
                                 </div>
+                                {{-- Pagination links --}}
+                                <div class="d-flex justify-content-center mt-3">
+                                    {{ $students->links() }}
+                                </div>
                             </div>
                         </div>
                     </div>
