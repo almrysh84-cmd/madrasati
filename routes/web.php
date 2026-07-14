@@ -186,6 +186,17 @@ Route::group(
             Route::get('admin/parents/{parentId}/children', 'ParentManagementController@getChildren')->name('admin.parents.children');
         });
 
+        // ==================== لوحة التحليلات المتقدمة (Analytics Dashboard) ====================
+        Route::get('/analytics', function (\App\Services\AnalyticsService $analytics) {
+            $stats = $analytics->dashboardStats();
+            $studentsByGrade = $analytics->studentsByGrade();
+            $attendanceTrend = $analytics->attendanceTrend(30);
+            $topStudents = $analytics->topStudents(10);
+            $financial = $analytics->financialReport();
+            $subjectAverages = $analytics->subjectAverages();
+            return view('pages.admin.analytics', compact('stats', 'studentsByGrade', 'attendanceTrend', 'topStudents', 'financial', 'subjectAverages'));
+        })->name('analytics.dashboard');
+
         //==============================Excel استيراد وتصدير============================
         Route::group(['namespace' => 'App\Http\Controllers\Excel'], function () {
             Route::get('excel', 'ExcelController@index')->name('excel.index');

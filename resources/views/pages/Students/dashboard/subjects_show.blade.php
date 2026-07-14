@@ -216,7 +216,7 @@
                                             </td>
                                             <td>
                                                 @if(!$myDegree)
-                                                    <a href="{{ url('/en/student_exams/' . $quiz->id) }}" class="btn btn-success btn-sm">
+                                                    <a href="{{ url('/en/take_quiz/' . $quiz->id) }}" class="btn btn-success btn-sm">
                                                         <i class="fas fa-pen"></i> أداء الاختبار
                                                     </a>
                                                 @else

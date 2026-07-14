@@ -42,6 +42,12 @@ Route::group(
             Route::get('student_subjects/{subjectId}', [\App\Http\Controllers\Students\dashboard\StudentSubjectsController::class, 'show'])->name('student.subjects.show');
             Route::get('student_subjects/{subjectId}/messages', [\App\Http\Controllers\Students\dashboard\StudentSubjectsController::class, 'messages'])->name('student.subjects.messages');
             Route::post('student_subjects/{subjectId}/messages', [\App\Http\Controllers\Students\dashboard\StudentSubjectsController::class, 'sendMessage'])->name('student.subjects.sendMessage');
+
+            // ==================== أداء الاختبار المتقدم (Quiz Taker) ====================
+            Route::get('take_quiz/{quizId}', function ($quizId) {
+                $quiz = \App\Models\Quizze::with('questions')->findOrFail($quizId);
+                return view('pages.Students.dashboard.quiz_taker_page', compact('quiz'));
+            })->name('student.take_quiz');
         });
 
         // ==================== لوحة الإعلانات (Announcements Board) ====================
