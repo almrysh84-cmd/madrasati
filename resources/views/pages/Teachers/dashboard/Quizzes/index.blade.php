@@ -55,6 +55,7 @@
                                                             data-toggle="modal"
                                                             data-target="#delete_exam{{ $quizze->id }}" title="حذف"><i
                                                             class="fa fa-trash"></i></button>
+                                                    <a href="{{ route('teacher.quiz.builder', $quizze->id) }}" class="btn btn-info btn-sm" title="محرر متقدم"><i class="fas fa-tools"></i></a>
                                                     <a href="{{route('quizzes.show',$quizze->id)}}"
                                                        class="btn btn-warning btn-sm" title="عرض الاسئلة" role="button" aria-pressed="true"><i
                                                             class="fa fa-binoculars"></i></a>

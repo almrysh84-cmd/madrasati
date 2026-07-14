@@ -87,6 +87,16 @@ Route::group(
             Route::get('teacher_messages', [\App\Http\Controllers\Teachers\dashboard\TeacherMessagesController::class, 'index'])->name('teacher.messages.index');
             Route::get('teacher_messages/{parentId}', [\App\Http\Controllers\Teachers\dashboard\TeacherMessagesController::class, 'show'])->name('teacher.messages.show');
             Route::post('teacher_messages/{parentId}', [\App\Http\Controllers\Teachers\dashboard\TeacherMessagesController::class, 'store'])->name('teacher.messages.store');
+
+            // ==================== Quiz Builder المتقدم ====================
+            Route::get('quiz_builder/{quizId}', function ($quizId) {
+                $quiz = \App\Models\Quizze::findOrFail($quizId);
+                // تحقق الملكية
+                if ($quiz->teacher_id !== auth()->user()->id) {
+                    abort(403, 'غير مصرح');
+                }
+                return view('pages.Teachers.dashboard.quiz_builder_page', compact('quiz'));
+            })->name('teacher.quiz.builder');
         });
 
         // ==================== لوحة الإعلانات (Announcements Board) ====================
