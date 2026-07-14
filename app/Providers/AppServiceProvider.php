@@ -39,6 +39,10 @@ class AppServiceProvider extends ServiceProvider
                 return new \App\Services\WhatsAppService();
             }
         );
+
+        // ===== خدمات Pro =====
+        $this->app->singleton(\App\Services\QuizService::class);
+        $this->app->singleton(\App\Services\AnalyticsService::class);
     }
 
     /**
