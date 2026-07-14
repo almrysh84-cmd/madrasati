@@ -13,11 +13,25 @@ class SubjectRepository implements SubjectRepositoryInterface
 
     public function index()
     {
-        // Eager-load relations + paginate to reduce memory
-        $subjects = Subject::with(['grade', 'classroom', 'teacher'])
-            ->orderBy('id', 'desc')
-            ->paginate(50);
-        return view('pages.Subjects.index', compact('subjects'));
+        // فلترة حسب الصف والفصل الدراسي
+        $classroom_id = request()->get('classroom_id', '');
+        $term = request()->get('term', '');
+
+        $query = Subject::with(['grade', 'classroom', 'teacher']);
+
+        if ($classroom_id) {
+            $query->where('classroom_id', $classroom_id);
+        }
+        if ($term) {
+            $query->where('term', $term);
+        }
+
+        $subjects = $query->orderBy('classroom_id')->orderBy('term')->orderBy('id')->paginate(50);
+
+        // جلب كل الصفوف للفلتر
+        $classrooms = \App\Models\Classroom::with('grade')->orderBy('Grade_id')->orderBy('id')->get();
+
+        return view('pages.Subjects.index', compact('subjects', 'classrooms', 'classroom_id', 'term'));
     }
 
     public function create()
