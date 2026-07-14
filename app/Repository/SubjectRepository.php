@@ -29,7 +29,7 @@ class SubjectRepository implements SubjectRepositoryInterface
         $subjects = $query->orderBy('classroom_id')->orderBy('term')->orderBy('id')->paginate(50);
 
         // جلب كل الصفوف للفلتر
-        $classrooms = \App\Models\Classroom::with('grade')->orderBy('Grade_id')->orderBy('id')->get();
+        $classrooms = \App\Models\Classroom::with('Grades')->orderBy('Grade_id')->orderBy('id')->get();
 
         return view('pages.Subjects.index', compact('subjects', 'classrooms', 'classroom_id', 'term'));
     }

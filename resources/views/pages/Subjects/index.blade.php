@@ -32,7 +32,7 @@
                                         @foreach($classrooms as $classroom)
                                             <option value="{{ $classroom->id }}"
                                                 @if((string)$classroom_id === (string)$classroom->id) selected @endif>
-                                                {{ $classroom->grade ? $classroom->grade->getTranslation('Name', 'ar') : '' }}
+                                                {{ $classroom->Grades ? $classroom->Grades->getTranslation('Name', 'ar') : '' }}
                                                 — {{ $classroom->getTranslation('Name_Class', 'ar') }}
                                             </option>
                                         @endforeach
