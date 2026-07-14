@@ -44,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\QuizService::class);
         $this->app->singleton(\App\Services\AnalyticsService::class);
         $this->app->singleton(\App\Services\PaymentService::class);
+        $this->app->singleton(\App\Services\ImportExportService::class);
     }
 
     /**

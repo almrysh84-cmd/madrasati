@@ -24,6 +24,9 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\QuestionBank'  => 'App\Policies\QuestionBankPolicy',
         'App\Models\PromotionLog'  => 'App\Policies\PromotionLogPolicy',
         'App\Models\Announcement'  => 'App\Policies\AnnouncementPolicy',
+        'App\Models\Quizze'        => 'App\Policies\QuizPolicy',
+        'App\Models\Payment'       => 'App\Policies\PaymentPolicy',
+        'App\Models\Student'       => 'App\Policies\StudentPolicy',
     ];
 
     /**
