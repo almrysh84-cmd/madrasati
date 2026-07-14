@@ -33,6 +33,7 @@
                                             <th>اسم المادة</th>
                                             <th>المرحلة الدراسية</th>
                                             <th>الصف الدراسي</th>
+                                            <th>الفصل</th>
                                             <th>اسم المعلم</th>
                                             <th>العمليات</th>
                                         </tr>
@@ -44,7 +45,14 @@
                                             <td>{{$subject->name}}</td>
                                             <td>{{$subject->grade ? $subject->grade->Name : "-"}}</td>
                                             <td>{{$subject->classroom ? $subject->classroom->Name_Class : "-"}}</td>
-                                            <td>{{$subject->teacher->name}}</td>
+                                            <td>
+                                                @if($subject->term == 1)
+                                                    <span class="badge badge-primary">الفصل الأول</span>
+                                                @else
+                                                    <span class="badge badge-success">الفصل الثاني</span>
+                                                @endif
+                                            </td>
+                                            <td>{{$subject->teacher ? $subject->teacher->name : "-"}}</td>
                                                 <td>
                                                     <a href="{{route('subjects.edit',$subject->id)}}" class="btn btn-info btn-sm" role="button" aria-pressed="true"><i class="fa fa-edit"></i></a>
                                                     <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#delete_subject{{ $subject->id }}" title="حذف"><i class="fa fa-trash"></i></button>

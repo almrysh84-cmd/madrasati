@@ -13,7 +13,7 @@ class Subject extends Model
 
     public $translatable = ['name'];
 
-    protected $fillable = ['name', 'grade_id', 'classroom_id', 'teacher_id'];
+    protected $fillable = ['name', 'grade_id', 'classroom_id', 'term', 'teacher_id'];
 
 
     // جلب اسم المراحل الدراسية

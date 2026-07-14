@@ -20,22 +20,53 @@
                 <div class="card-body">
                     <h4 class="mb-4" style="font-family: 'Cairo', sans-serif">
                         <i class="fas fa-book-open text-primary"></i>
-                        المواد الدراسية ({{ $subjects->count() }})
+                        المواد الدراسية
                     </h4>
+
+                    {{-- ===== زرا الترم الأول والثاني ===== --}}
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <a href="{{ url('/en/student_subjects?term=1') }}"
+                               class="btn btn-lg btn-{{ $term == 1 ? 'primary' : 'outline-primary' }} w-100 py-3"
+                               style="font-family: 'Cairo', sans-serif; font-size: 18px;">
+                                <i class="fas fa-calendar-alt"></i>
+                                الفصل الدراسي الأول
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url('/en/student_subjects?term=2') }}"
+                               class="btn btn-lg btn-{{ $term == 2 ? 'success' : 'outline-success' }} w-100 py-3"
+                               style="font-family: 'Cairo', sans-serif; font-size: 18px;">
+                                <i class="fas fa-calendar-check"></i>
+                                الفصل الدراسي الثاني
+                            </a>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h5 class="mb-3" style="font-family: 'Cairo', sans-serif">
+                        @if($term == 1)
+                            <i class="fas fa-calendar-alt text-primary"></i>
+                            مواد الفصل الدراسي الأول ({{ $subjects->count() }})
+                        @else
+                            <i class="fas fa-calendar-check text-success"></i>
+                            مواد الفصل الدراسي الثاني ({{ $subjects->count() }})
+                        @endif
+                    </h5>
 
                     @if($subjects->isEmpty())
                         <div class="alert alert-info text-center" style="font-family: 'Cairo', sans-serif">
                             <i class="fas fa-info-circle fa-2x mb-2"></i>
-                            <h5>لا توجد مواد مسجلة لصفك حالياً</h5>
-                            <p>يرجى التواصل مع إدارة المدرسة.</p>
+                            <h5>لا توجد مواد مسجلة لهذا الفصل</h5>
                         </div>
                     @else
                         <div class="row">
                             @foreach($subjects as $subject)
                                 <div class="col-md-6 col-xl-4 mb-4">
                                     <a href="{{ url('/en/student_subjects/' . $subject->id) }}" class="text-decoration-none">
-                                        <div class="card shadow-sm h-100 border-primary" style="cursor: pointer; transition: transform 0.2s;">
-                                            <div class="card-header bg-primary text-white">
+                                        <div class="card shadow-sm h-100 border-{{ $term == 1 ? 'primary' : 'success' }}" style="cursor: pointer; transition: transform 0.2s;">
+                                            <div class="card-header bg-{{ $term == 1 ? 'primary' : 'success' }} text-white">
                                                 <h5 class="mb-0" style="font-family: 'Cairo', sans-serif">
                                                     <i class="fas fa-book"></i>
                                                     {{ $subject->getTranslation('name', 'ar') }}
@@ -76,7 +107,7 @@
                                                 </div>
                                             </div>
                                             <div class="card-footer bg-light text-center">
-                                                <span class="text-primary">
+                                                <span class="text-{{ $term == 1 ? 'primary' : 'success' }}">
                                                     <i class="fas fa-arrow-left"></i>
                                                     عرض التفاصيل
                                                 </span>
