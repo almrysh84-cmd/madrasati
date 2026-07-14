@@ -27,6 +27,25 @@ class Quizze extends Model
     }
     public $translatable = ['name'];
 
+    protected $fillable = [
+        'name', 'subject_id', 'grade_id', 'classroom_id', 'section_id',
+        'teacher_id', 'duration_minutes', 'passing_score', 'max_attempts',
+        'shuffle_questions', 'shuffle_options', 'show_results_immediately',
+        'anti_cheat', 'available_from', 'available_to', 'term',
+    ];
+
+    protected $casts = [
+        'duration_minutes'         => 'integer',
+        'passing_score'            => 'decimal:2',
+        'max_attempts'             => 'integer',
+        'shuffle_questions'        => 'boolean',
+        'shuffle_options'          => 'boolean',
+        'show_results_immediately' => 'boolean',
+        'anti_cheat'               => 'boolean',
+        'available_from'           => 'datetime',
+        'available_to'             => 'datetime',
+    ];
+
     public function teacher()
     {
         return $this->belongsTo('App\Models\Teacher', 'teacher_id');
@@ -60,5 +79,10 @@ class Quizze extends Model
     public function degree()
     {
         return $this->hasMany('App\Models\Degree');
+    }
+
+    public function questions()
+    {
+        return $this->hasMany('App\Models\Question');
     }
 }
