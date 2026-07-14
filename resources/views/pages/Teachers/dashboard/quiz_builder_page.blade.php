@@ -31,7 +31,7 @@
                 </div>
             </div>
 
-            <livewire:quiz-builder :quizId="{{ $quiz->id }}" />
+            @livewire('quiz-builder', ['quizId' => $quiz->id])
         </div>
     </div>
 @endsection
