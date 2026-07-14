@@ -43,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
         // ===== خدمات Pro =====
         $this->app->singleton(\App\Services\QuizService::class);
         $this->app->singleton(\App\Services\AnalyticsService::class);
+        $this->app->singleton(\App\Services\PaymentService::class);
     }
 
     /**
