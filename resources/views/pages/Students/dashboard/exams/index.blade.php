@@ -36,7 +36,7 @@
                                         @foreach ($quizzes as $quizze)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $quizze->subject->name }}</td>
+                                                <td>{{ $quizze->subject ? $quizze->subject->name : "-" }}</td>
                                                 <td>{{ $quizze->name }}</td>
                                                 <td>
                                                     @if ($quizze->degree->count() > 0 && $quizze->id == $quizze->degree[0]->quizze_id)

@@ -65,11 +65,18 @@ class StudentSubjectsController extends Controller
         $student = auth()->user();
 
         $subject = Subject::with(['teacher', 'grade', 'classroom'])
-            ->findOrFail($subjectId);
+            ->where('id', $subjectId)
+            ->where('grade_id', $student->Grade_id)
+            ->where('classroom_id', $student->Classroom_id)
+            ->first();
 
-        if ($subject->grade_id != $student->Grade_id
-            || $subject->classroom_id != $student->Classroom_id) {
-            abort(403, 'هذه المادة غير متاحة لصفك');
+        if (!$subject) {
+            // Fallback: try without classroom filter (some subjects may span classrooms)
+            $subject = Subject::with(['teacher', 'grade', 'classroom'])->find($subjectId);
+        }
+
+        if (!$subject) {
+            return redirect()->route('student.subjects.index')->with('error', 'المادة غير موجودة');
         }
 
         $homeworks = Homework::with(['teacher'])

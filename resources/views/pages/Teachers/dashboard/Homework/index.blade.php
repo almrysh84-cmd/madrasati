@@ -55,7 +55,7 @@
                                                         <span class="badge badge-warning">أسئلة</span>
                                                     @endif
                                                 </td>
-                                                <td>{{$homework->subject->name}}</td>
+                                                <td>{{$homework->subject ? $homework->subject->name : "-"}}</td>
                                                 <td>{{$homework->grade ? $homework->grade->Name : "-"}}</td>
                                                 <td>{{$homework->classroom ? $homework->classroom->Name_Class : "-"}}</td>
                                                 <td>{{$homework->section ? $homework->section->Name_Section : "-"}}</td>
