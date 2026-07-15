@@ -140,9 +140,7 @@ header start-->
         <li class="nav-item dropdown mr-30">
             <a class="nav-link nav-pill user-avatar" data-toggle="dropdown" href="#" role="button"
                 aria-haspopup="true" aria-expanded="false">
-                <img src="{{ URL::asset('assets/images/user_icon.jpg') }}" alt="avatar">
-
-
+                <i class="fas fa-user-circle" style="font-size: 28px; color: #6c758d;"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-right">
                 <div class="dropdown-header">

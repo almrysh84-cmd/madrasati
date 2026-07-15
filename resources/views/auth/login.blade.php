@@ -45,13 +45,12 @@ login-->
                     <div class="col-lg-4 col-md-6 login-fancy-bg bg"
                         style="background-image: url('{{ asset('assets/images/login-inner-bg.jpg') }}');">
                         <div class="login-fancy">
-                            <h2 class="text-white mb-20">Hello world!</h2>
-                            <p class="mb-20 text-white">Create tailor-cut websites with the exclusive multi-purpose
-                                responsive template along with powerful features.</p>
+                            <h2 class="text-white mb-20" style="font-family: 'Cairo', sans-serif;">برنامج مورا سوفت المدرسي الشامل</h2>
+                            <p class="mb-20 text-white" style="font-family: 'Cairo', sans-serif;">نظام متكامل لإدارة المدارس — الطلاب، المعلمون، الحضور، الدرجات، الرسوم، الاختبارات الإلكترونية، الواجبات، الإعلانات، التواصل بين المعلمين وأولياء الأمور، والتقارير الشاملة.</p>
                             <ul class="list-unstyled  pos-bot pb-30">
-                                <li class="list-inline-item"><a class="text-white" href="#"> Terms of Use</a>
+                                <li class="list-inline-item"><a class="text-white" href="#">شروط الاستخدام</a>
                                 </li>
-                                <li class="list-inline-item"><a class="text-white" href="#"> Privacy Policy</a>
+                                <li class="list-inline-item"><a class="text-white" href="#">سياسة الخصوصية</a>
                                 </li>
                             </ul>
                         </div>
