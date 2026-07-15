@@ -183,17 +183,17 @@
                 <i class="fas fa-chevron-left arrow"></i>
             </a>
             <a href="{{ route('login.show', 'teacher') }}" class="role-card card-teacher">
-                <div class="icon-box"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="icon-box"><i class="fas fa-chalkboard"></i></div>
                 <div class="text-box"><h3>معلم</h3><p>الحضور، الواجبات، الاختبارات الإلكترونية</p></div>
                 <i class="fas fa-chevron-left arrow"></i>
             </a>
             <a href="{{ route('login.show', 'parent') }}" class="role-card card-parent">
-                <div class="icon-box"><i class="fas fa-user-tie"></i></div>
+                <div class="icon-box"><i class="fas fa-home"></i></div>
                 <div class="text-box"><h3>ولي أمر</h3><p>متابعة الأبناء، الرسوم، التواصل مع المعلمين</p></div>
                 <i class="fas fa-chevron-left arrow"></i>
             </a>
             <a href="{{ route('login.show', 'admin') }}" class="role-card card-admin">
-                <div class="icon-box"><i class="fas fa-user-shield"></i></div>
+                <div class="icon-box"><i class="fas fa-cog"></i></div>
                 <div class="text-box"><h3>الإدارة</h3><p>لوحة تحكم المدير، التحليلات، التقارير</p></div>
                 <i class="fas fa-chevron-left arrow"></i>
             </a>
