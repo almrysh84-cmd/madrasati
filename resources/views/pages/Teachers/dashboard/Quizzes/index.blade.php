@@ -31,6 +31,7 @@
                                         <tr>
                                             <th>#</th>
                                             <th>اسم الاختبار</th>
+                                            <th>النوع</th>
                                             <th>اسم المعلم</th>
                                             <th>المرحلة الدراسية</th>
                                             <th>الصف الدراسي</th>
@@ -43,7 +44,18 @@
                                             <tr>
                                                 <td>{{ $loop->iteration}}</td>
                                                 <td>{{$quizze->name}}</td>
-                                                <td>{{$quizze->teacher->name}}</td>
+                                                <td>
+                                                    @if($quizze->exam_type == 'monthly')
+                                                        <span class="badge badge-primary">شهري</span>
+                                                    @elseif($quizze->exam_type == 'compensatory')
+                                                        <span class="badge badge-warning">تعويضي</span>
+                                                    @elseif($quizze->exam_type == 'activities')
+                                                        <span class="badge badge-info">أنشطة</span>
+                                                    @else
+                                                        <span class="badge badge-secondary">عام</span>
+                                                    @endif
+                                                </td>
+                                                <td>{{$quizze->teacher ? $quizze->teacher->name : "-"}}</td>
                                                 <td>{{$quizze->grade ? $quizze->grade->Name : "-"}}</td>
                                                 <td>{{$quizze->classroom ? $quizze->classroom->Name_Class : "-"}}</td>
                                                 <td>{{$quizze->section ? $quizze->section->Name_Section : "-"}}</td>

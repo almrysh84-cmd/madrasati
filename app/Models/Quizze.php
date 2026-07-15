@@ -29,7 +29,7 @@ class Quizze extends Model
 
     protected $fillable = [
         'name', 'subject_id', 'grade_id', 'classroom_id', 'section_id',
-        'teacher_id', 'duration_minutes', 'passing_score', 'max_attempts',
+        'teacher_id', 'exam_type', 'duration_minutes', 'passing_score', 'max_attempts',
         'shuffle_questions', 'shuffle_options', 'show_results_immediately',
         'anti_cheat', 'available_from', 'available_to', 'term',
     ];

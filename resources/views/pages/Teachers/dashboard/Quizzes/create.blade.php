@@ -60,6 +60,17 @@
                                         </div>
                                     </div>
 
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label for="exam_type">نوع الاختبار : <span class="text-danger">*</span></label>
+                                            <select class="custom-select mr-sm-2" name="exam_type" required>
+                                                <option value="monthly" selected>اختبار شهري</option>
+                                                <option value="compensatory">اختبار تعويضي</option>
+                                                <option value="activities">أنشطة / تقويم</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
                                 </div>
 
                                 <div class="form-row">
