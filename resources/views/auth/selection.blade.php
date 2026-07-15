@@ -5,189 +5,300 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <title>برنامج مورا سوفت لادارة المدارس</title>
+    <title>برنامج مورا سوفت المدرسي الشامل</title>
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon" />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+
         body {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #1a237e 0%, #283593 40%, #3949ab 70%, #5c6bc0 100%);
             position: relative;
             overflow: hidden;
+            background: #0f172a;
         }
-        /* Decorative shapes */
-        .shape { position: absolute; border-radius: 50%; opacity: 0.08; background: #fff; }
-        .shape-1 { width: 400px; height: 400px; top: -100px; right: -100px; }
-        .shape-2 { width: 300px; height: 300px; bottom: -80px; left: -80px; }
-        .shape-3 { width: 200px; height: 200px; top: 40%; left: 10%; }
-        .shape-4 { width: 150px; height: 150px; bottom: 20%; right: 15%; }
 
+        /* ===== الخلفية المدرسية ===== */
+        .bg-layer {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+        }
+        .bg-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 25%, #2563eb 50%, #1e40af 75%, #1e3a8a 100%);
+        }
+        /* أشكال هندسية عائمة */
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            backdrop-filter: blur(20px);
+        }
+        .fs-1 { width: 500px; height: 500px; top: -150px; right: -150px; background: rgba(59,130,246,0.12); }
+        .fs-2 { width: 400px; height: 400px; bottom: -100px; left: -100px; background: rgba(139,92,246,0.10); }
+        .fs-3 { width: 200px; height: 200px; top: 50%; left: 5%; background: rgba(34,197,94,0.08); }
+        .fs-4 { width: 150px; height: 150px; bottom: 30%; right: 10%; background: rgba(251,191,36,0.08); }
+
+        /* نمط شبكي خفيف */
+        .bg-pattern {
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59,130,246,0.06) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139,92,246,0.06) 0%, transparent 50%);
+        }
+
+        /* ===== المحتوى ===== */
         .container-box {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 920px;
-            padding: 20px;
+            max-width: 480px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .header h1 {
-            color: #fff;
-            font-size: 32px;
-            font-weight: 900;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        .header p {
-            color: rgba(255,255,255,0.85);
-            font-size: 16px;
-        }
-        .header .logo-icon {
-            width: 80px;
-            height: 80px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 50%;
-            display: inline-flex;
+
+        /* الشعار */
+        .logo {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+            border-radius: 28px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.3);
+            margin-bottom: 20px;
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255,255,255,0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            animation: floatLogo 4s ease-in-out infinite;
         }
-        .header .logo-icon i { font-size: 36px; color: #fff; }
+        .logo i { font-size: 42px; color: #fff; }
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
 
+        .header { text-align: center; margin-bottom: 35px; }
+        .header h1 {
+            color: #fff;
+            font-size: 26px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+            line-height: 1.3;
+        }
+        .header p {
+            color: rgba(255,255,255,0.75);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ===== البطاقات العمودية ===== */
         .cards-wrapper {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
-        @media (max-width: 768px) {
-            .cards-wrapper { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 480px) {
-            .cards-wrapper { grid-template-columns: 1fr; }
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
         }
 
         .role-card {
-            background: rgba(255,255,255,0.95);
-            border-radius: 20px;
-            padding: 30px 20px;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            padding: 18px 22px;
+            border-radius: 18px;
             text-decoration: none;
-            color: #333;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             position: relative;
             overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
         }
         .role-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 5px;
-            transition: height 0.3s;
+            right: 0; top: 0; bottom: 0;
+            width: 5px;
+            transition: width 0.3s;
         }
         .role-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transform: translateX(-8px);
+            background: rgba(255,255,255,0.12);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        .role-card:hover::before { height: 100%; opacity: 0.03; }
+        .role-card:hover::before { width: 8px; }
 
-        .role-card .icon-circle {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: inline-flex;
+        .role-card .icon-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 18px;
+            margin-left: 16px;
+            flex-shrink: 0;
             transition: transform 0.3s;
         }
-        .role-card:hover .icon-circle { transform: scale(1.1); }
-        .role-card .icon-circle i { font-size: 32px; color: #fff; }
+        .role-card:hover .icon-box { transform: scale(1.1) rotate(-5deg); }
+        .role-card .icon-box i { font-size: 24px; color: #fff; }
 
-        .role-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-        .role-card p { font-size: 13px; color: #666; }
-
-        /* Card colors */
-        .card-admin .icon-circle { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .card-admin::before { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .card-teacher .icon-circle { background: linear-gradient(135deg, #27ae60, #229954); }
-        .card-teacher::before { background: linear-gradient(135deg, #27ae60, #229954); }
-        .card-student .icon-circle { background: linear-gradient(135deg, #3498db, #2980b9); }
-        .card-student::before { background: linear-gradient(135deg, #3498db, #2980b9); }
-        .card-parent .icon-circle { background: linear-gradient(135deg, #f39c12, #e67e22); }
-        .card-parent::before { background: linear-gradient(135deg, #f39c12, #e67e22); }
-
-        .footer {
-            text-align: center;
-            margin-top: 35px;
+        .role-card .text-box { flex: 1; }
+        .role-card .text-box h3 {
+            color: #fff;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+        .role-card .text-box p {
             color: rgba(255,255,255,0.6);
             font-size: 13px;
         }
-        .footer a { color: rgba(255,255,255,0.8); text-decoration: none; margin: 0 10px; }
-        .footer a:hover { color: #fff; }
+        .role-card .arrow {
+            color: rgba(255,255,255,0.4);
+            font-size: 18px;
+            transition: transform 0.3s, color 0.3s;
+        }
+        .role-card:hover .arrow {
+            color: #fff;
+            transform: translateX(-6px);
+        }
 
-        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        .header .logo-icon { animation: float 3s ease-in-out infinite; }
+        /* ألوان البطاقات */
+        .card-student .icon-box { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .card-student::before { background: linear-gradient(180deg, #3b82f6, #1d4ed8); }
+        .card-teacher .icon-box { background: linear-gradient(135deg, #22c55e, #15803d); }
+        .card-teacher::before { background: linear-gradient(180deg, #22c55e, #15803d); }
+        .card-parent .icon-box { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .card-parent::before { background: linear-gradient(180deg, #f59e0b, #d97706); }
+        .card-admin .icon-box { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+        .card-admin::before { background: linear-gradient(180deg, #ef4444, #b91c1c); }
+
+        /* التذييل */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+        }
+        .footer-links { margin-top: 8px; }
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            margin: 0 8px;
+            font-size: 12px;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover { color: #fff; }
+
+        /* ===== التجاوب ===== */
+        @media (max-width: 480px) {
+            .container-box { padding: 20px 15px; }
+            .logo { width: 75px; height: 75px; border-radius: 22px; }
+            .logo i { font-size: 34px; }
+            .header h1 { font-size: 22px; }
+            .header p { font-size: 13px; }
+            .role-card { padding: 15px 18px; }
+            .role-card .icon-box { width: 48px; height: 48px; border-radius: 14px; }
+            .role-card .icon-box i { font-size: 20px; }
+            .role-card .text-box h3 { font-size: 15px; }
+            .role-card .text-box p { font-size: 12px; }
+        }
+
+        @media (min-height: 800px) {
+            .container-box { max-width: 500px; }
+            .cards-wrapper { gap: 16px; }
+            .role-card { padding: 22px 26px; }
+        }
+
+        /* منع التحديد */
+        .role-card { -webkit-user-select: none; user-select: none; }
     </style>
 </head>
 
 <body>
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
-    <div class="shape shape-4"></div>
+    <!-- الخلفية -->
+    <div class="bg-layer">
+        <div class="bg-gradient"></div>
+        <div class="bg-pattern"></div>
+        <div class="floating-shape fs-1"></div>
+        <div class="floating-shape fs-2"></div>
+        <div class="floating-shape fs-3"></div>
+        <div class="floating-shape fs-4"></div>
+    </div>
 
+    <!-- المحتوى -->
     <div class="container-box">
+        <!-- الشعار -->
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+
+        <!-- العنوان -->
         <div class="header">
-            <div class="logo-icon">
-                <i class="fas fa-graduation-cap"></i>
-            </div>
             <h1>برنامج مورا سوفت المدرسي الشامل</h1>
             <p>نظام متكامل لإدارة المدارس — اختر طريقة الدخول</p>
         </div>
 
+        <!-- البطاقات العمودية -->
         <div class="cards-wrapper">
-            <a href="{{ route('login.show', 'admin') }}" class="role-card card-admin">
-                <div class="icon-circle"><i class="fas fa-user-shield"></i></div>
-                <h3>الإدارة</h3>
-                <p>لوحة تحكم المدير</p>
-            </a>
-
-            <a href="{{ route('login.show', 'teacher') }}" class="role-card card-teacher">
-                <div class="icon-circle"><i class="fas fa-chalkboard-teacher"></i></div>
-                <h3>معلم</h3>
-                <p>الحضور، الواجبات، الاختبارات</p>
-            </a>
-
+            <!-- 1. طالب -->
             <a href="{{ route('login.show', 'student') }}" class="role-card card-student">
-                <div class="icon-circle"><i class="fas fa-user-graduate"></i></div>
-                <h3>طالب</h3>
-                <p>الدرجات، الواجبات، المواد</p>
+                <div class="icon-box"><i class="fas fa-user-graduate"></i></div>
+                <div class="text-box">
+                    <h3>طالب</h3>
+                    <p>الدرجات، الواجبات، المواد الدراسية</p>
+                </div>
+                <i class="fas fa-chevron-left arrow"></i>
             </a>
 
+            <!-- 2. معلم -->
+            <a href="{{ route('login.show', 'teacher') }}" class="role-card card-teacher">
+                <div class="icon-box"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="text-box">
+                    <h3>معلم</h3>
+                    <p>الحضور، الواجبات، الاختبارات الإلكترونية</p>
+                </div>
+                <i class="fas fa-chevron-left arrow"></i>
+            </a>
+
+            <!-- 3. ولي أمر -->
             <a href="{{ route('login.show', 'parent') }}" class="role-card card-parent">
-                <div class="icon-circle"><i class="fas fa-user-tie"></i></div>
-                <h3>ولي أمر</h3>
-                <p>متابعة الأبناء والرسوم</p>
+                <div class="icon-box"><i class="fas fa-user-tie"></i></div>
+                <div class="text-box">
+                    <h3>ولي أمر</h3>
+                    <p>متابعة الأبناء، الرسوم، التواصل مع المعلمين</p>
+                </div>
+                <i class="fas fa-chevron-left arrow"></i>
+            </a>
+
+            <!-- 4. إدارة -->
+            <a href="{{ route('login.show', 'admin') }}" class="role-card card-admin">
+                <div class="icon-box"><i class="fas fa-user-shield"></i></div>
+                <div class="text-box">
+                    <h3>الإدارة</h3>
+                    <p>لوحة تحكم المدير، التحليلات، التقارير</p>
+                </div>
+                <i class="fas fa-chevron-left arrow"></i>
             </a>
         </div>
 
+        <!-- التذييل -->
         <div class="footer">
             <p>&copy; 2024 برنامج مورا سوفت المدرسي الشامل</p>
-            <p>
+            <div class="footer-links">
                 <a href="#">شروط الاستخدام</a> •
                 <a href="#">سياسة الخصوصية</a> •
                 <a href="#">الدعم الفني</a>
-            </p>
+            </div>
         </div>
     </div>
 </body>
