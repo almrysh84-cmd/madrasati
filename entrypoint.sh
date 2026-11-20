@@ -109,6 +109,16 @@ fi
 if [ "$APP_ENV" = "production" ]; then
     echo "Running database migrations (production mode — additive only)..."
     php artisan migrate --force
+    # Auto-seed a fresh/empty database (e.g. a brand-new Postgres instance) without
+    # destroying existing data. Safe on every deploy: only seeds when the users table
+    # is empty. Subsequent deploys skip seeding and preserve all data.
+    USER_COUNT=$(php artisan tinker --execute="echo App\Models\User::count();" 2>/dev/null | tr -d '[:space:]')
+    if [ "$USER_COUNT" = "0" ]; then
+        echo "Database is empty — running initial seeder..."
+        php artisan db:seed --force
+    else
+        echo "Database has $USER_COUNT users — skipping seed (data preserved)."
+    fi
 else
     echo "Running database migrations (non-production mode — fresh + seed)..."
     php artisan migrate:fresh --force
