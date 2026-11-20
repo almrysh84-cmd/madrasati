@@ -27,6 +27,23 @@ if [ -n "$RAILWAY_PUBLIC_DOMAIN" ]; then
     sed -i "s|APP_URL=.*|APP_URL=https://$RAILWAY_PUBLIC_DOMAIN|" /var/www/html/.env
 fi
 
+# ===== Render-specific env var mapping =====
+# Render injects RENDER_EXTERNAL_URL (e.g. https://madrasati.onrender.com)
+# and does NOT auto-inject MYSQLHOST/MYSQLPORT like Railway.
+# DB_* must be provided as Render env vars directly.
+if [ -n "$RENDER_EXTERNAL_URL" ]; then
+    sed -i "s|APP_URL=.*|APP_URL=$RENDER_EXTERNAL_URL|" /var/www/html/.env
+    echo "Render APP_URL configured: $RENDER_EXTERNAL_URL"
+fi
+
+# APP_KEY: prefer the persistent env var (set in Render dashboard) so sessions
+# survive redeploys. Only generate one if neither env var nor .env provides it.
+if [ -n "$APP_KEY" ]; then
+    sed -i "s|APP_KEY=.*|APP_KEY=$APP_KEY|" /var/www/html/.env
+elif ! grep -q "APP_KEY=base64:" /var/www/html/.env; then
+    php artisan key:generate --force
+fi
+
 # ===== CRITICAL: Map Railway env vars to .env file =====
 # Railway injects env vars at runtime, but Laravel's config:cache reads from .env.
 # If we don't sync them, config:cache will use the .env.example defaults (which may
@@ -139,5 +156,16 @@ echo "---"
 echo "Checking apache2.conf for MPM LoadModule:"
 grep -n "mpm" /etc/apache2/apache2.conf 2>/dev/null || echo "No mpm in apache2.conf"
 
-echo "Starting Apache on port 8080..."
+# ===== Dynamic port (Render injects $PORT, default 10000; Railway uses 8080) =====
+RENDER_PORT="${PORT:-8080}"
+if [ -n "$PORT" ]; then
+    sed -i "s/^Listen .*/Listen $RENDER_PORT/" /etc/apache2/ports.conf
+    # Update the default vhost VirtualHost directive to match
+    if [ -f /etc/apache2/sites-enabled/000-default.conf ]; then
+        sed -i "s|<VirtualHost \*:[0-9]*>|<VirtualHost *:$RENDER_PORT>|" /etc/apache2/sites-enabled/000-default.conf
+    fi
+    echo "Apache reconfigured to listen on Render port $RENDER_PORT"
+fi
+
+echo "Starting Apache on port ${RENDER_PORT}..."
 exec apache2-foreground

@@ -1,0 +1,78 @@
+# Render Blueprint — madrasati (نظام إدارة المدارس)
+# https://render.com/docs/blueprint-spec
+#
+# طريقة النشر:
+#   1. في لوحة Render: New → Blueprint
+#   2. الصق رابط المستودع: https://github.com/almrysh84-cmd/madrasati
+#   3. Render سيقرأ هذا الملف ويعرض المتغيرات التي تحتاج تعبئة (sync: false)
+#   4. عبّئ APP_KEY و DB_* ثم اضغط Apply
+#
+# ملاحظات:
+#   - الخطة المجانية (free) تدور_DOWN بعد 15 دقيقة من الخمول وتستيقظ خلال ~50 ثانية.
+#   - الخطة المجانية لا تدعم الأقراص الدائمة (persistent disks)، لذا مجلد storage/
+#     مؤقت ويُعاد إنشاؤه عند كل نشر. للملفات الدائمة ارقِ للخطة Starter وأضف disk.
+#   - قاعدة البيانات: استخدم Render MySQL (مدفوع) أو أي MySQL خارجي (Railway، Aiven، TiDB).
+
+services:
+  - type: web
+    name: madrasati
+    runtime: docker
+    region: frankfurt
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    port: 8080
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      # ----- إعدادات التطبيق -----
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_NAME
+        value: "مدرستي"
+      - key: APP_KEY
+        sync: false   # مطلوب: php artisan key:generate --show  ثم الصق الناتج (base64:...)
+      - key: APP_LOCALE
+        value: ar
+      - key: APP_FALLBACK_LOCALE
+        value: ar
+
+      # ----- الجلسات والأمان -----
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_LIFETIME
+        value: "120"
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: SESSION_DOMAIN
+        sync: false   # اختياري: نطاقك بعد إنشاء الخدمة (مثل madrasati.onrender.com)
+
+      # ----- الكاش والطابور والبث -----
+      - key: CACHE_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: BROADCAST_DRIVER
+        value: log
+      - key: FILESYSTEM_DISK
+        value: local
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: error
+
+      # ----- قاعدة البيانات (MySQL) — مطلوب تعبئتها -----
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        sync: false   # مطلوب: عنوان خادم MySQL
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_DATABASE
+        sync: false   # مطلوب: اسم قاعدة البيانات
+      - key: DB_USERNAME
+        sync: false   # مطلوب: اسم المستخدم
+      - key: DB_PASSWORD
+        sync: false   # مطلوب: كلمة المرور
