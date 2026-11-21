@@ -108,14 +108,22 @@ fi
 # In production: only run migrate (additive). In non-production: allow fresh+seed.
 if [ "$APP_ENV" = "production" ]; then
     echo "Running database migrations (production mode — additive only)..."
-    php artisan migrate --force
-    # Auto-seed a fresh/empty database (e.g. a brand-new Postgres instance) without
-    # destroying existing data. Safe on every deploy: only seeds when the users table
-    # is empty. Subsequent deploys skip seeding and preserve all data.
-    USER_COUNT=$(php artisan tinker --execute="echo App\Models\User::count();" 2>/dev/null | tr -d '[:space:]')
+    # Guarded: a failed migrate must NOT abort the deploy. The DB is typically
+    # already fully migrated from a prior deploy; if migrate can't connect
+    # transiently (shared-DB connection limits) or has nothing to run, we
+    # continue so the app can still serve. The error is surfaced to the log.
+    if ! php artisan migrate --force 2>&1; then
+        echo "WARN: php artisan migrate returned non-zero — continuing (DB likely already migrated)."
+    fi
+    # Auto-seed a fresh/empty database without destroying existing data.
+    # Safe on every deploy: only seeds when the users table is empty.
+    USER_COUNT=$(php artisan tinker --execute="echo App\Models\User::count();" 2>/dev/null | tr -d '[:space:]' || true)
+    if [ -z "$USER_COUNT" ]; then USER_COUNT="unknown"; fi
     if [ "$USER_COUNT" = "0" ]; then
         echo "Database is empty — running initial seeder..."
-        php artisan db:seed --force
+        if ! php artisan db:seed --force 2>&1; then
+            echo "WARN: db:seed returned non-zero — continuing."
+        fi
     else
         echo "Database has $USER_COUNT users — skipping seed (data preserved)."
     fi

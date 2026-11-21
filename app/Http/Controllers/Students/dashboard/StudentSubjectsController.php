@@ -23,7 +23,7 @@ class StudentSubjectsController extends Controller
         $student = auth()->user();
         $term = $request->get('term', 1); // افتراضي: الترم الأول
 
-        // جلب المواد المرتبطة بصف الطالب + الترم المحدد
+        // جلب المواد المرتبطة بصف الطالب + الترم المحدد (eager-load العلاقات)
         $subjects = Subject::with(['teacher', 'grade', 'classroom'])
             ->where('grade_id', $student->Grade_id)
             ->where('classroom_id', $student->Classroom_id)
@@ -31,27 +31,38 @@ class StudentSubjectsController extends Controller
             ->orderBy('id')
             ->get();
 
-        // إضافة إحصائيات لكل مادة
+        // إحصائيات مجمّعة (3 استعلامات إجمالية بدلاً من 3 لكل مادة — يُلغي N+1)
+        $subjectIds = $subjects->pluck('id');
+
+        $homeworkCounts = Homework::whereIn('subject_id', $subjectIds)
+            ->where('grade_id', $student->Grade_id)
+            ->where('classroom_id', $student->Classroom_id)
+            ->where('section_id', $student->section_id)
+            ->selectRaw('subject_id, COUNT(*) as cnt')
+            ->groupBy('subject_id')
+            ->pluck('cnt', 'subject_id');
+
+        $quizCounts = Quizze::whereIn('subject_id', $subjectIds)
+            ->where('grade_id', $student->Grade_id)
+            ->where('classroom_id', $student->Classroom_id)
+            ->where('section_id', $student->section_id)
+            ->selectRaw('subject_id, COUNT(*) as cnt')
+            ->groupBy('subject_id')
+            ->pluck('cnt', 'subject_id');
+
+        // درجات الطالب مع تحميل علاقة الاختبار مرة واحدة (eager-load)
+        $degrees = Degree::with('quizze')
+            ->where('student_id', $student->id)
+            ->whereHas('quizze', fn($q) => $q->whereIn('subject_id', $subjectIds))
+            ->get();
+        $degreesBySubject = $degrees->groupBy(fn($d) => $d->quizze->subject_id ?? null);
+
         foreach ($subjects as $subject) {
-            $subject->homeworks_count = Homework::where('subject_id', $subject->id)
-                ->where('grade_id', $student->Grade_id)
-                ->where('classroom_id', $student->Classroom_id)
-                ->where('section_id', $student->section_id)
-                ->count();
-
-            $subject->quizzes_count = Quizze::where('subject_id', $subject->id)
-                ->where('grade_id', $student->Grade_id)
-                ->where('classroom_id', $student->Classroom_id)
-                ->where('section_id', $student->section_id)
-                ->count();
-
-            $degrees = Degree::where('student_id', $student->id)
-                ->whereHas('quizze', function($q) use ($subject) {
-                    $q->where('subject_id', $subject->id);
-                })
-                ->get();
-            $subject->total_score = $degrees->sum('score');
-            $subject->exams_taken = $degrees->count();
+            $subject->homeworks_count = $homeworkCounts->get($subject->id, 0);
+            $subject->quizzes_count = $quizCounts->get($subject->id, 0);
+            $subjDegrees = $degreesBySubject->get($subject->id, collect());
+            $subject->total_score = $subjDegrees->sum('score');
+            $subject->exams_taken = $subjDegrees->count();
         }
 
         return view('pages.Students.dashboard.subjects_index', compact('subjects', 'term'));
