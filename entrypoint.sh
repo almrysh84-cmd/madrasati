@@ -118,22 +118,27 @@ else
     echo "RUN_MIGRATIONS not set — skipping DB operations (DB already migrated+seeded)."
 fi
 
-# Publish PHPFlasher (toastr) assets so notifications work
-php artisan flasher:install --no-interaction 2>/dev/null || true
+# Publish PHPFlasher (toastr) assets so notifications work (time-boxed: bootstraps
+# Laravel, which can hang on shared-MySQL contention during zero-downtime deploy).
+timeout 30 php artisan flasher:install --no-interaction 2>/dev/null || true
 
-# Clear ALL stale caches from previous deploys
-php artisan route:clear 2>/dev/null || true
-php artisan config:clear 2>/dev/null || true
-php artisan view:clear 2>/dev/null || true
-php artisan event:clear 2>/dev/null || true
-rm -f /var/www/html/bootstrap/cache/routes*.php /var/www/html/bootstrap/cache/config.php /var/www/html/bootstrap/cache/events.php /var/www/html/bootstrap/cache/packages.php /var/www/html/bootstrap/cache/services.php 2>/dev/null || true
+# Clear ALL stale caches by removing the cached files directly (NOT via artisan,
+# which bootstraps Laravel and can hang on shared-MySQL connection contention).
+rm -f /var/www/html/bootstrap/cache/routes*.php \
+      /var/www/html/bootstrap/cache/config.php \
+      /var/www/html/bootstrap/cache/events.php \
+      /var/www/html/bootstrap/cache/packages.php \
+      /var/www/html/bootstrap/cache/services.php \
+      /var/www/html/storage/framework/views/*.php 2>/dev/null || true
 
-# Cache config (DB-free — just compiles the config array, no connection)
-php artisan config:cache 2>&1 || echo "WARNING: config:cache failed"
-# view:cache precompiles blade templates (perf optimization, optional, DB-free).
-# Time-boxed: on 512MB free-tier it can be slow; a hang would stall the deploy.
-# If it times out, Laravel still serves (compiles blades on demand).
-timeout 90 php artisan view:cache 2>&1 || echo "WARNING: view:cache failed or timed out (continuing)"
+# Cache config (DB-free in theory, but bootstraps Laravel which may touch the DB
+# via a service provider and hang on shared-MySQL connection contention). Time-boxed
+# so it can never stall the deploy; if it times out the app reads .env at runtime.
+timeout 60 php artisan config:cache 2>&1 || echo "WARNING: config:cache failed or timed out (continuing)"
+# view:cache SKIPPED — it bootstraps the full view factory (heavy, can hang/OOM on
+# 512MB). Laravel compiles blades on demand into storage/framework/views instead,
+# which is fine and cached after first hit.
+# timeout 90 php artisan view:cache 2>&1 || echo "WARNING: view:cache skipped/failed (continuing)"
 
 # Ensure writable permissions
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
