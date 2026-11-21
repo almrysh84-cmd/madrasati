@@ -33,6 +33,19 @@ if [ -n "$RENDER_EXTERNAL_URL" ]; then
     echo "Render APP_URL configured: $RENDER_EXTERNAL_URL"
 fi
 
+# Sync Render DB_* env vars into .env. CRITICAL: .env is created from
+# .env.example (DB_HOST=127.0.0.1 — wrong). Without this, the app connects to
+# 127.0.0.1 → "Connection refused". env() does read getenv (Render vars) at
+# runtime, but writing them into .env makes it robust for config:cache too.
+if [ -n "$DB_HOST" ]; then
+    sed -i "s|^DB_HOST=.*|DB_HOST=$DB_HOST|" /var/www/html/.env
+    sed -i "s|^DB_PORT=.*|DB_PORT=${DB_PORT:-3306}|" /var/www/html/.env
+    sed -i "s|^DB_DATABASE=.*|DB_DATABASE=$DB_DATABASE|" /var/www/html/.env
+    sed -i "s|^DB_USERNAME=.*|DB_USERNAME=$DB_USERNAME|" /var/www/html/.env
+    sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$DB_PASSWORD|" /var/www/html/.env
+    echo "Render DB configured: $DB_HOST:${DB_PORT:-3306}/$DB_DATABASE"
+fi
+
 # APP_KEY: prefer the persistent env var (set in Render dashboard) so sessions
 # survive redeploys. Only generate one if neither env var nor .env provides it.
 if [ -n "$APP_KEY" ]; then
