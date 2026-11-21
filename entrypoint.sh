@@ -104,33 +104,24 @@ if [ -n "$DB_HOST_VAL" ] && [ "$DB_HOST_VAL" != "127.0.0.1" ]; then
     fi
 fi
 
-# Run migrations (P0 fix: NEVER use migrate:fresh in production — it destroys data)
-# In production: only run migrate (additive). In non-production: allow fresh+seed.
-if [ "$APP_ENV" = "production" ]; then
-    echo "Running database migrations (production mode — additive only)..."
-    # Guarded: a failed migrate must NOT abort the deploy. The DB is typically
-    # already fully migrated from a prior deploy; if migrate can't connect
-    # transiently (shared-DB connection limits) or has nothing to run, we
-    # continue so the app can still serve. The error is surfaced to the log.
-    if ! php artisan migrate --force 2>&1; then
-        echo "WARN: php artisan migrate returned non-zero — continuing (DB likely already migrated)."
-    fi
-    # Auto-seed a fresh/empty database without destroying existing data.
-    # Safe on every deploy: only seeds when the users table is empty.
-    USER_COUNT=$(php artisan tinker --execute="echo App\Models\User::count();" 2>/dev/null | tr -d '[:space:]' || true)
-    if [ -z "$USER_COUNT" ]; then USER_COUNT="unknown"; fi
-    if [ "$USER_COUNT" = "0" ]; then
-        echo "Database is empty — running initial seeder..."
-        if ! php artisan db:seed --force 2>&1; then
-            echo "WARN: db:seed returned non-zero — continuing."
-        fi
-    else
-        echo "Database has $USER_COUNT users — skipping seed (data preserved)."
+# Idempotent migrations + conditional seed (NEVER migrate:fresh — it destroys
+# data and fails when the live deploy holds locks on the tables being dropped).
+# Works the same in every APP_ENV: additive migrate, seed only on a truly empty DB.
+echo "Running database migrations (additive, idempotent)..."
+if ! php artisan migrate --force 2>&1; then
+    echo "WARN: php artisan migrate returned non-zero — continuing (DB likely already migrated)."
+fi
+# Seed only when the users table is empty (brand-new DB). Preserves all data
+# on subsequent deploys. Tinker failure is non-fatal (guarded, no pipefail).
+USER_COUNT=$(php artisan tinker --execute="echo App\Models\User::count();" 2>/dev/null | tr -d '[:space:]' || true)
+if [ -z "$USER_COUNT" ]; then USER_COUNT="unknown"; fi
+if [ "$USER_COUNT" = "0" ]; then
+    echo "Database is empty — running initial seeder..."
+    if ! php artisan db:seed --force 2>&1; then
+        echo "WARN: db:seed returned non-zero — continuing."
     fi
 else
-    echo "Running database migrations (non-production mode — fresh + seed)..."
-    php artisan migrate:fresh --force
-    php artisan db:seed --force
+    echo "Database has $USER_COUNT users — skipping seed (data preserved)."
 fi
 
 # Publish PHPFlasher (toastr) assets so notifications work
