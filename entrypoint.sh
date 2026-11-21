@@ -112,9 +112,18 @@ if ! php artisan migrate --force 2>&1; then
     echo "WARN: php artisan migrate returned non-zero — continuing (DB likely already migrated)."
 fi
 # Seed only when the users table is empty (brand-new DB). Preserves all data
-# on subsequent deploys. Tinker failure is non-fatal (guarded, no pipefail).
-USER_COUNT=$(php artisan tinker --execute="echo App\Models\User::count();" 2>/dev/null | tr -d '[:space:]' || true)
-if [ -z "$USER_COUNT" ]; then USER_COUNT="unknown"; fi
+# on subsequent deploys. Uses a lightweight raw PDO query (NOT tinker, which
+# boots the full Laravel stack and OOMs on 512MB when combined with view:cache).
+USER_COUNT=$(php -r '
+$e=parse_ini_file("/var/www/html/.env");
+try {
+  $pdo=new PDO("mysql:host=".$e["DB_HOST"].";port=".($e["DB_PORT"]??"3306").";dbname=".$e["DB_DATABASE"].";charset=utf8mb4",
+    $e["DB_USERNAME"], $e["DB_PASSWORD"], [PDO::ATTR_TIMEOUT=>8]);
+  $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  echo (int)$pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
+} catch (\Throwable $ex) { echo "err"; }
+' 2>/dev/null || echo "err")
+if [ -z "$USER_COUNT" ] || [ "$USER_COUNT" = "err" ]; then USER_COUNT="unknown"; fi
 if [ "$USER_COUNT" = "0" ]; then
     echo "Database is empty — running initial seeder..."
     if ! php artisan db:seed --force 2>&1; then
@@ -137,7 +146,10 @@ rm -f /var/www/html/bootstrap/cache/routes*.php /var/www/html/bootstrap/cache/co
 
 # Cache for production — these dramatically improve performance
 php artisan config:cache 2>&1 || echo "WARNING: config:cache failed"
-php artisan view:cache 2>&1 || echo "WARNING: view:cache failed"
+# view:cache precompiles all blade templates (perf optimization, optional).
+# Time-boxed: on 512MB free-tier it can be slow or OOM; a hang here would stall
+# the deploy forever. If it times out, Laravel still serves (compiles on demand).
+timeout 90 php artisan view:cache 2>&1 || echo "WARNING: view:cache failed or timed out (continuing)"
 # Note: route:cache disabled because LaravelLocalization::setLocale()
 # does not work with cached routes (prefix is evaluated at compile time)
 # php artisan route:cache
