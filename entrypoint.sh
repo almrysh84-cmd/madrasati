@@ -1,6 +1,27 @@
 #!/bin/bash
 set -e
 
+# === Deploy progress logger (diagnostic) — writes markers to deploy_log table
+# in the DB so we can see exactly where the entrypoint reaches/hangs, since
+# Render free-tier runtime logs aren't exposed via API. Uses env vars (Render-
+# injected DB_*), not .env (which still holds .env.example defaults at this point).
+log_step() {
+  STEP_MSG="$1" php -r '
+    $h=getenv("DB_HOST"); $p=getenv("DB_PORT")?:"3306";
+    $d=getenv("DB_DATABASE"); $u=getenv("DB_USERNAME"); $w=getenv("DB_PASSWORD");
+    $msg=getenv("STEP_MSG");
+    try {
+      $pdo=new PDO("mysql:host=$h;port=$p;dbname=$d;charset=utf8mb4", $u, $w, [PDO::ATTR_TIMEOUT=>5]);
+      $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      $pdo->exec("CREATE TABLE IF NOT EXISTS deploy_log (id INT AUTO_INCREMENT PRIMARY KEY, step VARCHAR(120), ts VARCHAR(40))");
+      $st=$pdo->prepare("INSERT INTO deploy_log (step, ts) VALUES (?, ?)");
+      $st->execute([$msg, date("Y-m-d H:i:s")]);
+    } catch (\Throwable $ex) {}
+  ' 2>/dev/null || true
+  echo "[deploy-log] $1"
+}
+log_step "entrypoint_start"
+
 # Copy .env.example to .env if .env doesn't exist
 if [ ! -f /var/www/html/.env ]; then
     cp /var/www/html/.env.example /var/www/html/.env
@@ -100,17 +121,22 @@ if [ -n "$DB_HOST_VAL" ] && [ "$DB_HOST_VAL" != "127.0.0.1" ]; then
     done
     if [ $RETRY -ge $MAX_RETRIES ]; then
         echo "ERROR: MySQL not available after $MAX_RETRIES attempts"
+        log_step "db_wait_failed"
         exit 1
     fi
 fi
+log_step "db_ready"
 
 # Idempotent migrations + conditional seed (NEVER migrate:fresh — it destroys
 # data and fails when the live deploy holds locks on the tables being dropped).
 # Works the same in every APP_ENV: additive migrate, seed only on a truly empty DB.
 echo "Running database migrations (additive, idempotent)..."
+log_step "migrate_start"
 if ! php artisan migrate --force 2>&1; then
     echo "WARN: php artisan migrate returned non-zero — continuing (DB likely already migrated)."
+    log_step "migrate_failed_nonzero"
 fi
+log_step "migrate_done"
 # Seed only when the users table is empty (brand-new DB). Preserves all data
 # on subsequent deploys. Uses a lightweight raw PDO query (NOT tinker, which
 # boots the full Laravel stack and OOMs on 512MB when combined with view:cache).
@@ -124,13 +150,18 @@ try {
 } catch (\Throwable $ex) { echo "err"; }
 ' 2>/dev/null || echo "err")
 if [ -z "$USER_COUNT" ] || [ "$USER_COUNT" = "err" ]; then USER_COUNT="unknown"; fi
+log_step "user_count=$USER_COUNT"
 if [ "$USER_COUNT" = "0" ]; then
     echo "Database is empty — running initial seeder..."
+    log_step "seed_start"
     if ! php artisan db:seed --force 2>&1; then
         echo "WARN: db:seed returned non-zero — continuing."
+        log_step "seed_failed_nonzero"
     fi
+    log_step "seed_done"
 else
     echo "Database has $USER_COUNT users — skipping seed (data preserved)."
+    log_step "seed_skipped"
 fi
 
 # Publish PHPFlasher (toastr) assets so notifications work
@@ -143,13 +174,16 @@ php artisan view:clear 2>/dev/null || true
 php artisan event:clear 2>/dev/null || true
 # Force-remove any cached route file that may have been baked into the Docker image
 rm -f /var/www/html/bootstrap/cache/routes*.php /var/www/html/bootstrap/cache/config.php /var/www/html/bootstrap/cache/events.php /var/www/html/bootstrap/cache/packages.php /var/www/html/bootstrap/cache/services.php 2>/dev/null || true
+log_step "caches_cleared"
 
 # Cache for production — these dramatically improve performance
 php artisan config:cache 2>&1 || echo "WARNING: config:cache failed"
+log_step "config_cached"
 # view:cache precompiles all blade templates (perf optimization, optional).
 # Time-boxed: on 512MB free-tier it can be slow or OOM; a hang here would stall
 # the deploy forever. If it times out, Laravel still serves (compiles on demand).
 timeout 90 php artisan view:cache 2>&1 || echo "WARNING: view:cache failed or timed out (continuing)"
+log_step "view_cached"
 # Note: route:cache disabled because LaravelLocalization::setLocale()
 # does not work with cached routes (prefix is evaluated at compile time)
 # php artisan route:cache
@@ -159,6 +193,7 @@ timeout 90 php artisan view:cache 2>&1 || echo "WARNING: view:cache failed or ti
 
 # Ensure writable permissions
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+log_step "chown_done"
 
 # Fix MPM conflict - ensure only prefork is loaded
 rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf
@@ -189,4 +224,5 @@ if [ -n "$PORT" ]; then
 fi
 
 echo "Starting Apache on port ${RENDER_PORT}..."
+log_step "apache_start"
 exec apache2-foreground
