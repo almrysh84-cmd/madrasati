@@ -1,0 +1,222 @@
+/* ==========================================================================
+   مدرستي — Student UI Modernization Layer
+   Scoped to .student-scope so it never touches the admin Webmin theme.
+   Loaded only on student dashboard pages. RTL-aware. Mobile-first.
+   ========================================================================== */
+
+.student-scope {
+  --stu-primary: #4f46e5;
+  --stu-primary-dark: #3730a3;
+  --stu-primary-soft: #eef2ff;
+  --stu-success: #10b981;
+  --stu-success-soft: #ecfdf5;
+  --stu-warning: #f59e0b;
+  --stu-warning-soft: #fffbeb;
+  --stu-info: #06b6d4;
+  --stu-info-soft: #ecfeff;
+  --stu-danger: #ef4444;
+  --stu-danger-soft: #fef2f2;
+  --stu-surface: #f8fafc;
+  --stu-card: #ffffff;
+  --stu-border: #e2e8f0;
+  --stu-text: #1e293b;
+  --stu-muted: #64748b;
+  --stu-radius: 16px;
+  --stu-radius-sm: 10px;
+  --stu-shadow: 0 1px 2px rgba(15,23,42,.04), 0 4px 12px rgba(15,23,42,.05);
+  --stu-shadow-hover: 0 8px 24px rgba(79,70,229,.18);
+  font-family: 'Cairo', sans-serif;
+  color: var(--stu-text);
+}
+
+/* ===== Hero welcome banner ===== */
+.student-scope .stu-hero {
+  background: linear-gradient(135deg, var(--stu-primary) 0%, var(--stu-primary-dark) 100%);
+  border-radius: var(--stu-radius);
+  padding: 28px 26px;
+  color: #fff;
+  margin-bottom: 22px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(79,70,229,.25);
+}
+.student-scope .stu-hero::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: auto;
+  inset-inline-end: -40px;
+  top: -60px;
+  width: 220px; height: 220px;
+  background: rgba(255,255,255,.12);
+  border-radius: 50%;
+}
+.student-scope .stu-hero h3 {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  margin: 0 0 6px;
+  font-size: clamp(1.25rem, 3vw, 1.6rem);
+}
+.student-scope .stu-hero p {
+  margin: 0;
+  opacity: .92;
+  font-size: .95rem;
+}
+.student-scope .stu-hero .stu-hero-icon {
+  position: absolute;
+  inset-inline-end: 24px;
+  bottom: 14px;
+  font-size: 3.2rem;
+  opacity: .25;
+}
+
+/* ===== Stat cards row ===== */
+.student-scope .stu-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
+.student-scope .stu-stat-card {
+  background: var(--stu-card);
+  border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius);
+  padding: 18px 20px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--stu-shadow);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.student-scope .stu-stat-card:hover { transform: translateY(-3px); box-shadow: var(--stu-shadow-hover); }
+.student-scope .stu-stat-card .stu-stat-icon {
+  width: 50px; height: 50px; border-radius: 14px;
+  display: grid; place-items: center; font-size: 1.3rem; color: #fff; flex-shrink: 0;
+}
+.student-scope .stu-stat-card .stu-stat-value { font-size: 1.55rem; font-weight: 800; line-height: 1.1; }
+.student-scope .stu-stat-card .stu-stat-label { font-size: .82rem; color: var(--stu-muted); margin-top: 2px; }
+.student-scope .stu-ic-primary { background: var(--stu-primary); }
+.student-scope .stu-ic-success { background: var(--stu-success); }
+.student-scope .stu-ic-warning { background: var(--stu-warning); }
+.student-scope .stu-ic-info    { background: var(--stu-info); }
+
+/* ===== Section title ===== */
+.student-scope .stu-section-title {
+  font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 1.1rem;
+  margin: 0 0 14px; display: flex; align-items: center; gap: 8px; color: var(--stu-text);
+}
+.student-scope .stu-section-title i { color: var(--stu-primary); }
+
+/* ===== Term toggle pills ===== */
+.student-scope .stu-term-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.student-scope .stu-term-pill {
+  flex: 1; min-width: 160px; text-align: center; padding: 12px 16px;
+  border-radius: 12px; font-weight: 700; font-family: 'Cairo', sans-serif;
+  border: 2px solid var(--stu-border); background: #fff; color: var(--stu-muted);
+  text-decoration: none; transition: all .18s ease; font-size: .98rem;
+}
+.student-scope .stu-term-pill:hover { border-color: var(--stu-primary); color: var(--stu-primary); }
+.student-scope .stu-term-pill.active { background: var(--stu-primary); border-color: var(--stu-primary); color: #fff; box-shadow: 0 6px 16px rgba(79,70,229,.25); }
+.student-scope .stu-term-pill.active.success { background: var(--stu-success); border-color: var(--stu-success); box-shadow: 0 6px 16px rgba(16,185,129,.25); }
+
+/* ===== Subject cards ===== */
+.student-scope .stu-subject-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.student-scope .stu-subject-card {
+  background: var(--stu-card); border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius); overflow: hidden; text-decoration: none;
+  display: flex; flex-direction: column; transition: transform .2s ease, box-shadow .2s ease;
+  box-shadow: var(--stu-shadow);
+}
+.student-scope .stu-subject-card:hover { transform: translateY(-4px); box-shadow: var(--stu-shadow-hover); }
+.student-scope .stu-subject-card .stu-subj-head {
+  padding: 16px 18px; color: #fff; display: flex; align-items: center; gap: 10px;
+}
+.student-scope .stu-subject-card .stu-subj-head.primary { background: linear-gradient(135deg,#6366f1,#4338ca); }
+.student-scope .stu-subject-card .stu-subj-head.success { background: linear-gradient(135deg,#34d399,#059669); }
+.student-scope .stu-subject-card .stu-subj-head h5 { margin: 0; font-size: 1.02rem; font-weight: 700; font-family: 'Cairo', sans-serif; }
+.student-scope .stu-subject-card .stu-subj-head .stu-subj-icon {
+  width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,.22);
+  display: grid; place-items: center; font-size: 1.05rem; flex-shrink: 0;
+}
+.student-scope .stu-subject-card .stu-subj-body { padding: 16px 18px; flex: 1; }
+.student-scope .stu-subject-card .stu-subj-teacher {
+  color: var(--stu-muted); font-size: .9rem; margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+}
+.student-scope .stu-subject-card .stu-subj-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.student-scope .stu-subject-card .stu-subj-stat {
+  background: var(--stu-surface); border-radius: 10px; padding: 10px 4px; text-align: center;
+}
+.student-scope .stu-subject-card .stu-subj-stat .num { font-size: 1.25rem; font-weight: 800; line-height: 1; }
+.student-scope .stu-subject-card .stu-subj-stat .lbl { font-size: .72rem; color: var(--stu-muted); margin-top: 4px; display: block; }
+.student-scope .stu-subject-card .stu-subj-stat .num.info { color: var(--stu-info); }
+.student-scope .stu-subject-card .stu-subj-stat .num.warning { color: var(--stu-warning); }
+.student-scope .stu-subject-card .stu-subj-stat .num.success { color: var(--stu-success); }
+.student-scope .stu-subject-card .stu-subj-foot {
+  padding: 10px 18px; background: var(--stu-surface); text-align: center;
+  font-size: .88rem; font-weight: 600; color: var(--stu-primary);
+  border-top: 1px solid var(--stu-border);
+}
+.student-scope .stu-subject-card.success .stu-subj-foot { color: var(--stu-success); }
+
+/* ===== Empty state ===== */
+.student-scope .stu-empty {
+  text-align: center; padding: 40px 20px; border: 2px dashed var(--stu-border);
+  border-radius: var(--stu-radius); background: var(--stu-surface); color: var(--stu-muted);
+}
+.student-scope .stu-empty i { font-size: 2.6rem; color: #cbd5e1; margin-bottom: 12px; display: block; }
+.student-scope .stu-empty h5 { font-family: 'Cairo', sans-serif; color: var(--stu-text); margin: 0 0 4px; }
+.student-scope .stu-empty p { margin: 0; font-size: .9rem; }
+
+/* ===== Modern table ===== */
+.student-scope .stu-table-wrap {
+  background: var(--stu-card); border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius); overflow: hidden; box-shadow: var(--stu-shadow);
+}
+.student-scope .stu-table-wrap .table { margin: 0; font-family: 'Cairo', sans-serif; }
+.student-scope .stu-table-wrap thead th {
+  background: var(--stu-primary-soft); color: var(--stu-primary-dark);
+  font-weight: 700; font-size: .88rem; border-bottom: 2px solid var(--stu-border);
+  padding: 14px 12px; white-space: nowrap;
+}
+.student-scope .stu-table-wrap tbody td { padding: 12px; vertical-align: middle; border-color: var(--stu-border); }
+.student-scope .stu-table-wrap tbody tr:hover { background: var(--stu-surface); }
+
+/* ===== Badges ===== */
+.student-scope .stu-badge {
+  display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px;
+  border-radius: 20px; font-size: .8rem; font-weight: 700; font-family: 'Cairo', sans-serif;
+}
+.student-scope .stu-badge.primary { background: var(--stu-primary-soft); color: var(--stu-primary-dark); }
+.student-scope .stu-badge.success { background: var(--stu-success-soft); color: #047857; }
+.student-scope .stu-badge.warning { background: var(--stu-warning-soft); color: #b45309; }
+.student-scope .stu-badge.info    { background: var(--stu-info-soft); color: #0e7490; }
+.student-scope .stu-badge.danger  { background: var(--stu-danger-soft); color: #b91c1c; }
+.student-scope .stu-badge.secondary { background: #f1f5f9; color: #475569; }
+
+/* ===== Buttons ===== */
+.student-scope .stu-btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px;
+  border-radius: 10px; font-weight: 700; font-family: 'Cairo', sans-serif; font-size: .9rem;
+  border: none; cursor: pointer; transition: all .16s ease; text-decoration: none;
+}
+.student-scope .stu-btn-primary { background: var(--stu-primary); color: #fff; }
+.student-scope .stu-btn-primary:hover { background: var(--stu-primary-dark); color: #fff; transform: translateY(-1px); }
+.student-scope .stu-btn-success { background: var(--stu-success); color: #fff; }
+.student-scope .stu-btn-success:hover { background: #059669; color: #fff; }
+.student-scope .stu-btn-outline { background: #fff; color: var(--stu-success); border: 2px solid var(--stu-success); }
+.student-scope .stu-btn-outline:hover { background: var(--stu-success-soft); }
+
+/* ===== Card container (page wrapper) ===== */
+.student-scope .stu-card {
+  background: var(--stu-card); border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius); box-shadow: var(--stu-shadow); padding: 22px; margin-bottom: 22px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1100px) {
+  .student-scope .stu-stats { grid-template-columns: repeat(2, 1fr); }
+  .student-scope .stu-subject-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .student-scope .stu-stats { grid-template-columns: 1fr; }
+  .student-scope .stu-subject-grid { grid-template-columns: 1fr; }
+  .student-scope .stu-term-pill { min-width: 100%; }
+  .student-scope .stu-hero { padding: 20px 18px; }
+  .student-scope .stu-hero .stu-hero-icon { display: none; }
+  .student-scope .stu-subject-card .stu-subj-stats { gap: 6px; }
+  .student-scope .stu-subject-card .stu-subj-stat .num { font-size: 1.05rem; }
+  .student-scope .stu-table-wrap .table { font-size: .85rem; }
+  .student-scope .stu-table-wrap thead th, .student-scope .stu-table-wrap tbody td { padding: 9px 7px; }
+}

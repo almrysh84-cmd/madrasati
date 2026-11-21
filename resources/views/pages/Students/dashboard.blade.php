@@ -13,11 +13,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600&display=swap" rel="stylesheet">
     @include('layouts.head')
+    <link href="{{ URL::asset('assets/css/student-ui.css') }}" rel="stylesheet">
 </head>
 
-<body style="font-family: 'Cairo', sans-serif">
+<body class="student-page" style="font-family: 'Cairo', sans-serif">
 
-    <div class="wrapper" style="font-family: 'Cairo', sans-serif">
+    <div class="wrapper student-scope" style="font-family: 'Cairo', sans-serif">
 
         <!--=================================
  preloader -->
@@ -37,40 +38,56 @@
  Main content -->
         <!-- main-content -->
         <div class="content-wrapper">
-            <div class="page-title" >
-                <div class="row">
-                    <div class="col-sm-6" >
-                        <h4 class="mb-0" style="font-family: 'Cairo', sans-serif">مرحبا بك : {{auth()->user()->name}}</h4>
-                    </div><br><br>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb pt-0 pr-0 float-left float-sm-right">
-                        </ol>
-                    </div>
+            @php
+                $stu = auth()->user();
+                $gradeId = $stu->Grade_id;
+                $classroomId = $stu->Classroom_id;
+                $sectionId = $stu->section_id;
+                $pendingHomework = \App\Models\Homework::where('grade_id', $gradeId)
+                    ->where('classroom_id', $classroomId)->where('section_id', $sectionId)->count();
+                $availableExams = \App\Models\Quizze::whereHas('subject', fn($q) =>
+                        $q->where('grade_id', $gradeId)->where('classroom_id', $classroomId))
+                    ->whereDoesntHave('degree', fn($q) => $q->where('student_id', $stu->id))->count();
+                $avgDegree = \App\Models\Degree::where('student_id', $stu->id)->avg('score');
+                $takenExams = \App\Models\Degree::where('student_id', $stu->id)->count();
+            @endphp
+
+            {{-- ===== Hero welcome ===== --}}
+            <div class="stu-hero">
+                <h3>مرحباً بك، {{ $stu->name }} 👋</h3>
+                <p>إليك ملخّص نشاطك الدراسي اليوم — استمر في التميّز!</p>
+                <i class="fas fa-graduation-cap stu-hero-icon"></i>
+            </div>
+
+            {{-- ===== Stat cards ===== --}}
+            <div class="stu-stats">
+                <div class="stu-stat-card">
+                    <div class="stu-stat-icon stu-ic-primary"><i class="fas fa-book"></i></div>
+                    <div><div class="stu-stat-value">{{ $availableExams }}</div><div class="stu-stat-label">اختبارات متاحة</div></div>
+                </div>
+                <div class="stu-stat-card">
+                    <div class="stu-stat-icon stu-ic-warning"><i class="fas fa-tasks"></i></div>
+                    <div><div class="stu-stat-value">{{ $pendingHomework }}</div><div class="stu-stat-label">واجبات</div></div>
+                </div>
+                <div class="stu-stat-card">
+                    <div class="stu-stat-icon stu-ic-success"><i class="fas fa-star"></i></div>
+                    <div><div class="stu-stat-value">{{ is_numeric($avgDegree) ? number_format($avgDegree, 1) : '0' }}</div><div class="stu-stat-label">معدّل درجاتي</div></div>
+                </div>
+                <div class="stu-stat-card">
+                    <div class="stu-stat-icon stu-ic-info"><i class="fas fa-pen-alt"></i></div>
+                    <div><div class="stu-stat-value">{{ $takenExams }}</div><div class="stu-stat-label">اختبارات أديتها</div></div>
                 </div>
             </div>
+
             <div class="calendar-main mb-30">
                 <livewire:calender-student />
             </div>
 
-            {{-- ===== Chart.js (Phase 2) ===== --}}
-            <div class="row">
-                <div class="col-xl-12 mb-30">
-                    <div class="card card-statistics h-100">
-                        <div class="card-body">
-                            <h5 style="font-family: 'Cairo', sans-serif" class="card-title mb-3">
-                                <i class="fas fa-chart-bar text-primary"></i> نتائج اختباراتي
-                            </h5>
-                            <canvas id="studentResultsChart" height="80"></canvas>
-                        </div>
-                    </div>
-                </div>
+            {{-- ===== Chart.js ===== --}}
+            <div class="stu-card">
+                <h5 class="stu-section-title"><i class="fas fa-chart-bar"></i> نتائج اختباراتي</h5>
+                <canvas id="studentResultsChart" height="80"></canvas>
             </div>
-            {{-- ===== End Chart.js ===== --}}
-            <!--=================================
- wrapper -->
-
-            <!--=================================
- footer -->
 
             @include('layouts.footer')
         </div><!-- main content wrapper end-->
