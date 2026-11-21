@@ -220,3 +220,84 @@
   .student-scope .stu-table-wrap .table { font-size: .85rem; }
   .student-scope .stu-table-wrap thead th, .student-scope .stu-table-wrap tbody td { padding: 9px 7px; }
 }
+
+/* ===== Dashboard v2: quick actions + today's tasks + progress ===== */
+.student-scope .stu-quickactions {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 0 0 22px;
+}
+.student-scope .stu-qa {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  background: var(--stu-card); border: 1px solid var(--stu-border); border-radius: var(--stu-radius);
+  padding: 18px 10px; text-align: center; box-shadow: var(--stu-shadow);
+  transition: transform .15s ease, box-shadow .15s ease; text-decoration: none; color: var(--stu-ink);
+}
+.student-scope .stu-qa:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(37,99,235,.12); }
+.student-scope .stu-qa .stu-qa-ic {
+  width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem; color: #fff;
+}
+.student-scope .stu-qa .stu-qa-label { font-weight: 700; font-size: .98rem; }
+.student-scope .stu-qa .stu-qa-sub { font-size: .78rem; color: var(--stu-muted); }
+.student-scope .stu-qa-primary .stu-qa-ic { background: var(--stu-primary); }
+.student-scope .stu-qa-warning .stu-qa-ic { background: var(--stu-warning); }
+.student-scope .stu-qa-success .stu-qa-ic { background: var(--stu-success); }
+.student-scope .stu-qa-info    .stu-qa-ic { background: var(--stu-info); }
+
+/* Today's tasks (combined homework + exams, sorted by urgency) */
+.student-scope .stu-tasks { list-style: none; padding: 0; margin: 0; }
+.student-scope .stu-task {
+  display: flex; align-items: center; gap: 14px; padding: 13px 12px; border-bottom: 1px solid var(--stu-border);
+}
+.student-scope .stu-task:last-child { border-bottom: none; }
+.student-scope .stu-task .stu-task-ic {
+  width: 38px; height: 38px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; color: #fff; font-size: .95rem;
+}
+.student-scope .stu-task .stu-task-main { flex: 1; min-width: 0; }
+.student-scope .stu-task .stu-task-title { font-weight: 700; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.student-scope .stu-task .stu-task-meta { font-size: .78rem; color: var(--stu-muted); margin-top: 2px; }
+.student-scope .stu-task .stu-due {
+  font-size: .72rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+}
+.student-scope .stu-due-urgent { background: #fee2e2; color: #b91c1c; }
+.student-sope .stu-due-urgent { background: #fee2e2; color: #b91c1c; }
+.student-scope .stu-due-soon   { background: #fef3c7; color: #b45309; }
+.student-scope .stu-due-ok     { background: #dcfce7; color: #166534; }
+.student-scope .stu-task .stu-task-go {
+  font-size: .8rem; font-weight: 700; padding: 7px 14px; border-radius: 8px; white-space: nowrap; text-decoration: none;
+}
+.student-scope .stu-task-exam .stu-task-ic { background: var(--stu-primary); }
+.student-scope .stu-task-hw   .stu-task-ic { background: var(--stu-warning); }
+
+/* Two-column layout */
+.student-scope .stu-two-col { display: grid; grid-template-columns: 1.4fr 1fr; gap: 22px; }
+.student-scope .stu-two-col .stu-col-stack > .stu-card { margin-bottom: 22px; }
+
+/* Subject progress bars */
+.student-scope .stu-prog-item { margin-bottom: 14px; }
+.student-scope .stu-prog-item:last-child { margin-bottom: 0; }
+.student-scope .stu-prog-head { display: flex; justify-content: space-between; font-size: .85rem; margin-bottom: 5px; }
+.student-scope .stu-prog-head .stu-prog-name { font-weight: 700; }
+.student-scope .stu-prog-bar { height: 8px; background: var(--stu-border); border-radius: 999px; overflow: hidden; }
+.student-scope .stu-prog-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--stu-primary), var(--stu-info)); }
+
+/* Announcement items */
+.student-scope .stu-announce { padding: 11px 0; border-bottom: 1px dashed var(--stu-border); }
+.student-scope .stu-announce:last-child { border-bottom: none; }
+.student-scope .stu-announce .stu-an-title { font-weight: 700; font-size: .9rem; }
+.student-scope .stu-announce .stu-an-body { font-size: .8rem; color: var(--stu-muted); margin-top: 3px; line-height: 1.5; }
+.student-scope .stu-an-date { font-size: .72rem; color: var(--stu-muted); }
+
+/* Latest grade row */
+.student-scope .stu-grade-row { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--stu-border); }
+.student-scope .stu-grade-row:last-child { border-bottom: none; }
+.student-scope .stu-grade-name { flex: 1; font-size: .88rem; font-weight: 600; }
+.student-scope .stu-grade-score { font-weight: 800; font-size: 1.05rem; }
+.student-scope .stu-grade-pill { font-size: .72rem; padding: 2px 8px; border-radius: 999px; font-weight: 700; }
+.student-scope .stu-grade-good { background: #dcfce7; color: #166534; }
+.student-scope .stu-grade-mid  { background: #fef3c7; color: #b45309; }
+.student-scope .stu-grade-low  { background: #fee2e2; color: #b91c1c; }
+.student-scope .stu-empty { text-align: center; color: var(--stu-muted); padding: 18px; font-size: .9rem; }
+@media (max-width: 900px) {
+  .student-scope .stu-quickactions { grid-template-columns: repeat(2, 1fr); }
+  .student-scope .stu-two-col { grid-template-columns: 1fr; }
+}
