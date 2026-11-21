@@ -20,7 +20,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
      */
     public function collection()
     {
-        return Student::with(['gender', 'nationalitie', 'blood', 'grade', 'classroom', 'section', 'myparent'])
+        return Student::with(['gender', 'Nationality', 'blood', 'grade', 'classroom', 'section', 'myparent'])
             ->get();
     }
 
@@ -56,7 +56,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
             $student->getTranslation('name', 'en'),
             $student->email,
             $student->gender ? $student->gender->getTranslation('Name', 'ar') : '',
-            $student->nationalitie ? $student->nationalitie->getTranslation('Name', 'ar') : '',
+            $student->Nationality ? $student->Nationality->getTranslation('Name', 'ar') : '',
             $student->blood ? $student->blood->Name : '',
             $student->Date_Birth,
             $student->grade ? $student->grade->getTranslation('Name', 'ar') : '',
